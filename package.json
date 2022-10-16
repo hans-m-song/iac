@@ -1,0 +1,22 @@
+{
+  "name": "aws",
+  "type": "module",
+  "scripts": {
+    "cdk": "cdk",
+    "start": "tsx stacks/index.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.188.0",
+    "aws-cdk-lib": "^2.46.0",
+    "source-map-support": "^0.5.21",
+    "table": "^6.8.0",
+    "tsx": "^3.10.1",
+    "typescript": "^4.8.4",
+    "yaml": "^1.10.2"
+  },
+  "devDependencies": {
+    "@types/json-diff": "^0.9.0",
+    "@types/node": "^18.8.4",
+    "aws-cdk": "^2.46.0"
+  }
+}
