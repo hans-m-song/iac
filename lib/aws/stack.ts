@@ -1,4 +1,5 @@
-import { cliStream, cliSync } from "@lib/core/process.js";
+import { cliStream } from "@lib/core/process.js";
+import { promises as fs } from "fs";
 import {
   CloudFormationClient,
   DeleteStackCommand,
@@ -46,17 +47,6 @@ export class Stack {
     }
   }
 
-  async synth() {
-    await cliSync(
-      `npx`,
-      `cdk`,
-      `synth`,
-      `--app="npx tsx ${this.filepath}"`,
-      `--output="${this.outputDir}"`,
-      `--quiet`,
-    );
-  }
-
   async create(timeout?: number) {
     const command = new CreateStackCommand({
       StackName: this.name,
@@ -79,24 +69,32 @@ export class Stack {
     return response.StackId;
   }
 
-  async deploy() {
-    await cliStream(
-      "npx",
-      "cdk",
-      "deploy",
-      `--app="${this.outputDir}"`,
-      `--quiet`,
+  static async cdk(...args: string[]) {
+    await cliStream("npx", "cdk", ...args);
+  }
+
+  async synth(args: string[] = []) {
+    await fs.rm(this.outputDir, { recursive: true, force: true });
+
+    await Stack.cdk(
+      `synth`,
+      `--app="npx tsx ${this.filepath}"`,
+      `--output="${this.outputDir}"`,
+      "--quiet",
+      ...args,
     );
   }
 
-  async destroy() {
-    await cliStream(
-      "npx",
-      "cdk",
-      "destroy",
-      `--app="${this.outputDir}"`,
-      `--quiet`,
-    );
+  async diff() {
+    await Stack.cdk("diff", `--app="${this.outputDir}"`);
+  }
+
+  async deploy(args: string[] = []) {
+    await Stack.cdk("deploy", `--app="${this.outputDir}"`, "--quiet", ...args);
+  }
+
+  async destroy(args: string[] = []) {
+    await Stack.cdk("destroy", `--app="${this.outputDir}"`, "--quiet", ...args);
   }
 
   async update(timeout?: number) {
@@ -180,7 +178,7 @@ export class Stack {
             resolved: p.ResolvedValue,
           }),
         ),
-      ),
+      ).join("\n"),
       "creation": spec.CreationTime,
       "last updated": spec.LastUpdatedTime,
       "capabilities": spec.Capabilities?.join("\n"),

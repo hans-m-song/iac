@@ -1,17 +1,17 @@
 import "source-map-support/register";
 import path from "path";
 import { walk } from "@lib/core/fs.js";
-import { promptIndex } from "@lib/core/prompt.js";
+import { promptIndex, promptYesNo } from "@lib/core/prompt.js";
 import { renderTable } from "@lib/core/table.js";
 import { Stack } from "@lib/aws/stack.js";
 
 const args = process.argv.slice(2);
-const debug =
-  process.env.DEBUG === "true"
-    ? (...args: any[]) => console.log("[DEBUG]", ...args)
-    : () => {};
+const debugEnabled = process.env.DEBUG === "true";
+const debug = debugEnabled
+  ? (...args: any[]) => console.log("[DEBUG]", ...args)
+  : () => {};
 debug("debug mode enabled");
-const [givenStackName, givenAction] = args;
+const [givenStackName, givenAction, ...restArgs] = args;
 
 console.log("Listing available stacks...");
 const stackdir = path.join(process.cwd(), "./stacks");
@@ -59,7 +59,7 @@ if (exists) {
 }
 
 const actions = exists
-  ? ["synth", "describe", "deploy", "destroy", "delete"]
+  ? ["synth", "describe", "deploy", "destroy", "delete", "diff"]
   : ["synth", "describe", "deploy"];
 debug({ givenAction });
 if (givenAction && !actions.includes(givenAction)) {
@@ -80,11 +80,22 @@ const actionIndex = givenAction
 const action = actions[actionIndex];
 debug({ actionIndex, action });
 
+const executionArgs = debugEnabled
+  ? [...restArgs, "--debug", "--verbose"]
+  : restArgs;
 switch (action) {
   // TODO via AWS SDK?
   // case "update":
   // case "create":
   // case "delete":
+
+  case "diff": {
+    console.log("Beginning synth...");
+    await stack.synth(executionArgs);
+
+    await stack.diff();
+    break;
+  }
 
   case "describe": {
     const spec = await stack.describe();
@@ -99,22 +110,28 @@ switch (action) {
 
   case "synth": {
     console.log("Beginning synth...");
-    await stack.synth();
+    await stack.synth(executionArgs);
     break;
   }
 
   case "deploy": {
     console.log("Beginning synth...");
-    await stack.synth();
+    await stack.synth(executionArgs);
+
+    await stack.diff();
+    const shouldContinue = await promptYesNo("Continue?");
+    if (!shouldContinue) {
+      break;
+    }
 
     console.log(`Beginning deploy...`);
-    await stack.deploy();
+    await stack.deploy(executionArgs);
     break;
   }
 
   case "destroy": {
     console.log("Beginning destroy...");
-    await stack.destroy();
+    await stack.destroy(executionArgs);
     break;
   }
 }

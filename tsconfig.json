@@ -5,8 +5,9 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["lib/*"]
+      "@lib/*": ["lib/*"],
+      "@resources/*": ["resources/*"]
     }
   },
-  "include": ["iac", "stacks"]
+  "include": ["iac", "stacks", "resources"]
 }
