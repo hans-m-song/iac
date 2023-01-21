@@ -518,4 +518,3 @@ Outputs:
       Fn::GetAtt:
         - CdkBootstrapVersion
         - Value
-

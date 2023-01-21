@@ -1,5 +1,7 @@
 import { Construct } from "constructs";
 
+import packageJson from "~/package.json";
+
 const CONTEXT_KEY_QUALIFIER = "@aws-cdk/core:bootstrapQualifier";
 
 const assertContext = (scope: Construct, key: string) => {
@@ -14,5 +16,9 @@ const assertContext = (scope: Construct, key: string) => {
 export const getContext = (scope: Construct) => {
   const cwd = process.cwd();
   const qualifier = assertContext(scope, CONTEXT_KEY_QUALIFIER);
-  return { cwd, qualifier };
+  return {
+    repositoryUrl: packageJson.repository.url,
+    cwd,
+    qualifier,
+  };
 };

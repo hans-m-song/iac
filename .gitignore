@@ -3,6 +3,9 @@ node_modules
 
 # misc
 .dccache
+.env
 
 # cdk
 cdk.out*
+.gitsecret/keys/random_seed
+!*.secret

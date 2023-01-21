@@ -1,22 +1,32 @@
 {
   "name": "aws",
-  "type": "module",
   "scripts": {
-    "cdk": "cdk",
-    "start": "tsx stacks/index.ts"
+    "synth": "cdk synthesize --quiet",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy --all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hans-m-song/aws.git"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.188.0",
+    "aws-cdk": "^2.46.0",
     "aws-cdk-lib": "^2.49.0",
     "source-map-support": "^0.5.21",
-    "table": "^6.8.0",
     "tsx": "^3.10.1",
-    "typescript": "^4.8.4",
-    "yaml": "^1.10.2"
+    "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "@types/json-diff": "^0.9.0",
+    "@tsconfig/node16": "^1.0.3",
     "@types/node": "^18.8.4",
-    "aws-cdk": "^2.46.0"
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.4",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.0",
+    "prettier": "^2.8.2"
   }
 }

@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "Node16",
+    "module": "CommonJS",
     "target": "ESNext",
     "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["lib/*"],
-      "@resources/*": ["resources/*"]
+      "~/*": ["./*"]
     }
   },
-  "include": ["iac", "stacks", "resources"]
+  "include": ["stacks", "lib"]
 }

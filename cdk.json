@@ -1,4 +1,5 @@
 {
+  "app": "tsx stacks/index.ts",
   "region": "ap-southeast-2",
   "context": {
     "@aws-cdk/core:bootstrapQualifier": "toolkit"
