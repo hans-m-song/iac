@@ -11,5 +11,14 @@ const app = new App();
 new HostedZoneUpdateStack(app, "HostedZoneUpdateStack");
 
 new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
-  env: { region: "us-east-1" },
+  repositories: [
+    "github-actions-runner",
+    "home-assistant-integrations",
+    "huisheng",
+  ],
+});
+
+new ManagedECRPublicStack(app, "ManagedECRPublicForSongmatrixStack", {
+  prefix: "songmatrix",
+  repositories: ["sync-service"],
 });

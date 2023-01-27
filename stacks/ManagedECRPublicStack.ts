@@ -7,31 +7,44 @@ import { Stack } from "~/lib/cdk/Stack";
 import { ECRPublicPusherPolicy } from "~/lib/constructs/iam/ECRPublicPusherPolicy";
 import { kebabToPascalCase } from "~/lib/utils/string";
 
-const repositories = [
-  // { name: "github-actions-runner" },
-  // { name: "home-assistant-integrations" },
-  { name: "huisheng" },
-];
+export interface ManagedECRPublicStackProps extends StackProps {
+  prefix?: string;
+  repositories: string[];
+}
 
 export class ManagedECRPublicStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+  constructor(
+    scope: Construct,
+    id: string,
+    { prefix, repositories, ...props }: ManagedECRPublicStackProps,
+  ) {
+    super(scope, id, {
+      ...props,
+      env: {
+        ...props.env,
+        region: "us-east-1",
+      },
+    });
 
-    const publicRepos = repositories.map(
+    const prefixed = repositories.map((repo) =>
+      prefix ? `${prefix}/${repo}` : repo,
+    );
+
+    const repos = prefixed.map(
       (repo) =>
         new CfnPublicRepository(
           this,
-          `${kebabToPascalCase(repo.name)}PublicRepository`,
-          { repositoryName: repo.name },
+          `${kebabToPascalCase(repo.replace(/\//g, "-"))}PublicRepository`,
+          { repositoryName: repo },
         ),
     );
 
     const policy = new ECRPublicPusherPolicy(this, "Policy", {
-      repositories: publicRepos,
+      repositories: repos,
     });
 
     new User(this, "User", {
-      userName: "ecr-pusher",
+      userName: prefix ? `ecr-pusher-${prefix}` : "ecr-pusher",
       managedPolicies: [policy],
     });
   }
