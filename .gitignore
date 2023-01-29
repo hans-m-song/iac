@@ -12,3 +12,4 @@ cdk.out*
 
 # terraform
 .terraform
+*.tfvars
