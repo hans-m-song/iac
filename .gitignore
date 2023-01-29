@@ -9,3 +9,6 @@ node_modules
 cdk.out*
 .gitsecret/keys/random_seed
 !*.secret
+
+# terraform
+.terraform
