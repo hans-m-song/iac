@@ -19,11 +19,6 @@ on:
           - newrelic
 
   workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        required: true
-        description: Github token
-
     inputs:
       dry-run:
         description: Disable terraform apply
@@ -70,7 +65,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init -backend-config="token=${{ secrets.TERRAFORM_TOKEN }}"
+        run: terraform init -backend-config="token=${{ github.token }}"
 
       - name: Terraform Validate
         id: validate

@@ -21,5 +21,3 @@ jobs:
     uses: ./.github/workflows/_terraform.yaml
     with:
       workspace: auth0
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
