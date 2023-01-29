@@ -18,6 +18,8 @@ permissions:
 
 jobs:
   terraform:
+    name: Terraform
+
     uses: ./.github/workflows/_terraform.yaml
     with:
       workspace: auth0
