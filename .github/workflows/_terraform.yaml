@@ -31,6 +31,11 @@ on:
         required: true
         type: string
 
+    secrets:
+      TERRAFORM_TOKEN:
+        description: Terraform authentication token
+        required: true
+
 permissions:
   pull-requests: write
 
