@@ -53,6 +53,11 @@ jobs:
           [ "${{ inputs.workspace }}" == "newrelic" ] && exit 0
           exit 1
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v2
         with:
