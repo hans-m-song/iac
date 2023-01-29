@@ -19,6 +19,11 @@ on:
           - newrelic
 
   workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+        description: Github token
+
     inputs:
       dry-run:
         description: Disable terraform apply
