@@ -70,7 +70,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init -backend-config="token=${{ github.token }}"
+        run: terraform init -backend-config="token=${{ secrets.TERRAFORM_TOKEN }}"
 
       - name: Terraform Validate
         id: validate
