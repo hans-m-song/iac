@@ -1,5 +1,5 @@
 terraform {
-  backend "remote" {
+  cloud {
     hostname     = "app.terraform.io"
     organization = "deep-thought"
 
@@ -18,5 +18,19 @@ terraform {
 }
 
 provider "github" {
+  owner = "hans-m-song"
+  alias = "hans-m-song"
+  token = var.github_token
+}
+
+provider "github" {
+  owner = "axatol"
+  alias = "axatol"
+  token = var.github_token
+}
+
+provider "github" {
+  owner = "songmatrix"
+  alias = "songmatrix"
   token = var.github_token
 }
