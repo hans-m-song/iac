@@ -1,17 +1,21 @@
 import { StackProps } from "aws-cdk-lib";
 import { User } from "aws-cdk-lib/aws-iam";
+import { HostedZoneAttributes } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { HostedZoneUpdatePolicy } from "~/lib/constructs/iam/HostedZoneUpdatePolicy";
 
-const hostedZones = [
-  { zoneName: "hsong.me", hostedZoneId: "Z09233301OJXCBONJC133" },
-  { zoneName: "axatol.xyz", hostedZoneId: "Z067173715955IHMKKU3W" },
-];
+export interface HostedZoneUpdateStackProps extends StackProps {
+  hostedZones: HostedZoneAttributes[];
+}
 
 export class HostedZoneUpdateStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    { hostedZones, ...props }: HostedZoneUpdateStackProps,
+  ) {
     super(scope, id, props);
 
     const policy = new HostedZoneUpdatePolicy(this, "Policy", {

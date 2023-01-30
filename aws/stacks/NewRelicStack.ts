@@ -5,7 +5,7 @@ import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
-import { SSM, URI } from "~/lib/constants";
+import { SSM, Domain } from "~/lib/constants";
 import { FirehoseToS3Role } from "~/lib/constructs/iam/FirehoseToS3Policy";
 
 export class NewRelicStack extends Stack {
@@ -31,7 +31,7 @@ export class NewRelicStack extends Stack {
         },
         endpointConfiguration: {
           name: "New Relic",
-          url: URI.NewRelicLogsFirehose,
+          url: `https://${Domain.NewRelicLogsFirehose}`,
           accessKey: licenseKey,
         },
         requestConfiguration: {

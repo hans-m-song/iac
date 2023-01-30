@@ -3,7 +3,8 @@
   "scripts": {
     "synth": "cdk synthesize --quiet",
     "diff": "cdk diff",
-    "deploy": "cdk deploy --all"
+    "deploy": "cdk deploy",
+    "deploy:all": "npm run deploy -- --all"
   },
   "repository": {
     "type": "git",

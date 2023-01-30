@@ -2,6 +2,7 @@
   "app": "tsx stacks/index.ts",
   "region": "ap-southeast-2",
   "context": {
-    "@aws-cdk/core:bootstrapQualifier": "toolkit"
+    "@aws-cdk/core:bootstrapQualifier": "toolkit",
+    "acknowledged-issue-numbers": [8607]
   }
 }
