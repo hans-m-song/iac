@@ -1,7 +1,3 @@
-module "default_github_repository" {
-
-}
-
 resource "github_repository" "axatol_actions" {
   provider = github.axatol
   name     = "actions"
