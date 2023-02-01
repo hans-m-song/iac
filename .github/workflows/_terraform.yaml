@@ -55,7 +55,6 @@ jobs:
         run: |
           [ "${{ inputs.workspace }}" == "auth0" ] && exit 0
           [ "${{ inputs.workspace }}" == "github" ] && exit 0
-          [ "${{ inputs.workspace }}" == "newrelic" ] && exit 0
           exit 1
 
       - name: Setup Node
@@ -63,18 +62,18 @@ jobs:
         with:
           node-version: "16"
 
-      - name: Setup terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.7
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
 
-      - name: Terraform fmt
+      - name: Terraform Format
         id: fmt
         continue-on-error: true
         run: terraform fmt -check
 
-      - name: Terraform Init
+      - name: Terraform Initialise
         id: init
         run: terraform init
 
