@@ -1,6 +1,6 @@
 resource "github_repository_webhook" "actions_runner_controller_hans-m-song-huisheng" {
   provider   = github.hans-m-song
-  repository = "huisheng"
+  repository = github_repository.hans-m-song_huisheng.name
 
   configuration {
     content_type = "json"
@@ -14,7 +14,7 @@ resource "github_repository_webhook" "actions_runner_controller_hans-m-song-huis
 
 resource "github_repository_webhook" "actions_runner_controller_hans-m-song-iac" {
   provider   = github.hans-m-song
-  repository = "iac"
+  repository = github_repository.hans-m-song_iac.name
 
   configuration {
     content_type = "json"
@@ -28,7 +28,7 @@ resource "github_repository_webhook" "actions_runner_controller_hans-m-song-iac"
 
 resource "github_repository_webhook" "actions_runner_controller_hans-m-song-kube-stack" {
   provider   = github.hans-m-song
-  repository = "kube-stack"
+  repository = github_repository.hans-m-song_kube-stack.name
 
   configuration {
     content_type = "json"

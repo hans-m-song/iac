@@ -1,25 +1,13 @@
+module "default_github_repository" {
+
+}
+
 resource "github_repository" "axatol_actions" {
   provider = github.axatol
   name     = "actions"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 
   topics = [
@@ -33,24 +21,8 @@ resource "github_repository" "axatol_home-assistant-integrations" {
   name        = "home-assistant-integrations"
   description = "Home Assistant custom integrations"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 
   topics = [
@@ -67,24 +39,8 @@ resource "github_repository" "hans-m-song_huisheng" {
   name        = "huisheng"
   description = "Quick and dirty Discord bot with Youtube support"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 
   topics = [
@@ -100,24 +56,8 @@ resource "github_repository" "hans-m-song_kube-stack" {
   name        = "kube-stack"
   description = "Bare metal k3s config"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 
   topics = [
@@ -131,24 +71,8 @@ resource "github_repository" "hans-m-song_iac" {
   provider = github.hans-m-song
   name     = "iac"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
 
@@ -156,24 +80,8 @@ resource "github_repository" "songmatrix_data-service" {
   provider = github.songmatrix
   name     = "data-service"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
 
@@ -181,24 +89,8 @@ resource "github_repository" "songmatrix_frontend-web" {
   provider = github.songmatrix
   name     = "frontend-web"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
 
@@ -206,24 +98,8 @@ resource "github_repository" "songmatrix_gateway" {
   provider = github.songmatrix
   name     = "gateway"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
 
@@ -231,24 +107,8 @@ resource "github_repository" "songmatrix_github" {
   provider = github.songmatrix
   name     = ".github"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
 
@@ -256,23 +116,7 @@ resource "github_repository" "songmatrix_sync-service" {
   provider = github.songmatrix
   name     = "sync-service"
 
-  has_issues      = true
-  has_discussions = false
-  has_projects    = true
-  has_wiki        = true
-  has_downloads   = false
-
-  allow_merge_commit  = true
-  allow_rebase_merge  = false
-  allow_squash_merge  = false
-  allow_auto_merge    = true
-  allow_update_branch = true
-
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-
-  merge_commit_title   = "MERGE_MESSAGE"
-  merge_commit_message = "PR_TITLE"
-
+  allow_auto_merge       = true
+  allow_update_branch    = true
   delete_branch_on_merge = true
 }
