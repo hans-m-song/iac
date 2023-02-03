@@ -30,6 +30,17 @@ resource "github_repository" "axatol_home-assistant-integrations" {
   ]
 }
 
+resource "github_repository" "axatol_yt-dlp-ui" {
+  provider    = github.axatol
+  name        = "yt-dlp-ui"
+  description = "Youtube downloader server and frontend"
+
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "hans-m-song_huisheng" {
   provider    = github.hans-m-song
   name        = "huisheng"
