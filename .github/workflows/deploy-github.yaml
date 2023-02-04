@@ -1,28 +1,28 @@
-name: Terraform Auth0
+name: Terraform Github
 
 on:
   push:
     branches:
       - master
     paths:
-      - "auth0/**/*.tf"
-      - .github/workflows/terraform-auth0.yaml
+      - "github/**/*.tf"
+      - .github/workflows/terraform-github.yaml
 
   pull_request:
     paths:
-      - "auth0/**/*.tf"
-      - .github/workflows/terraform-auth0.yaml
+      - "github/**/*.tf"
+      - .github/workflows/terraform-github.yaml
 
 permissions:
   pull-requests: write
 
 jobs:
   terraform:
-    name: Terraform
+    name: Terraform Github
 
     uses: ./.github/workflows/_terraform.yaml
     with:
-      workspace: auth0
+      workspace: github
 
     secrets:
       TERRAFORM_TOKEN: ${{ secrets.TERRAFORM_TOKEN }}
