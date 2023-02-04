@@ -10,7 +10,6 @@ on:
         options:
           - auth0
           - github
-          - newrelic
 
   workflow_call:
     inputs:
@@ -30,6 +29,7 @@ permissions:
 jobs:
   plan:
     name: Plan
+    if: github.event_name == 'pull_request'
     runs-on: self-hosted
     defaults:
       run:
@@ -118,7 +118,6 @@ jobs:
 
   apply:
     name: Apply
-    needs: plan
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
 
@@ -143,6 +142,9 @@ jobs:
         with:
           terraform_version: ${{ secrets.TERRAFORM_VERSION }}
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
+
+      - name: Terraform Initialise
+        run: terraform init
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false
