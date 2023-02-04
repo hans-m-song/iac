@@ -18,3 +18,11 @@ resource "github_actions_secret" "hans-m-song_iac_aws_deploy_role_arn" {
   secret_name     = "aws_deploy_role_arn"
   plaintext_value = var.aws_deploy_role_arn
 }
+
+resource "github_actions_secret" "hans-m-song_iac_terraform_version" {
+  provider   = github.hans-m-song
+  repository = github_repository.hans-m-song_iac.name
+
+  secret_name     = "terraform_version"
+  plaintext_value = "1.3.7"
+}

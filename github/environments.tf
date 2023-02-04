@@ -15,4 +15,3 @@ resource "github_repository_environment" "hans-m-song_iac_github" {
   repository  = github_repository.hans-m-song_iac.name
   environment = "github"
 }
-
