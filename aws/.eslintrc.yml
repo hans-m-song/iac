@@ -3,8 +3,6 @@ root: true
 extends:
   - eslint:recommended
   - plugin:@typescript-eslint/recommended
-  - plugin:react/recommended
-  - plugin:jsx-a11y/recommended
   - plugin:prettier/recommended
 
 env:
@@ -13,11 +11,11 @@ env:
 
 plugins:
   - import
-  - '@typescript-eslint'
+  - "@typescript-eslint"
   - react
   - prettier
 
-parser: '@typescript-eslint/parser'
+parser: "@typescript-eslint/parser"
 
 parserOptions:
   ecmaFeatures:
@@ -28,17 +26,17 @@ settings:
     version: detect
 
 rules:
-  '@typescript-eslint/ban-types':
+  "@typescript-eslint/ban-types":
     - error
     - types:
-        '{}': false
+        "{}": false
         Function: false
         extend-defaults: true
 
-  '@typescript-eslint/no-explicit-any':
+  "@typescript-eslint/no-explicit-any":
     - off
 
-  '@typescript-eslint/no-unused-vars':
+  "@typescript-eslint/no-unused-vars":
     - warn
     - vars: all
       args: after-used

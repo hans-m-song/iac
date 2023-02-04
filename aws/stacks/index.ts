@@ -3,9 +3,9 @@ import "source-map-support/register";
 
 import { App } from "aws-cdk-lib";
 
+import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
-import { OIDCProviderStack } from "./OIDCProviderStack";
 
 const app = new App();
 
@@ -29,4 +29,4 @@ new ManagedECRPublicStack(app, "ManagedECRPublicForSongmatrixStack", {
   repositories: ["sync-service"],
 });
 
-new OIDCProviderStack(app, "OIDCProviderStack");
+new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");

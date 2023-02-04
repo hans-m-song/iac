@@ -5,11 +5,11 @@ node_modules
 .dccache
 .iac-data
 .env
+!*.secret
+.gitsecret/keys/random_seed
 
 # cdk
 cdk.out*
-.gitsecret/keys/random_seed
-!*.secret
 
 # terraform
 .terraform
