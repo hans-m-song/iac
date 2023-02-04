@@ -11,7 +11,7 @@
     "url": "https://github.com/hans-m-song/iac.git"
   },
   "dependencies": {
-    "aws-cdk": "^2.46.0",
+    "aws-cdk": "^2.60.0",
     "aws-cdk-lib": "^2.49.0",
     "dotenv": "^16.0.3",
     "source-map-support": "^0.5.21",
