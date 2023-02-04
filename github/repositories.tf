@@ -30,9 +30,9 @@ resource "github_repository" "axatol_home-assistant-integrations" {
   ]
 }
 
-resource "github_repository" "axatol_yt-dlp-ui" {
+resource "github_repository" "axatol_youtube-dl" {
   provider    = github.axatol
-  name        = "yt-dlp-ui"
+  name        = "youtube-dl"
   description = "Youtube downloader server and frontend"
 
 
