@@ -3,12 +3,6 @@ name: Terraform
 on:
   workflow_dispatch:
     inputs:
-      dry-run:
-        description: Disable terraform apply
-        required: false
-        type: boolean
-        default: true
-
       workspace:
         description: Terraform workspace context to use
         required: true
@@ -20,12 +14,6 @@ on:
 
   workflow_call:
     inputs:
-      dry-run:
-        description: Disable terraform apply
-        required: false
-        type: boolean
-        default: true
-
       workspace:
         description: Terraform workspace context to use
         required: true
@@ -40,8 +28,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  check:
-    name: Check
+  plan:
+    name: Plan
     runs-on: self-hosted
     defaults:
       run:
@@ -65,7 +53,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.3.7
+          terraform_version: ${{ secrets.TERRAFORM_VERSION }}
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
 
       - name: Terraform Format
@@ -130,7 +118,7 @@ jobs:
 
   apply:
     name: Apply
-    needs: check
+    needs: plan
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
 
@@ -142,6 +130,9 @@ jobs:
         working-directory: ${{ inputs.workspace }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -150,7 +141,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.3.7
+          terraform_version: ${{ secrets.TERRAFORM_VERSION }}
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
 
       - name: Terraform Apply
