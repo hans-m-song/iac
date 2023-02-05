@@ -22,10 +22,9 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     new GithubActionsRole(this, "IACDeployRole", {
       claims: {
-        owner: "hans-m-song",
-        repo: "iac",
-        file: "*",
-        reference: "*",
+        repositoryOwner: "hans-m-song",
+        repository: "iac",
+        context: [{ pullRequest: true }],
       },
     }).addToPolicy(
       new PolicyStatement({

@@ -1,4 +1,4 @@
-name: CDK AWS
+name: Deploy AWS
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
       - master
     paths:
       - "aws/**"
-      - .github/workflows/cdk-aws.yaml
+      - .github/workflows/deploy-aws.yaml
 
   pull_request:
     paths:
       - "aws/**"
-      - .github/workflows/cdk-aws.yaml
+      - .github/workflows/deploy-aws.yaml
 
 permissions:
   id-token: write

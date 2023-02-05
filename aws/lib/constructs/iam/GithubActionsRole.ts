@@ -19,13 +19,16 @@ const toArray = (input?: string | string[]): string[] => {
  * https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
  */
 export interface GithubActionsSubjectClaimsProps {
-  owner: string;
-  repo: string;
-  file?: string;
-  reference?: string;
-  environments?: string | string[];
-  actors?: string | string[];
-  events?: string | string[];
+  repositoryOwner: string;
+  repository: string;
+  context: (
+    | { environment: string }
+    | { branch: string }
+    | { pullRequest: true }
+  )[];
+  workflowName?: string;
+  jobWorkflowRef?: string;
+  actors?: string[];
 }
 
 export interface GithubActionsFederatedPrincipalProps {
@@ -53,30 +56,25 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
   private static formatClaims(
     props: GithubActionsSubjectClaimsProps,
   ): string[] {
-    const file = props.file ?? "*";
-    const reference = props.reference ?? "*";
-    const events = toArray(props.events);
-    const environments = toArray(props.environments);
-    const actors = toArray(props.actors);
+    const actors = !props.actors ? ["*"] : props.actors;
 
-    const claims = events
-      .map((event) =>
-        environments.map((environment) =>
-          actors.map((actor) => ({
-            job_workflow_ref: `${props.owner}/${props.repo}/${file}@${reference}`,
-            event_name: event,
-            actor: actor,
-            environment: environment,
-          })),
-        ),
-      )
-      .flat(2);
-
-    return claims.map((claim) =>
-      Object.entries(claim)
-        .map((pair) => pair.join(":"))
-        .join(":"),
+    const claims = actors.map((actor) =>
+      props.context.map((context) =>
+        [
+          `repo:${props.repositoryOwner}/${props.repository}`,
+          "environment" in context && `environment:${context.environment}`,
+          "branch" in context && `ref:refs/heads/${context.branch}`,
+          "pullRequest" in context && "pull_request",
+          `workflow:${props.workflowName ?? "*"}`,
+          `job_workflow_ref:${props.jobWorkflowRef ?? "*"}`,
+          `actor:${actor}`,
+        ]
+          .filter(Boolean)
+          .join(":"),
+      ),
     );
+
+    return claims.flat();
   }
 }
 
