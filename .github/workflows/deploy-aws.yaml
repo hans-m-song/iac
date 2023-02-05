@@ -27,6 +27,11 @@ jobs:
         working-directory: aws
 
     steps:
+      - name: Debug OIDC
+        uses: github/actions-oidc-debugger@main
+        with:
+          audience: sts.amazonaws.com
+
       - name: Checkout
         uses: actions/checkout@v3
 
