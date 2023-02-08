@@ -6,7 +6,7 @@
     "diff:ci": "npm run diff -- --ci",
     "deploy": "cdk deploy",
     "deploy:all": "npm run deploy -- --all",
-    "deploy:ci": "npm run deploy:all -- --app cdk.out",
+    "deploy:ci": "npm run deploy:all -- --ci --app cdk.out --require-approval never --progress events",
     "lint": "eslint {lib,stacks}/**/*.ts"
   },
   "repository": {

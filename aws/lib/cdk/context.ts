@@ -33,7 +33,7 @@ export const getContext = (scope: Construct) => {
       throw new Error("must be called within the scope of a stack");
     }
 
-    return `cdk-${qualifier}-${purpose}-${stack.account}-${stack.region}`;
+    return `cdk-${qualifier}-${purpose}-${stack.account}-*`;
   };
 
   const bootstrapRoleARN = (purpose: string) => {

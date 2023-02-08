@@ -50,8 +50,8 @@ export class GithubActionsOIDCProviderStack extends Stack {
       claims: {
         repositoryOwner: "hans-m-song",
         repository: "iac",
-        contexts: [{ pullRequest: true }],
-        // contexts: [{ branch: "master" }],
+        contexts: [{ environment: "aws" }],
+        actors: ["hans-m-song"],
       },
     });
 

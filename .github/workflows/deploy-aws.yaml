@@ -27,6 +27,9 @@ jobs:
       run:
         working-directory: aws
 
+    outputs:
+      total-changed: ${{ steps.summarise.outputs.total-changed }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,11 +60,17 @@ jobs:
       - name: Determine Deployment Diff
         id: diff
         run: |
+          output=$( npm run diff:ci )
           echo "DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
-          npm run diff:ci >> $GITHUB_ENV
+          echo $output >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+          echo "::group::CDK Diff"
+          echo $output
+          echo "::endGroup::"
+
       - name: Summarise Diff
+        id: summarise
         uses: actions/github-script@v6
         with:
           script: |
@@ -69,7 +78,8 @@ jobs:
             const added = lines.filter((line) => line.startsWith("[+]")).length;
             const modified = lines.filter((line) => line.startsWith("[~]")).length;
             const removed = lines.filter((line) => line.startsWith("[-]")).length;
-            const total = added.length + modified.length + removed.length;
+            const total = added + modified + removed;
+            core.setOutput("total-changed", total);
 
             const body = `
             #### CDK Diff Summary
@@ -80,13 +90,13 @@ jobs:
 
             <details><summary>Diff output</summary>
 
-            \`\`\`\n
+            \`\`\`
             ${process.env.DIFF_OUTPUT}
             \`\`\`
 
             </details>
 
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`aws\`, Workflow: \`${{ github.workflow }}\`*
             `.trim();
 
             github.rest.issues.createComment({
@@ -96,9 +106,18 @@ jobs:
               body,
             });
 
+      - name: Upload artifacts
+        if: steps.summarise.outputs.total-changes > 0
+        uses: actions/upload-artifact@v3
+        with:
+          name: cdk.out
+          path: cdk.out
+
   deploy:
     name: Deploy
     needs: build
+    if: needs.build.outputs.total-changed > 0
+    environment: aws
     runs-on: self-hosted
 
     defaults:
@@ -106,6 +125,23 @@ jobs:
         working-directory: aws
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: cdk.out
+          path: cdk.out
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -115,13 +151,5 @@ jobs:
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-
-  #     - name: Install Dependencies
-  #       run: npm install
+      - name: Deploy
+        run: npm run deploy:ci
