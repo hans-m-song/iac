@@ -1,4 +1,4 @@
-name: Terraform Github
+name: Deploy Github
 
 on:
   push:
@@ -6,12 +6,14 @@ on:
       - master
     paths:
       - "github/**/*.tf"
-      - .github/workflows/terraform-github.yaml
+      - .github/workflows/deploy-github.yaml
+      - .github/workflows/_terraform.yaml
 
   pull_request:
     paths:
       - "github/**/*.tf"
-      - .github/workflows/terraform-github.yaml
+      - .github/workflows/deploy-github.yaml
+      - .github/workflows/_terraform.yaml
 
 permissions:
   pull-requests: write

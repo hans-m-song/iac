@@ -57,7 +57,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 16
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -145,7 +145,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 16
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

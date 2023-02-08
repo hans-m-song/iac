@@ -1,4 +1,4 @@
-import { Stack as CDKStack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack as CDKStack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { getContext } from "./context";
@@ -20,5 +20,9 @@ export class Stack extends CDKStack {
     };
 
     super(scope, id, stackProps);
+  }
+
+  output(exportName: string, value: string) {
+    return new CfnOutput(this, exportName, { exportName, value });
   }
 }

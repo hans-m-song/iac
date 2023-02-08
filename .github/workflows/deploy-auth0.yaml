@@ -1,4 +1,4 @@
-name: Terraform Auth0
+name: Deploy Auth0
 
 on:
   push:
@@ -6,12 +6,14 @@ on:
       - master
     paths:
       - "auth0/**/*.tf"
-      - .github/workflows/terraform-auth0.yaml
+      - .github/workflows/deploy-auth0.yaml
+      - .github/workflows/_terraform.yaml
 
   pull_request:
     paths:
       - "auth0/**/*.tf"
-      - .github/workflows/terraform-auth0.yaml
+      - .github/workflows/deploy-auth0.yaml
+      - .github/workflows/_terraform.yaml
 
 permissions:
   pull-requests: write

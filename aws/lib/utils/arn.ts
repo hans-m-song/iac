@@ -1,5 +1,6 @@
 import { Arn, ArnFormat, Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
+
 import { Region } from "~/lib/constants";
 
 export const arn = (

@@ -1,0 +1,155 @@
+name: Deploy AWS
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "aws/**"
+      - .github/workflows/deploy-aws.yaml
+
+  pull_request:
+    paths:
+      - "aws/**"
+      - .github/workflows/deploy-aws.yaml
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: aws
+
+    outputs:
+      total-changed: ${{ steps.summarise.outputs.total-changed }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run ESlint
+        run: npm run lint
+
+      - name: Synthesize
+        run: npm run synth
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_DIFF_ROLE_ARN }}
+          role-session-name: hans-m-song_iac_cdk-aws_diff
+          aws-region: ap-southeast-2
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+
+      - name: Determine Deployment Diff
+        id: diff
+        run: |
+          output=$( npm run diff:ci )
+          echo "DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo $output >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "::group::CDK Diff"
+          echo $output
+          echo "::endGroup::"
+
+      - name: Summarise Diff
+        id: summarise
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const lines = process.env.DIFF_OUTPUT.split(/\n/g);
+            const added = lines.filter((line) => line.startsWith("[+]")).length;
+            const modified = lines.filter((line) => line.startsWith("[~]")).length;
+            const removed = lines.filter((line) => line.startsWith("[-]")).length;
+            const total = added + modified + removed;
+            core.setOutput("total-changed", total);
+
+            const body = `
+            #### CDK Diff Summary
+            Added: ${added}
+            Modified: ${modified}
+            Removed: ${removed}
+            Total: ${total}
+
+            <details><summary>Diff output</summary>
+
+            \`\`\`
+            ${process.env.DIFF_OUTPUT}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`aws\`, Workflow: \`${{ github.workflow }}\`*
+            `.trim();
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Upload artifacts
+        if: steps.summarise.outputs.total-changes > 0
+        uses: actions/upload-artifact@v3
+        with:
+          name: cdk.out
+          path: cdk.out
+
+  deploy:
+    name: Deploy
+    needs: build
+    if: needs.build.outputs.total-changed > 0
+    environment: aws
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: aws
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: cdk.out
+          path: cdk.out
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: hans-m-song_iac_cdk-aws_deploy
+          aws-region: ap-southeast-2
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+
+      - name: Deploy
+        run: npm run deploy:ci
