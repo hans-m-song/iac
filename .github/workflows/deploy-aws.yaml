@@ -16,6 +16,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  issues: write
 
 jobs:
   build:
@@ -97,6 +98,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: build
     runs-on: self-hosted
 
     defaults:
