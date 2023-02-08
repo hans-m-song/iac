@@ -1,4 +1,4 @@
-name: Terraform Auth0
+name: Deploy Auth0
 
 on:
   push:

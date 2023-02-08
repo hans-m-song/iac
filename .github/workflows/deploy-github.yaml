@@ -1,4 +1,4 @@
-name: Terraform Github
+name: Deploy Github
 
 on:
   push:

@@ -1,19 +1,12 @@
-import { FederatedPrincipal, Role, RoleProps } from "aws-cdk-lib/aws-iam";
+import {
+  CfnOIDCProvider,
+  FederatedPrincipal,
+  Role,
+  RoleProps,
+} from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 import { Domain } from "~/lib/constants";
-
-const toArray = (input?: string | string[]): string[] => {
-  if (!input) {
-    return ["*"];
-  }
-
-  if (!Array.isArray(input)) {
-    return [input];
-  }
-
-  return input;
-};
 
 /**
  * https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
@@ -21,7 +14,7 @@ const toArray = (input?: string | string[]): string[] => {
 export interface GithubActionsSubjectClaimsProps {
   repositoryOwner: string;
   repository: string;
-  context: (
+  contexts: (
     | { environment: string }
     | { branch: string }
     | { pullRequest: true }
@@ -32,13 +25,14 @@ export interface GithubActionsSubjectClaimsProps {
 }
 
 export interface GithubActionsFederatedPrincipalProps {
+  provider: CfnOIDCProvider;
   claims: GithubActionsSubjectClaimsProps;
 }
 
 export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
   constructor(props: GithubActionsFederatedPrincipalProps) {
     super(
-      Domain.GithubActionsToken,
+      props.provider.attrArn,
       {
         StringEquals: {
           [`${Domain.GithubActionsToken}:aud`]:
@@ -59,7 +53,7 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
     const actors = !props.actors ? ["*"] : props.actors;
 
     const claims = actors.map((actor) =>
-      props.context.map((context) =>
+      props.contexts.map((context) =>
         [
           `repo:${props.repositoryOwner}/${props.repository}`,
           "environment" in context && `environment:${context.environment}`,
@@ -79,6 +73,7 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
 }
 
 export interface GithubActionsRoleProps extends Omit<RoleProps, "assumedBy"> {
+  provider: CfnOIDCProvider;
   claims: GithubActionsSubjectClaimsProps;
 }
 
@@ -86,11 +81,11 @@ export class GithubActionsRole extends Role {
   constructor(
     scope: Construct,
     id: string,
-    { claims, ...props }: GithubActionsRoleProps,
+    { provider, claims, ...props }: GithubActionsRoleProps,
   ) {
     super(scope, id, {
       ...props,
-      assumedBy: new GithubActionsFederatedPrincipal({ claims }),
+      assumedBy: new GithubActionsFederatedPrincipal({ provider, claims }),
     });
   }
 }

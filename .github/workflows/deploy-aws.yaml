@@ -27,11 +27,6 @@ jobs:
         working-directory: aws
 
     steps:
-      - name: Debug OIDC
-        uses: github/actions-oidc-debugger@main
-        with:
-          audience: sts.amazonaws.com
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -52,8 +47,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          role-session-name: hans-m-song_iac_cdk-aws_deploy
+          role-to-assume: ${{ secrets.AWS_DIFF_ROLE_ARN }}
+          role-session-name: hans-m-song_iac_cdk-aws_diff
           aws-region: ap-southeast-2
           role-skip-session-tagging: true
           role-duration-seconds: 3600
@@ -62,8 +57,8 @@ jobs:
         id: diff
         run: |
           echo "DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
-          npm run diff:ci  >> $GITHUB_ENV
-          echo "EOF"       >> $GITHUB_ENV
+          npm run diff:ci >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Summarise Diff
         uses: actions/github-script@v6
@@ -100,15 +95,24 @@ jobs:
               body,
             });
 
-  # deploy:
-  #   name: Deploy
-  #   runs-on: self-hosted
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
 
-  #   defaults:
-  #     run:
-  #       working-directory: aws
+    defaults:
+      run:
+        working-directory: aws
 
-  #   steps:
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: hans-m-song_iac_cdk-aws_deploy
+          aws-region: ap-southeast-2
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+
   #     - name: Checkout
   #       uses: actions/checkout@v3
 

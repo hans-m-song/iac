@@ -23,5 +23,7 @@ export enum SSM {
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
   GithubActionsOIDCProviderARN = "/infrastructure/github/actions_oidc_provider_arn",
+  GithubActionsIACDiffRoleARN = "/infrastructure/github/actions_iac_diff_role_arn",
+  GithubActionsIACDeployRoleARN = "/infrastructure/github/actions_iac_deploy_role_arn",
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
 }
