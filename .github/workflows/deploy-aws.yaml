@@ -81,6 +81,10 @@ jobs:
             const total = added + modified + removed;
             core.setOutput("total-changed", total);
 
+            if (!context.issue.number) {
+              return;
+            }
+
             const body = `
             #### CDK Diff Summary
             Added: ${added}
