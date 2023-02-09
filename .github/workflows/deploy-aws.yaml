@@ -125,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cdk.out
-          path: cdk.out
+          path: aws/cdk.out
 
   deploy:
     name: Deploy
@@ -157,7 +157,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: cdk.out
-          path: cdk.out
+          path: aws/cdk.out
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
