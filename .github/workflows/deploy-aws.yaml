@@ -116,7 +116,7 @@ jobs:
             });
 
       - name: Upload artifacts
-        if: steps.summarise.outputs.total-changes > 0
+        if: ${{ steps.summarise.outputs.total-changes > 0 }}
         uses: actions/upload-artifact@v3
         with:
           name: cdk.out
@@ -125,7 +125,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    if: needs.build.outputs.total-changed > 0
+    if: ${{ needs.build.outputs.total-changed > 0 }}
     environment: aws
     runs-on: self-hosted
 
