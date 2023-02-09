@@ -86,7 +86,8 @@ jobs:
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+          validate_stdout: ${{ steps.validate.outputs.stdout }}
+          plan_stdout: ${{ steps.plan.outputs.stdout }}
           tf_actions_working_dir: ${{ inputs.workspace }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -97,7 +98,7 @@ jobs:
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
+            ${process.env.validate_stdout.trim()}
             \`\`\`
 
             </details>
@@ -107,7 +108,7 @@ jobs:
             <details><summary>Show Plan</summary>
 
             \`\`\`\n
-            ${process.env.PLAN}
+            ${process.env.plan_stdout.trim()}
             \`\`\`
 
             </details>
