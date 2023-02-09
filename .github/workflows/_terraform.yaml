@@ -128,8 +128,11 @@ jobs:
   apply:
     name: Apply
     if: |
-      (github.ref == 'refs/heads/master' && github.event_name == 'push') 
-      || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply')
+      github.ref == 'refs/heads/master'
+      && (
+        github.event_name == 'push'
+        || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply')
+      )
     runs-on: self-hosted
     environment:
       name: ${{ inputs.workspace }}

@@ -1,6 +1,8 @@
 name: Deploy AWS
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - master
@@ -28,7 +30,7 @@ jobs:
         working-directory: aws
 
     outputs:
-      total-changed: ${{ steps.summarise.outputs.total-changed }}
+      has-changes: ${{ steps.summarise.outputs.has-changes }}
 
     steps:
       - name: Checkout
@@ -79,7 +81,7 @@ jobs:
             const modified = lines.filter((line) => line.startsWith("[~]")).length;
             const removed = lines.filter((line) => line.startsWith("[-]")).length;
             const total = added + modified + removed;
-            core.setOutput("total-changed", total);
+            core.setOutput("has-changes", total > 0 ? "yes" : "no");
 
             console.log({ added, modified, removed, total });
             core.startGroup("CDK diff output");
@@ -116,7 +118,10 @@ jobs:
             });
 
       - name: Upload artifacts
-        if: ${{ steps.summarise.outputs.total-changed > 0 }}
+        if: |
+          steps.summarise.outputs.has-changes == 'yes'
+          && github.ref == 'refs/heads/master'
+          && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-artifact@v3
         with:
           name: cdk.out
@@ -125,7 +130,10 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    if: ${{ needs.build.outputs.total-changed > 0 }}
+    if: |
+      needs.build.outputs.has-changes == 'yes'
+      && github.ref == 'refs/heads/master'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment: aws
     runs-on: self-hosted
 
