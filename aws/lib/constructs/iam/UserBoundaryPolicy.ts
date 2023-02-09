@@ -65,7 +65,9 @@ export class UserBoundaryPolicy extends ManagedPolicy {
         actions: ["iam:CreateUser", "iam:DeleteUser"],
         resources: ["*"],
         conditions: {
-          "iam:PermissionsBoundary": this.managedPolicyArn,
+          "ForAnyValue:StringEquals": {
+            "iam:PermissionsBoundary": this.managedPolicyArn,
+          },
         },
       }),
       new PolicyStatement({
@@ -73,7 +75,9 @@ export class UserBoundaryPolicy extends ManagedPolicy {
         actions: ["iam:CreateRole", "iam:DeleteRole"],
         resources: ["*"],
         conditions: {
-          "iam:PermissionsBoundary": executionBoundaryPolicy.managedPolicyArn,
+          "ForAnyValue:StringEquals": {
+            "iam:PermissionsBoundary": executionBoundaryPolicy.managedPolicyArn,
+          },
         },
       }),
     );
