@@ -62,7 +62,7 @@ jobs:
         run: |
           output=$( npm run diff:ci )
           echo "DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
-          echo $output >> $GITHUB_ENV
+          echo "$output" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
           echo "::group::CDK Diff"
@@ -81,6 +81,11 @@ jobs:
             const total = added + modified + removed;
             core.setOutput("total-changed", total);
 
+            console.log({ added, modified, removed, total });
+            core.startGroup("CDK diff output");
+            console.log(process.env.DIFF_OUTPUT);
+            core.endGroup();
+
             if (!context.issue.number) {
               return;
             }
@@ -94,8 +99,8 @@ jobs:
 
             <details><summary>Diff output</summary>
 
-            \`\`\`
-            ${process.env.DIFF_OUTPUT}
+            \`\`\`\n
+            ${process.env.DIFF_OUTPUT.trim()}
             \`\`\`
 
             </details>
