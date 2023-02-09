@@ -64,11 +64,6 @@ export class UserBoundaryPolicy extends ManagedPolicy {
         effect: Effect.DENY,
         actions: ["iam:CreateUser", "iam:DeleteUser"],
         resources: ["*"],
-        conditions: {
-          "ForAnyValue:StringEquals": {
-            "iam:PermissionsBoundary": this.managedPolicyArn,
-          },
-        },
       }),
       new PolicyStatement({
         effect: Effect.DENY,
