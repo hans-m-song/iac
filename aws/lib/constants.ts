@@ -22,8 +22,8 @@ export enum Domain {
 export enum SSM {
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
 
-  ExecutionBoundaryPolicyARN = "infrastructure/iam/execution_boundary_policy_arn",
-  UserBoundaryPolicyARN = "infrastructure/iam/user_boundary_policy_arn",
+  ExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
+  UserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
 
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
 
