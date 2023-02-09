@@ -8,8 +8,6 @@ import { Construct } from "constructs";
 
 import { ExecutionBoundaryPolicy } from "./ExecutionBoundaryPolicy";
 
-import { arn } from "~/lib/utils/arn";
-
 export interface UserBoundaryPolicyProps extends ManagedPolicyProps {
   executionBoundaryPolicy: ExecutionBoundaryPolicy;
 }
@@ -26,46 +24,61 @@ export class UserBoundaryPolicy extends ManagedPolicy {
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
-          "iam:AttachRolePolicy",
-          "iam:CreateRole",
-          "iam:PutRolePolicy",
-          "iam:PutRolePermissionsBoundary",
+          "apigateway:*",
+          "cloudformation:*",
+          "cloudfront:*",
+          "cloudtrail:*",
+          "cloudwatch:*",
+          "dynamodb:*",
+          "ecr-public:*",
+          "execute-api:*",
+          "iam:*",
+          "lambda:*",
+          "logs:*",
+          "route53:*",
+          "s3:*",
+          "ses:*",
+          "sns:*",
+          "sqs:*",
+          "ssm:*",
+          "sts:*",
+          "tag:*",
         ],
+        resources: ["*"],
+      }),
+    );
+
+    this.addStatements(
+      new PolicyStatement({
+        effect: Effect.DENY,
+        actions: [
+          "iam:CreateAccessKey",
+          "iam:CreateVirtualMFADevice",
+          "iam:DeactivateMFADevice",
+          "iam:DeleteAccessKey",
+          "iam:DeleteAccountPasswordPolicy",
+        ],
+        resources: ["*"],
+      }),
+      new PolicyStatement({
+        effect: Effect.DENY,
+        actions: ["iam:CreateUser", "iam:DeleteUser"],
         resources: ["*"],
         conditions: {
           "ForAnyValue:StringEquals": {
-            "iam:PermissionsBoundary": [
-              executionBoundaryPolicy.managedPolicyArn,
-            ],
+            "iam:PermissionsBoundary": this.managedPolicyArn,
           },
         },
       }),
       new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "iam:DeleteRole",
-          "iam:DeleteRolePermissionsBoundary",
-          "iam:DeleteRolePolicy",
-          "iam:DetachRolePolicy",
-        ],
+        effect: Effect.DENY,
+        actions: ["iam:CreateRole", "iam:DeleteRole"],
         resources: ["*"],
-      }),
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "ssm:AddTagsToResource",
-          "ssm:DeleteParameter*",
-          "ssm:GetParameter*",
-          "ssm:LabelParameterVersion",
-          "ssm:ListTagsForResource",
-          "ssm:PutParameter",
-          "ssm:RemoveTagsFromResource",
-        ],
-        resources: [
-          arn(this).parameter("infrastructure/*"),
-          arn(this).parameter("execution/*"),
-          arn(this).parameter("user/*"),
-        ],
+        conditions: {
+          "ForAnyValue:StringEquals": {
+            "iam:PermissionsBoundary": executionBoundaryPolicy.managedPolicyArn,
+          },
+        },
       }),
     );
   }

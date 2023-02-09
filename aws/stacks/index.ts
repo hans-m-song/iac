@@ -6,8 +6,13 @@ import { App } from "aws-cdk-lib";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
+import { ManagedIAMStack } from "./ManagedIAMStack";
 
 const app = new App();
+
+new ManagedIAMStack(app, "ManagedIAMStack");
+
+new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
 
 new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
   hostedZones: [
@@ -28,5 +33,3 @@ new ManagedECRPublicStack(app, "ManagedECRPublicForSongmatrixStack", {
   prefix: "songmatrix",
   repositories: ["sync-service"],
 });
-
-new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");

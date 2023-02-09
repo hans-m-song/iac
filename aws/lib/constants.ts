@@ -21,9 +21,15 @@ export enum Domain {
 
 export enum SSM {
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
+
+  ExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
+  UserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
+
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
+
   GithubActionsOIDCProviderARN = "/infrastructure/github/actions_oidc_provider_arn",
   GithubActionsIACDiffRoleARN = "/infrastructure/github/actions_iac_diff_role_arn",
   GithubActionsIACDeployRoleARN = "/infrastructure/github/actions_iac_deploy_role_arn",
+
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
 }
