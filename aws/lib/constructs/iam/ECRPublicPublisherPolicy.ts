@@ -7,15 +7,15 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
-export interface ECRPublicPusherPolicyProps extends ManagedPolicyProps {
+export interface ECRPublicPublisherPolicyProps extends ManagedPolicyProps {
   repositories: CfnPublicRepository[];
 }
 
-export class ECRPublicPusherPolicy extends ManagedPolicy {
+export class ECRPublicPublisherPolicy extends ManagedPolicy {
   constructor(
     scope: Construct,
     id: string,
-    { repositories, ...props }: ECRPublicPusherPolicyProps,
+    { repositories, ...props }: ECRPublicPublisherPolicyProps,
   ) {
     super(scope, id, props);
 

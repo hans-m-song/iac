@@ -1,22 +1,31 @@
 import { StackProps } from "aws-cdk-lib";
-import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
-import { User } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
-import { ECRPublicPusherPolicy } from "~/lib/constructs/iam/ECRPublicPusherPolicy";
-import { kebabToPascalCase } from "~/lib/utils/string";
+import { PublicRepository } from "~/lib/constructs/ecr/PublicRepository";
+import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
+import {
+  GithubActionsRole,
+  GithubActionsRoleProps,
+} from "~/lib/constructs/iam/GithubActionsRole";
+import { kebabToPascalCase, pascalToWords } from "~/lib/utils/string";
+
+export interface CreateGithubActionsPublisherRoleProps
+  extends Omit<GithubActionsRoleProps, "claims"> {
+  claims: GithubActionsRoleProps["claims"];
+}
 
 export interface ManagedECRPublicStackProps extends StackProps {
-  prefix?: string;
   repositories: string[];
 }
 
 export class ManagedECRPublicStack extends Stack {
+  repositories: PublicRepository[];
+
   constructor(
     scope: Construct,
     id: string,
-    { prefix, repositories, ...props }: ManagedECRPublicStackProps,
+    { repositories, ...props }: ManagedECRPublicStackProps,
   ) {
     super(scope, id, {
       ...props,
@@ -26,26 +35,27 @@ export class ManagedECRPublicStack extends Stack {
       },
     });
 
-    const prefixed = repositories.map((repo) =>
-      prefix ? `${prefix}/${repo}` : repo,
-    );
+    this.repositories = repositories.map((repo) => {
+      const id = kebabToPascalCase(repo.replace(/\//g, "-"));
 
-    const repos = prefixed.map(
-      (repo) =>
-        new CfnPublicRepository(
-          this,
-          `${kebabToPascalCase(repo.replace(/\//g, "-"))}PublicRepository`,
-          { repositoryName: repo },
-        ),
-    );
+      return new PublicRepository(this, `${id}PublicRepository`, {
+        repositoryName: repo,
+      });
+    });
+  }
 
-    const policy = new ECRPublicPusherPolicy(this, "Policy", {
-      repositories: repos,
+  createGithubActionsPublisherRole(id: string, props: GithubActionsRoleProps) {
+    const role = new GithubActionsRole(this, id, {
+      roleName: `${pascalToWords(this.node.id).join("-")}-image-publisher`,
+      ...props,
     });
 
-    new User(this, "User", {
-      userName: prefix ? `ecr-pusher-${prefix}` : "ecr-pusher",
-      managedPolicies: [policy],
+    const policy = new ECRPublicPublisherPolicy(role, "PublisherPolicy", {
+      repositories: this.repositories,
     });
+
+    role.addManagedPolicy(policy);
+
+    return role;
   }
 }

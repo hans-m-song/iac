@@ -1,18 +1,13 @@
-import {
-  CfnOIDCProvider,
-  FederatedPrincipal,
-  Role,
-  RoleProps,
-} from "aws-cdk-lib/aws-iam";
+import { FederatedPrincipal, Role, RoleProps } from "aws-cdk-lib/aws-iam";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
-import { Domain } from "~/lib/constants";
+import { Domain, SSM } from "~/lib/constants";
 
 /**
  * https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
  */
 export interface GithubActionsSubjectClaimsProps {
-  repositoryOwner: string;
   repository: string;
   contexts: (
     | { environment: string }
@@ -25,14 +20,14 @@ export interface GithubActionsSubjectClaimsProps {
 }
 
 export interface GithubActionsFederatedPrincipalProps {
-  provider: CfnOIDCProvider;
+  providerArn: string;
   claims: GithubActionsSubjectClaimsProps;
 }
 
 export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
   constructor(props: GithubActionsFederatedPrincipalProps) {
     super(
-      props.provider.attrArn,
+      props.providerArn,
       {
         StringEquals: {
           [`${Domain.GithubActionsToken}:aud`]:
@@ -55,7 +50,7 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
     const claims = actors.map((actor) =>
       props.contexts.map((context) =>
         [
-          `repo:${props.repositoryOwner}/${props.repository}`,
+          `repo:${props.repository}`,
           "environment" in context && `environment:${context.environment}`,
           "branch" in context && `ref:refs/heads/${context.branch}`,
           "pullRequest" in context && "pull_request",
@@ -73,7 +68,7 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
 }
 
 export interface GithubActionsRoleProps extends Omit<RoleProps, "assumedBy"> {
-  provider: CfnOIDCProvider;
+  providerArn?: string;
   claims: GithubActionsSubjectClaimsProps;
 }
 
@@ -81,11 +76,21 @@ export class GithubActionsRole extends Role {
   constructor(
     scope: Construct,
     id: string,
-    { provider, claims, ...props }: GithubActionsRoleProps,
+    { providerArn, claims, ...props }: GithubActionsRoleProps,
   ) {
+    const arn =
+      providerArn ??
+      StringParameter.valueForStringParameter(
+        scope,
+        SSM.GithubActionsOIDCProviderARN,
+      );
+
     super(scope, id, {
       ...props,
-      assumedBy: new GithubActionsFederatedPrincipal({ provider, claims }),
+      assumedBy: new GithubActionsFederatedPrincipal({
+        providerArn: arn,
+        claims,
+      }),
     });
   }
 }

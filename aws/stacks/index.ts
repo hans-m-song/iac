@@ -8,6 +8,8 @@ import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
 import { ManagedIAMStack } from "./ManagedIAMStack";
 
+import { hostedZones } from "~/lib/constants";
+
 const app = new App();
 
 new ManagedIAMStack(app, "ManagedIAMStack");
@@ -15,21 +17,32 @@ new ManagedIAMStack(app, "ManagedIAMStack");
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
 
 new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
-  hostedZones: [
-    { zoneName: "hsong.me", hostedZoneId: "Z09233301OJXCBONJC133" },
-    { zoneName: "axatol.xyz", hostedZoneId: "Z067173715955IHMKKU3W" },
-  ],
+  hostedZones: Object.values(hostedZones),
 });
 
-new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
-  repositories: [
-    "github-actions-runner",
-    "home-assistant-integrations",
-    "huisheng",
-  ],
-});
+const managedECRPublicStack = new ManagedECRPublicStack(
+  app,
+  "ManagedECRPublicStack",
+  {
+    repositories: [
+      "github-actions-runner",
+      "home-assistant-integrations",
+      "huisheng",
+    ],
+  },
+);
 
-new ManagedECRPublicStack(app, "ManagedECRPublicForSongmatrixStack", {
-  prefix: "songmatrix",
-  repositories: ["sync-service"],
-});
+managedECRPublicStack.repositories.forEach((repo) =>
+  repo.createGithubActionsPublisherRole(),
+);
+
+const managedECRPublicForSongmatrixStack = new ManagedECRPublicStack(
+  app,
+  "SongmatrixStackManagedECRPublic",
+  { repositories: ["songmatrix/sync-service"] },
+);
+
+managedECRPublicForSongmatrixStack.createGithubActionsPublisherRole(
+  "SongMatrixPublisherRole",
+  { claims: { repository: "songmatrix/*", contexts: [{ branch: "master" }] } },
+);
