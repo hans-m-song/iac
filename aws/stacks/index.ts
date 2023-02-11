@@ -28,7 +28,7 @@ new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
   ],
 });
 
-new ManagedECRPublicStack(app, "SongmatrixStackManagedECRPublic", {
+new ManagedECRPublicStack(app, "SongMatrixManagedECRPublicStack", {
   repositories: [
     ECR.Songmatrix_DataService,
     ECR.Songmatrix_Gateway,
