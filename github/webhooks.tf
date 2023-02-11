@@ -40,6 +40,19 @@ resource "github_repository_webhook" "actions_runner_controller_hans-m-song-kube
   active = true
 }
 
+resource "github_repository_webhook" "actions_runner_controller_hans-m-song-saml2aws" {
+  provider   = github.hans-m-song
+  repository = github_repository.hans-m-song_saml2aws.name
+
+  configuration {
+    content_type = "json"
+    insecure_ssl = false
+    url          = var.github_arc_webhook_url
+  }
+
+  events = ["workflow_job"]
+  active = true
+}
 
 resource "github_organization_webhook" "actions_runner_controller_axatol" {
   provider = github.axatol

@@ -58,6 +58,15 @@ resource "github_repository" "hans-m-song_huisheng" {
   ]
 }
 
+resource "github_repository" "hans-m-song_iac" {
+  provider = github.hans-m-song
+  name     = "iac"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "hans-m-song_kube-stack" {
   provider    = github.hans-m-song
   name        = "kube-stack"
@@ -74,9 +83,11 @@ resource "github_repository" "hans-m-song_kube-stack" {
   ]
 }
 
-resource "github_repository" "hans-m-song_iac" {
-  provider = github.hans-m-song
-  name     = "iac"
+resource "github_repository" "hans-m-song_saml2aws" {
+  provider     = github.hans-m-song
+  name         = "saml2aws"
+  description  = "CLI tool which enables you to login and retrieve AWS temporary credentials using a SAML IDP"
+  homepage_url = "https://github.com/Versent/saml2aws"
 
   allow_auto_merge       = true
   allow_update_branch    = true
