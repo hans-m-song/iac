@@ -29,11 +29,11 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
     super(
       props.providerArn,
       {
-        "StringEquals": {
+        StringEquals: {
           [`${Domain.GithubActionsToken}:aud`]:
             Domain.GithubActionsOIDCAudience,
         },
-        "ForAnyValue:StringLike": {
+        StringLike: {
           [`${Domain.GithubActionsToken}:sub`]:
             GithubActionsFederatedPrincipal.formatClaims(props.claims),
         },

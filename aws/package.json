@@ -9,6 +9,9 @@
     "deploy:ci": "npm run deploy:all -- --ci --app cdk.out --require-approval never --progress events",
     "lint": "eslint {lib,stacks}/**/*.ts"
   },
+  "workspaces": [
+    "handlers"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/hans-m-song/iac.git"
