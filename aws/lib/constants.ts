@@ -28,8 +28,31 @@ export enum SSM {
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
 
   GithubActionsOIDCProviderARN = "/infrastructure/github/actions_oidc_provider_arn",
+  GithubActionsLookupRoleARN = "/infrastructure/github/actions_lookup_role_arn",
   GithubActionsIACDiffRoleARN = "/infrastructure/github/actions_iac_diff_role_arn",
   GithubActionsIACDeployRoleARN = "/infrastructure/github/actions_iac_deploy_role_arn",
+  GithubActionsECRPublisherRoleARN = "/infrastructure/github/actions_ecr_image_publisher_role_arn",
+  GithubActionsSongMatrixECRPublisherRoleARN = "/infrastructure/github/actions_songmatrix_ecr_image_publisher_role_arn",
 
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
 }
+
+export enum ECR {
+  GithubActionsRunner = "github-actions-runner",
+  HomeAssistantIntegrations = "home-assistant-integrations",
+  Huisheng = "huisheng",
+  Songmatrix_DataService = "songmatrix/data-service",
+  Songmatrix_Gateway = "songmatrix/gateway",
+  Songmatrix_SyncService = "songmatrix/sync-service",
+}
+
+export const hostedZones = {
+  hsong_me: {
+    zoneName: "hsong.me",
+    hostedZoneId: "Z09233301OJXCBONJC133",
+  },
+  axatol_xyz: {
+    zoneName: "axatol.xyz",
+    hostedZoneId: "Z067173715955IHMKKU3W",
+  },
+};

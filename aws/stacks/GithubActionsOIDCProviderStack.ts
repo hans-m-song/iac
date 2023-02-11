@@ -1,13 +1,24 @@
 import { StackProps } from "aws-cdk-lib";
+import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { getContext } from "~/lib/cdk/context";
 import { Stack } from "~/lib/cdk/Stack";
-import { SSM } from "~/lib/constants";
+import { ECR, SSM } from "~/lib/constants";
+import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
 import { GithubActionsOIDCProvider } from "~/lib/constructs/iam/GithubActionsOIDCProvider";
-import { GithubActionsRole } from "~/lib/constructs/iam/GithubActionsRole";
+import {
+  GithubActionsRole,
+  GithubActionsRoleProps,
+} from "~/lib/constructs/iam/GithubActionsRole";
+import { arn } from "~/lib/utils/arn";
+
+export interface CreateGithubActionsECRPublisherRoleProps
+  extends GithubActionsRoleProps {
+  repositories: CfnPublicRepository[];
+}
 
 export class GithubActionsOIDCProviderStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,16 +27,17 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const provider = new GithubActionsOIDCProvider(this, "OIDCProvider");
 
+    this.output("OIDCProviderARN", provider.attrArn);
+
     new StringParameter(this, "OIDCProviderARNParameter", {
       parameterName: SSM.GithubActionsOIDCProviderARN,
       stringValue: provider.attrArn,
     });
 
     const iacDiffRole = new GithubActionsRole(this, "IACDiffRole", {
-      provider,
+      providerArn: provider.attrArn,
       claims: {
-        repositoryOwner: "hans-m-song",
-        repository: "iac",
+        repositories: ["hans-m-song/iac"],
         contexts: [{ pullRequest: true }, { branch: "*" }],
       },
     });
@@ -40,16 +52,15 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     this.output("IACDiffRoleARN", iacDiffRole.roleArn);
 
-    new StringParameter(this, "GithubActionsIACDiffRoleARNParameter", {
+    new StringParameter(this, "IACDiffRoleARNParameter", {
       parameterName: SSM.GithubActionsIACDiffRoleARN,
       stringValue: iacDiffRole.roleArn,
     });
 
     const iacDeployRole = new GithubActionsRole(this, "IACDeployRole", {
-      provider,
+      providerArn: provider.attrArn,
       claims: {
-        repositoryOwner: "hans-m-song",
-        repository: "iac",
+        repositories: ["hans-m-song/iac"],
         contexts: [{ environment: "aws" }],
         actors: ["hans-m-song"],
       },
@@ -71,9 +82,73 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     this.output("IACDeployRoleARN", iacDeployRole.roleArn);
 
-    new StringParameter(this, "GithubActionsIACDeployRoleARNParameter", {
+    new StringParameter(this, "IACDeployRoleARNParameter", {
       parameterName: SSM.GithubActionsIACDeployRoleARN,
       stringValue: iacDeployRole.roleArn,
+    });
+
+    const imagePublisherRole = new GithubActionsRole(this, "ECRPublisherRole", {
+      claims: {
+        repositories: [
+          "axatol/home-assistant-integrations",
+          "hans-m-song/huisheng",
+          "hans-m-song/kube-stack",
+        ],
+        contexts: [{ branch: "master" }],
+        actors: ["hans-m-song"],
+      },
+    });
+
+    imagePublisherRole.addManagedPolicy(
+      new ECRPublicPublisherPolicy(imagePublisherRole, "PublisherPolicy", {
+        repositories: [
+          arn(this).repository("ecr-public", ECR.HomeAssistantIntegrations),
+          arn(this).repository("ecr-public", ECR.Huisheng),
+          arn(this).repository("ecr-public", ECR.GithubActionsRunner),
+        ],
+      }),
+    );
+
+    this.output("ImagePublisherRole", imagePublisherRole.roleArn);
+
+    new StringParameter(this, "ECRPublisherRoleARNParameter", {
+      parameterName: SSM.GithubActionsECRPublisherRoleARN,
+      stringValue: imagePublisherRole.roleArn,
+    });
+
+    const songmatrixImagePublisherRole = new GithubActionsRole(
+      this,
+      "SongMatrixECRPublisherRole",
+      {
+        claims: {
+          repositories: ["songmatrix/*"],
+          contexts: [{ branch: "master" }],
+        },
+      },
+    );
+
+    songmatrixImagePublisherRole.addManagedPolicy(
+      new ECRPublicPublisherPolicy(
+        songmatrixImagePublisherRole,
+        "PublisherPolicy",
+        {
+          repositories: [
+            arn(this).repository("ecr-public", ECR.Songmatrix_DataService),
+            arn(this).repository("ecr-public", ECR.Songmatrix_Gateway),
+            arn(this).repository("ecr-public", ECR.Songmatrix_SyncService),
+          ],
+        },
+      ),
+    );
+
+    this.output(
+      "SongmatrixImagePublisherRole",
+      songmatrixImagePublisherRole.roleArn,
+    );
+
+    new StringParameter(this, "SongmatrixImagePublisherRoleARNParameter", {
+      parameterName: SSM.GithubActionsSongMatrixECRPublisherRoleARN,
+      stringValue: songmatrixImagePublisherRole.roleArn,
     });
   }
 }

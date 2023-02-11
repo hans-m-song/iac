@@ -8,6 +8,8 @@ import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
 import { ManagedIAMStack } from "./ManagedIAMStack";
 
+import { ECR, hostedZones } from "~/lib/constants";
+
 const app = new App();
 
 new ManagedIAMStack(app, "ManagedIAMStack");
@@ -15,21 +17,21 @@ new ManagedIAMStack(app, "ManagedIAMStack");
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
 
 new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
-  hostedZones: [
-    { zoneName: "hsong.me", hostedZoneId: "Z09233301OJXCBONJC133" },
-    { zoneName: "axatol.xyz", hostedZoneId: "Z067173715955IHMKKU3W" },
-  ],
+  hostedZones: Object.values(hostedZones),
 });
 
 new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
   repositories: [
-    "github-actions-runner",
-    "home-assistant-integrations",
-    "huisheng",
+    ECR.GithubActionsRunner,
+    ECR.HomeAssistantIntegrations,
+    ECR.Huisheng,
   ],
 });
 
-new ManagedECRPublicStack(app, "ManagedECRPublicForSongmatrixStack", {
-  prefix: "songmatrix",
-  repositories: ["sync-service"],
+new ManagedECRPublicStack(app, "SongmatrixStackManagedECRPublic", {
+  repositories: [
+    ECR.Songmatrix_DataService,
+    ECR.Songmatrix_Gateway,
+    ECR.Songmatrix_SyncService,
+  ],
 });

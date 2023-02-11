@@ -1,19 +1,14 @@
-import {
-  CfnOIDCProvider,
-  FederatedPrincipal,
-  Role,
-  RoleProps,
-} from "aws-cdk-lib/aws-iam";
+import { FederatedPrincipal, Role, RoleProps } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 import { Domain } from "~/lib/constants";
+import { arn } from "~/lib/utils/arn";
 
 /**
  * https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
  */
 export interface GithubActionsSubjectClaimsProps {
-  repositoryOwner: string;
-  repository: string;
+  repositories: string[];
   contexts: (
     | { environment: string }
     | { branch: string }
@@ -25,20 +20,20 @@ export interface GithubActionsSubjectClaimsProps {
 }
 
 export interface GithubActionsFederatedPrincipalProps {
-  provider: CfnOIDCProvider;
+  providerArn: string;
   claims: GithubActionsSubjectClaimsProps;
 }
 
 export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
   constructor(props: GithubActionsFederatedPrincipalProps) {
     super(
-      props.provider.attrArn,
+      props.providerArn,
       {
-        StringEquals: {
+        "StringEquals": {
           [`${Domain.GithubActionsToken}:aud`]:
             Domain.GithubActionsOIDCAudience,
         },
-        StringLike: {
+        "ForAnyValue:StringLike": {
           [`${Domain.GithubActionsToken}:sub`]:
             GithubActionsFederatedPrincipal.formatClaims(props.claims),
         },
@@ -52,28 +47,30 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
   ): string[] {
     const actors = !props.actors ? ["*"] : props.actors;
 
-    const claims = actors.map((actor) =>
-      props.contexts.map((context) =>
-        [
-          `repo:${props.repositoryOwner}/${props.repository}`,
-          "environment" in context && `environment:${context.environment}`,
-          "branch" in context && `ref:refs/heads/${context.branch}`,
-          "pullRequest" in context && "pull_request",
-          `workflow:${props.workflowName ?? "*"}`,
-          `job_workflow_ref:${props.jobWorkflowRef ?? "*"}`,
-          `actor:${actor}`,
-        ]
-          .filter(Boolean)
-          .join(":"),
+    const claims = props.repositories.map((repository) =>
+      actors.map((actor) =>
+        props.contexts.map((context) =>
+          [
+            `repo:${repository}`,
+            "environment" in context && `environment:${context.environment}`,
+            "branch" in context && `ref:refs/heads/${context.branch}`,
+            "pullRequest" in context && "pull_request",
+            `workflow:${props.workflowName ?? "*"}`,
+            `job_workflow_ref:${props.jobWorkflowRef ?? "*"}`,
+            `actor:${actor}`,
+          ]
+            .filter(Boolean)
+            .join(":"),
+        ),
       ),
     );
 
-    return claims.flat();
+    return claims.flat(2);
   }
 }
 
 export interface GithubActionsRoleProps extends Omit<RoleProps, "assumedBy"> {
-  provider: CfnOIDCProvider;
+  providerArn?: string;
   claims: GithubActionsSubjectClaimsProps;
 }
 
@@ -81,11 +78,15 @@ export class GithubActionsRole extends Role {
   constructor(
     scope: Construct,
     id: string,
-    { provider, claims, ...props }: GithubActionsRoleProps,
+    { providerArn, claims, ...props }: GithubActionsRoleProps,
   ) {
     super(scope, id, {
       ...props,
-      assumedBy: new GithubActionsFederatedPrincipal({ provider, claims }),
+      assumedBy: new GithubActionsFederatedPrincipal({
+        providerArn:
+          providerArn ?? arn(scope).oidcprovider(Domain.GithubActionsToken),
+        claims,
+      }),
     });
   }
 }
