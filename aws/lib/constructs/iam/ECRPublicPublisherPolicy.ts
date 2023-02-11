@@ -8,7 +8,7 @@ import {
 import { Construct } from "constructs";
 
 export interface ECRPublicPublisherPolicyProps extends ManagedPolicyProps {
-  repositories: CfnPublicRepository[];
+  repositories: (string | CfnPublicRepository)[];
 }
 
 export class ECRPublicPublisherPolicy extends ManagedPolicy {
@@ -57,7 +57,9 @@ export class ECRPublicPublisherPolicy extends ManagedPolicy {
             "ecr-public:UntagResource",
             "ecr-public:UploadLayerPart",
           ],
-          resources: repositories.map((repo) => repo.attrArn),
+          resources: repositories.map((repo) =>
+            typeof repo === "string" ? repo : repo.attrArn,
+          ),
         }),
       );
     }
