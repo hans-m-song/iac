@@ -90,7 +90,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     const imagePublisherRole = new GithubActionsRole(this, "ECRPublisherRole", {
       claims: {
         repositories: [
-          "axatol/home-assistant-integrations",
+          "axatol/*",
           "hans-m-song/huisheng",
           "hans-m-song/kube-stack",
         ],
