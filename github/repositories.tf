@@ -41,6 +41,15 @@ resource "github_repository" "axatol_youtube-dl" {
   delete_branch_on_merge = true
 }
 
+resource "github_repository" "hans-m-song_blog" {
+  provider     = github.hans-m-song
+  name         = "blog"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "hans-m-song_huisheng" {
   provider    = github.hans-m-song
   name        = "huisheng"
