@@ -37,7 +37,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     const iacDiffRole = new GithubActionsRole(this, "IACDiffRole", {
       providerArn: provider.attrArn,
       claims: {
-        repositories: ["hans-m-song/iac"],
+        repositories: ["hans-m-song/iac", "hans-m-song/blog"],
         contexts: [{ pullRequest: true }, { branch: "*" }],
       },
     });
@@ -60,7 +60,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     const iacDeployRole = new GithubActionsRole(this, "IACDeployRole", {
       providerArn: provider.attrArn,
       claims: {
-        repositories: ["hans-m-song/iac"],
+        repositories: ["hans-m-song/iac", "hans-m-song/blog"],
         contexts: [{ environment: "aws" }],
         actors: ["hans-m-song"],
       },

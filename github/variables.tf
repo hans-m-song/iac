@@ -44,6 +44,20 @@ resource "github_actions_secret" "hans-m-song_huisheng_aws_ecr_image_publisher_r
   plaintext_value = var.aws_ecr_image_publisher_role_arn
 }
 
+resource "github_actions_secret" "hans-m-song_blog_aws_deploy_role_arn" {
+  provider        = github.hans-m-song
+  repository      = github_repository.hans-m-song_blog.name
+  secret_name     = "AWS_DEPLOY_ROLE_ARN"
+  plaintext_value = var.aws_deploy_role_arn
+}
+
+resource "github_actions_secret" "hans-m-song_blog_aws_diff_role_arn" {
+  provider        = github.hans-m-song
+  repository      = github_repository.hans-m-song_blog.name
+  secret_name     = "AWS_DIFF_ROLE_ARN"
+  plaintext_value = var.aws_diff_role_arn
+}
+
 resource "github_actions_secret" "hans-m-song_iac_aws_deploy_role_arn" {
   provider        = github.hans-m-song
   repository      = github_repository.hans-m-song_iac.name

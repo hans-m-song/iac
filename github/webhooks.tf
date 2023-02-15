@@ -1,3 +1,17 @@
+resource "github_repository_webhook" "actions_runner_controller_hans-m-song_blog" {
+  provider   = github.hans-m-song
+  repository = github_repository.hans-m-song_blog.name
+
+  configuration {
+    content_type = "json"
+    insecure_ssl = false
+    url          = var.github_arc_webhook_url
+  }
+
+  events = ["workflow_job"]
+  active = true
+}
+
 resource "github_repository_webhook" "actions_runner_controller_hans-m-song-huisheng" {
   provider   = github.hans-m-song
   repository = github_repository.hans-m-song_huisheng.name
