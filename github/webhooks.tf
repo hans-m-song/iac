@@ -12,7 +12,6 @@ resource "github_repository_webhook" "actions_runner_controller_hans-m-song_blog
   active = true
 }
 
-
 resource "github_repository_webhook" "actions_runner_controller_hans-m-song-huisheng" {
   provider   = github.hans-m-song
   repository = github_repository.hans-m-song_huisheng.name
