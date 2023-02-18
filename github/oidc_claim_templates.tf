@@ -1,7 +1,5 @@
 resource "github_actions_repository_oidc_subject_claim_customization_template" "axatol" {
-  for_each = toset([
-    github_repository.axatol_home-assistant-integrations.name,
-  ])
+  for_each = toset(local.github_repositories_axatol)
 
   provider    = github.axatol
   repository  = each.value
@@ -16,11 +14,7 @@ resource "github_actions_repository_oidc_subject_claim_customization_template" "
 }
 
 resource "github_actions_repository_oidc_subject_claim_customization_template" "hans-m-song" {
-  for_each = toset([
-    github_repository.hans-m-song_iac.name,
-    github_repository.hans-m-song_kube-stack.name,
-    github_repository.hans-m-song_huisheng.name,
-  ])
+  for_each = toset(local.github_repositories_hans-m-song)
 
   provider    = github.hans-m-song
   repository  = each.value
@@ -35,11 +29,7 @@ resource "github_actions_repository_oidc_subject_claim_customization_template" "
 }
 
 resource "github_actions_repository_oidc_subject_claim_customization_template" "songmatrix" {
-  for_each = toset([
-    github_repository.songmatrix_data-service.name,
-    github_repository.songmatrix_gateway.name,
-    github_repository.songmatrix_sync-service.name,
-  ])
+  for_each = toset(local.github_repositories_songmatrix)
 
   provider    = github.songmatrix
   repository  = each.value
