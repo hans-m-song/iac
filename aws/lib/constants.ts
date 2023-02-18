@@ -35,6 +35,8 @@ export enum SSM {
   GithubActionsSongMatrixECRPublisherRoleARN = "/infrastructure/github/actions_songmatrix_ecr_image_publisher_role_arn",
 
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
+
+  EmailIdentityName = "/infrastructure/email/identity_name",
 }
 
 export enum ECR {

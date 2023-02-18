@@ -6,6 +6,7 @@ import { App } from "aws-cdk-lib";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
+import { ManagedEmailStack } from "./ManagedEmailStack";
 import { ManagedIAMStack } from "./ManagedIAMStack";
 
 import { ECR, hostedZones } from "~/lib/constants";
@@ -34,4 +35,8 @@ new ManagedECRPublicStack(app, "SongMatrixManagedECRPublicStack", {
     ECR.Songmatrix_Gateway,
     ECR.Songmatrix_SyncService,
   ],
+});
+
+new ManagedEmailStack(app, "ManagedEmailStack", {
+  hostedZoneIdentity: hostedZones.hsong_me,
 });
