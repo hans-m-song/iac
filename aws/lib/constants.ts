@@ -41,6 +41,7 @@ export enum ECR {
   GithubActionsRunner = "github-actions-runner",
   HomeAssistantIntegrations = "home-assistant-integrations",
   Huisheng = "huisheng",
+  JAYD = "jayd",
   Songmatrix_DataService = "songmatrix/data-service",
   Songmatrix_Gateway = "songmatrix/gateway",
   Songmatrix_SyncService = "songmatrix/sync-service",

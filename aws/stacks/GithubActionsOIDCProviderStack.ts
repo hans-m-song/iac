@@ -102,9 +102,10 @@ export class GithubActionsOIDCProviderStack extends Stack {
     imagePublisherRole.addManagedPolicy(
       new ECRPublicPublisherPolicy(imagePublisherRole, "PublisherPolicy", {
         repositories: [
+          arn(this).repository("ecr-public", ECR.GithubActionsRunner),
           arn(this).repository("ecr-public", ECR.HomeAssistantIntegrations),
           arn(this).repository("ecr-public", ECR.Huisheng),
-          arn(this).repository("ecr-public", ECR.GithubActionsRunner),
+          arn(this).repository("ecr-public", ECR.JAYD),
         ],
       }),
     );

@@ -25,6 +25,7 @@ new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
     ECR.GithubActionsRunner,
     ECR.HomeAssistantIntegrations,
     ECR.Huisheng,
+    ECR.JAYD,
   ],
 });
 
