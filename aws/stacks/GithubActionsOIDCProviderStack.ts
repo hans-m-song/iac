@@ -102,10 +102,10 @@ export class GithubActionsOIDCProviderStack extends Stack {
     imagePublisherRole.addManagedPolicy(
       new ECRPublicPublisherPolicy(imagePublisherRole, "PublisherPolicy", {
         repositories: [
-          arn(this).repository("ecr-public", ECR.GithubActionsRunner),
-          arn(this).repository("ecr-public", ECR.HomeAssistantIntegrations),
-          arn(this).repository("ecr-public", ECR.Huisheng),
-          arn(this).repository("ecr-public", ECR.JAYD),
+          arn().repository("ecr-public", ECR.GithubActionsRunner),
+          arn().repository("ecr-public", ECR.HomeAssistantIntegrations),
+          arn().repository("ecr-public", ECR.Huisheng),
+          arn().repository("ecr-public", ECR.JAYD),
         ],
       }),
     );
@@ -134,9 +134,9 @@ export class GithubActionsOIDCProviderStack extends Stack {
         "PublisherPolicy",
         {
           repositories: [
-            arn(this).repository("ecr-public", ECR.Songmatrix_DataService),
-            arn(this).repository("ecr-public", ECR.Songmatrix_Gateway),
-            arn(this).repository("ecr-public", ECR.Songmatrix_SyncService),
+            arn().repository("ecr-public", ECR.Songmatrix_DataService),
+            arn().repository("ecr-public", ECR.Songmatrix_Gateway),
+            arn().repository("ecr-public", ECR.Songmatrix_SyncService),
           ],
         },
       ),

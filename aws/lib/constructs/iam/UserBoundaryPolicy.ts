@@ -31,8 +31,8 @@ export class UserBoundaryPolicy extends ManagedPolicy {
           "cloudwatch:*",
           "dynamodb:*",
           "ecr-public:*",
+          "ecr:*",
           "execute-api:*",
-          "iam:*",
           "lambda:*",
           "logs:*",
           "route53:*",
@@ -50,24 +50,39 @@ export class UserBoundaryPolicy extends ManagedPolicy {
 
     this.addStatements(
       new PolicyStatement({
-        effect: Effect.DENY,
+        effect: Effect.ALLOW,
         actions: [
-          "iam:CreateAccessKey",
-          "iam:CreateVirtualMFADevice",
-          "iam:DeactivateMFADevice",
-          "iam:DeleteAccessKey",
-          "iam:DeleteAccountPasswordPolicy",
+          "iam:ListOpenIDConnectProviderTags",
+          "iam:ListPolicyTags",
+          "iam:ListRoleTags",
+          "iam:TagOpenIDConnectProvider",
+          "iam:TagPolicy",
+          "iam:TagRole",
+          "iam:UntagOpenIDConnectProvider",
+          "iam:UntagPolicy",
+          "iam:UntagRole",
+        ],
+        resources: ["*"],
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iam:GetRole",
+          "iam:DeleteRole",
+          // "iam:DeleteRolePermissionsBoundary",
+          "iam:DeleteRolePolicy",
+          "iam:DetachRolePolicy",
         ],
         resources: ["*"],
       }),
       new PolicyStatement({
         effect: Effect.DENY,
-        actions: ["iam:CreateUser", "iam:DeleteUser"],
-        resources: ["*"],
-      }),
-      new PolicyStatement({
-        effect: Effect.DENY,
-        actions: ["iam:CreateRole", "iam:DeleteRole"],
+        actions: [
+          "iam:AttachRolePolicy",
+          "iam:CreateRole",
+          "iam:PutRolePolicy",
+          "iam:PutRolePermissionsBoundary",
+        ],
         resources: ["*"],
         conditions: {
           "ForAnyValue:StringEquals": {

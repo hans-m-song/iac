@@ -3,14 +3,17 @@ import "source-map-support/register";
 
 import { App } from "aws-cdk-lib";
 
+import { ECR, hostedZones } from "~/lib/constants";
+
+import { AWSServicesStack } from "./AWSServicesStack";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
 import { ManagedIAMStack } from "./ManagedIAMStack";
 
-import { ECR, hostedZones } from "~/lib/constants";
-
 const app = new App();
+
+new AWSServicesStack(app, "AWSServicesStack");
 
 new ManagedIAMStack(app, "ManagedIAMStack");
 

@@ -1,8 +1,8 @@
 import { Construct } from "constructs";
 
-import { Stack } from "./Stack";
-
 import packageJson from "~/package.json";
+
+import { Stack } from "./Stack";
 
 const CONTEXT_KEY_QUALIFIER = "@aws-cdk/core:bootstrapQualifier";
 

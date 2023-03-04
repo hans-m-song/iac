@@ -84,7 +84,7 @@ export class GithubActionsRole extends Role {
       ...props,
       assumedBy: new GithubActionsFederatedPrincipal({
         providerArn:
-          providerArn ?? arn(scope).oidcprovider(Domain.GithubActionsToken),
+          providerArn ?? arn().oidcprovider(Domain.GithubActionsToken),
         claims,
       }),
     });

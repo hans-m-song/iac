@@ -2,18 +2,34 @@
 
 set -eux -o pipefail
 
-aws cloudformation deploy
---region ap-southeast-2 \
+QUALIFIER=toolkit
+FILE_ASSETS_BUCKET_KMS_KEY_ID=AWS_MANAGED_KEY
+STACK_NAME=stackName
+GIT_REPOSITORY=https://github.com/hans-m-song/iac
+PURPOSE=Infrastructure
+
+aws cloudformation deploy \
+  --region ap-southeast-2 \
   --template-file ./CDKToolkit.yaml \
   --stack-name CDKToolkit \
-  --parameter-overrides Qualifier=toolkit FileAssetsBucketKmsKeyId=AWS_MANAGED_KEY \
+  --parameter-overrides \
+  Qualifier=$QUALIFIER \
+  FileAssetsBucketKmsKeyId=$FILE_ASSETS_BUCKET_KMS_KEY_ID \
   --capabilities CAPABILITY_NAMED_IAM \
-  --tags Stack=CDKToolkit
+  --tags \
+  StackName=$STACK_NAME \
+  GitRepository=$GIT_REPOSITORY \
+  Purpose=$PURPOSE
 
 aws cloudformation deploy \
   --region us-east-1 \
   --template-file ./CDKToolkit.yaml \
   --stack-name CDKToolkit \
-  --parameter-overrides Qualifier=toolkit FileAssetsBucketKmsKeyId=AWS_MANAGED_KEY \
+  --parameter-overrides \
+  Qualifier=$QUALIFIER \
+  FileAssetsBucketKmsKeyId=$FILE_ASSETS_BUCKET_KMS_KEY_ID \
   --capabilities CAPABILITY_NAMED_IAM \
-  --tags Stack=CDKToolkit
+  --tags \
+  StackName=$STACK_NAME \
+  GitRepository=$GIT_REPOSITORY \
+  Purpose=$PURPOSE

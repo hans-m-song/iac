@@ -51,6 +51,10 @@ rules:
         - - parent
           - sibling
           - index
+      pathGroups:
+        - pattern: ~/**
+          group: parent
+          position: before
       newlines-between: always
       alphabetize:
         order: asc
