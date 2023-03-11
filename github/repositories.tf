@@ -1,4 +1,4 @@
-resource "github_repository" "axatol_actions" {
+resource "github_repository" "axatol-actions" {
   provider = github.axatol
   name     = "actions"
 
@@ -12,7 +12,7 @@ resource "github_repository" "axatol_actions" {
   ]
 }
 
-resource "github_repository" "axatol_home-assistant-integrations" {
+resource "github_repository" "axatol-home_assistant_integrations" {
   provider    = github.axatol
   name        = "home-assistant-integrations"
   description = "Home Assistant custom integrations"
@@ -30,7 +30,7 @@ resource "github_repository" "axatol_home-assistant-integrations" {
   ]
 }
 
-resource "github_repository" "axatol_jayd" {
+resource "github_repository" "axatol-jayd" {
   provider    = github.axatol
   name        = "jayd"
   description = "Just Another Youtube Downloader"
@@ -42,14 +42,14 @@ resource "github_repository" "axatol_jayd" {
 
 locals {
   github_repositories_axatol = [
-    github_repository.axatol_actions.name,
-    github_repository.axatol_home-assistant-integrations.name,
-    github_repository.axatol_jayd.name,
+    github_repository.axatol-actions.name,
+    github_repository.axatol-home_assistant_integrations.name,
+    github_repository.axatol-jayd.name,
   ]
 }
 
-resource "github_repository" "hans-m-song_blog" {
-  provider = github.hans-m-song
+resource "github_repository" "hans_m_song-blog" {
+  provider = github.hans_m_song
   name     = "blog"
 
   allow_auto_merge       = true
@@ -57,8 +57,8 @@ resource "github_repository" "hans-m-song_blog" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "hans-m-song_huisheng" {
-  provider    = github.hans-m-song
+resource "github_repository" "hans_m_song-huisheng" {
+  provider    = github.hans_m_song
   name        = "huisheng"
   description = "Quick and dirty Discord bot with Youtube support"
 
@@ -74,8 +74,8 @@ resource "github_repository" "hans-m-song_huisheng" {
   ]
 }
 
-resource "github_repository" "hans-m-song_iac" {
-  provider = github.hans-m-song
+resource "github_repository" "hans_m_song-iac" {
+  provider = github.hans_m_song
   name     = "iac"
 
   allow_auto_merge       = true
@@ -83,8 +83,8 @@ resource "github_repository" "hans-m-song_iac" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "hans-m-song_kube-stack" {
-  provider    = github.hans-m-song
+resource "github_repository" "hans_m_song-kube_stack" {
+  provider    = github.hans_m_song
   name        = "kube-stack"
   description = "Bare metal k3s config"
 
@@ -99,8 +99,8 @@ resource "github_repository" "hans-m-song_kube-stack" {
   ]
 }
 
-resource "github_repository" "hans-m-song_saml2aws" {
-  provider     = github.hans-m-song
+resource "github_repository" "hans_m_song-saml2aws" {
+  provider     = github.hans_m_song
   name         = "saml2aws"
   description  = "CLI tool which enables you to login and retrieve AWS temporary credentials using a SAML IDP"
   homepage_url = "https://github.com/Versent/saml2aws"
@@ -111,16 +111,16 @@ resource "github_repository" "hans-m-song_saml2aws" {
 }
 
 locals {
-  github_repositories_hans-m-song = [
-    github_repository.hans-m-song_blog.name,
-    github_repository.hans-m-song_huisheng.name,
-    github_repository.hans-m-song_iac.name,
-    github_repository.hans-m-song_kube-stack.name,
-    github_repository.hans-m-song_saml2aws.name,
+  github_repositories_hans_m_song = [
+    github_repository.hans_m_song-blog.name,
+    github_repository.hans_m_song-huisheng.name,
+    github_repository.hans_m_song-iac.name,
+    github_repository.hans_m_song-kube_stack.name,
+    github_repository.hans_m_song-saml2aws.name,
   ]
 }
 
-resource "github_repository" "songmatrix_data-service" {
+resource "github_repository" "songmatrix-data_service" {
   provider = github.songmatrix
   name     = "data-service"
 
@@ -129,7 +129,7 @@ resource "github_repository" "songmatrix_data-service" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "songmatrix_frontend-web" {
+resource "github_repository" "songmatrix-frontend_web" {
   provider = github.songmatrix
   name     = "frontend-web"
 
@@ -138,7 +138,7 @@ resource "github_repository" "songmatrix_frontend-web" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "songmatrix_gateway" {
+resource "github_repository" "songmatrix-gateway" {
   provider = github.songmatrix
   name     = "gateway"
 
@@ -147,7 +147,7 @@ resource "github_repository" "songmatrix_gateway" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "songmatrix_github" {
+resource "github_repository" "songmatrix-github" {
   provider = github.songmatrix
   name     = ".github"
 
@@ -156,7 +156,7 @@ resource "github_repository" "songmatrix_github" {
   delete_branch_on_merge = true
 }
 
-resource "github_repository" "songmatrix_sync-service" {
+resource "github_repository" "songmatrix-sync_service" {
   provider = github.songmatrix
   name     = "sync-service"
 
@@ -167,10 +167,10 @@ resource "github_repository" "songmatrix_sync-service" {
 
 locals {
   github_repositories_songmatrix = [
-    github_repository.songmatrix_data-service.name,
-    github_repository.songmatrix_frontend-web.name,
-    github_repository.songmatrix_gateway.name,
-    github_repository.songmatrix_github.name,
-    github_repository.songmatrix_sync-service.name,
+    github_repository.songmatrix-data_service.name,
+    github_repository.songmatrix-frontend_web.name,
+    github_repository.songmatrix-gateway.name,
+    github_repository.songmatrix-github.name,
+    github_repository.songmatrix-sync_service.name,
   ]
 }

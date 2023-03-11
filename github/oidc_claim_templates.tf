@@ -13,10 +13,10 @@ resource "github_actions_repository_oidc_subject_claim_customization_template" "
   ]
 }
 
-resource "github_actions_repository_oidc_subject_claim_customization_template" "hans-m-song" {
-  for_each = toset(local.github_repositories_hans-m-song)
+resource "github_actions_repository_oidc_subject_claim_customization_template" "hans_m_song" {
+  for_each = toset(local.github_repositories_hans_m_song)
 
-  provider    = github.hans-m-song
+  provider    = github.hans_m_song
   repository  = each.value
   use_default = false
   include_claim_keys = [

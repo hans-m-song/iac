@@ -18,7 +18,7 @@ terraform {
 
 provider "github" {
   owner = "hans-m-song"
-  alias = "hans-m-song"
+  alias = "hans_m_song"
   token = var.github_token
 }
 

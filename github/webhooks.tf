@@ -1,4 +1,4 @@
-resource "github_organization_webhook" "actions_runner_controller_axatol" {
+resource "github_organization_webhook" "actions_runner_controller-axatol" {
   provider = github.axatol
 
   configuration {
@@ -11,7 +11,7 @@ resource "github_organization_webhook" "actions_runner_controller_axatol" {
   active = true
 }
 
-resource "github_organization_webhook" "actions_runner_controller_songmatrix" {
+resource "github_organization_webhook" "actions_runner_controller-songmatrix" {
   provider = github.songmatrix
 
   configuration {
@@ -24,10 +24,10 @@ resource "github_organization_webhook" "actions_runner_controller_songmatrix" {
   active = true
 }
 
-resource "github_repository_webhook" "actions_runner_controller_hans-m-song" {
-  for_each = toset(local.github_repositories_hans-m-song)
+resource "github_repository_webhook" "actions_runner_controller-hans_m_song" {
+  for_each = toset(local.github_repositories_hans_m_song)
 
-  provider   = github.hans-m-song
+  provider   = github.hans_m_song
   repository = each.value
 
   configuration {
