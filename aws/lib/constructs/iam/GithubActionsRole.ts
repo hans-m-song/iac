@@ -30,8 +30,7 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
       props.providerArn,
       {
         "StringEquals": {
-          [`${Domain.GithubActionsToken}:aud`]:
-            Domain.GithubActionsOIDCAudience,
+          [`${Domain.GithubActionsToken}:aud`]: Domain.AWSSecurityTokenService,
         },
         "ForAnyValue:StringLike": {
           [`${Domain.GithubActionsToken}:sub`]:

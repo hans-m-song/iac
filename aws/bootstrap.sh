@@ -4,7 +4,7 @@ set -eux -o pipefail
 
 QUALIFIER=toolkit
 FILE_ASSETS_BUCKET_KMS_KEY_ID=AWS_MANAGED_KEY
-STACK_NAME=stackName
+STACK_NAME=CDKToolkit
 GIT_REPOSITORY=https://github.com/hans-m-song/iac
 PURPOSE=Infrastructure
 

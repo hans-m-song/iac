@@ -22,7 +22,7 @@ export class Stack extends CDKStack {
     super(scope, id, stackProps);
   }
 
-  output(exportName: string, value: string) {
-    return new CfnOutput(this, exportName, { exportName, value });
+  output(name: string, value: string) {
+    return new CfnOutput(this, name, { value });
   }
 }
