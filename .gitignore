@@ -7,6 +7,7 @@ node_modules
 .env
 !*.secret
 .gitsecret/keys/random_seed
+*.diff
 
 # cdk
 cdk.out*
@@ -14,3 +15,6 @@ cdk.out*
 # terraform
 .terraform
 *.tfvars
+
+# secrets
+k8s/setup-secrets.sh
