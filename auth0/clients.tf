@@ -1,11 +1,6 @@
-resource "auth0_client" "deep_thought_cluster_gateway" {
-  name     = "deep-thought cluster gateway"
-  app_type = "regular_web"
-}
-
-resource "auth0_client" "deep_thought_minio_idp" {
-  name     = "deep-thought - Minio IDP"
-  app_type = "regular_web"
+resource "auth0_client" "deep_thought_client" {
+  name     = "deep-thought - Cluster Client"
+  app_type = "non_interactive"
 }
 
 resource "auth0_client" "jayd_server_test_application" {
@@ -18,9 +13,9 @@ resource "auth0_client" "jayd_web" {
   app_type                   = "spa"
   token_endpoint_auth_method = "none"
   oidc_conformant            = true
-  web_origins                = ["https://jayd.axatol.xyz"]
-  callbacks                  = ["https://jayd.axatol.xyz"]
-  allowed_logout_urls        = ["https://jayd.axatol.xyz"]
+  web_origins                = ["https://jayd.axatol.xyz", "https://jayd.k8s.axatol.xyz"]
+  callbacks                  = ["https://jayd.axatol.xyz", "https://jayd.k8s.axatol.xyz"]
+  allowed_logout_urls        = ["https://jayd.axatol.xyz", "https://jayd.k8s.axatol.xyz"]
   jwt_configuration { alg = "RS256" }
 }
 
