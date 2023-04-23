@@ -12,6 +12,24 @@ resource "github_repository" "axatol-actions" {
   ]
 }
 
+resource "github_repository" "axatol-actions_runner_broker" {
+  provider = github.axatol
+  name     = "actions-runner-broker"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
+resource "github_repository" "axatol-aws_dynamic_dns" {
+  provider = github.axatol
+  name     = "aws-dynamic-dns"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "axatol-home_assistant_integrations" {
   provider    = github.axatol
   name        = "home-assistant-integrations"
@@ -30,6 +48,15 @@ resource "github_repository" "axatol-home_assistant_integrations" {
   ]
 }
 
+resource "github_repository" "axatol-hookshot_artillery" {
+  provider = github.axatol
+  name     = "hookshot-artillery"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "axatol-jayd" {
   provider    = github.axatol
   name        = "jayd"
@@ -43,7 +70,10 @@ resource "github_repository" "axatol-jayd" {
 locals {
   github_repositories_axatol = [
     github_repository.axatol-actions.name,
+    github_repository.axatol-actions_runner_broker.name,
+    github_repository.axatol-aws_dynamic_dns.name,
     github_repository.axatol-home_assistant_integrations.name,
+    github_repository.axatol-hookshot_artillery.name,
     github_repository.axatol-jayd.name,
   ]
 }
