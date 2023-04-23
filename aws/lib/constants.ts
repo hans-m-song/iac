@@ -34,6 +34,7 @@ export enum SSM {
 }
 
 export enum ECR {
+  ActionsRunnerBrokerDispatcher = "actions-runner-broker-dispatcher",
   GithubActionsRunner = "github-actions-runner",
   HomeAssistantIntegrations = "home-assistant-integrations",
   Huisheng = "huisheng",

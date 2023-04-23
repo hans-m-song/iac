@@ -25,6 +25,7 @@ new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
 
 new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
   repositories: [
+    ECR.ActionsRunnerBrokerDispatcher,
     ECR.GithubActionsRunner,
     ECR.HomeAssistantIntegrations,
     ECR.Huisheng,
