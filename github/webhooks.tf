@@ -52,6 +52,6 @@ resource "github_repository_webhook" "new_relic-hans_m_song" {
     url          = "https://log-api.newrelic.com/log/v1?Api-Key=${var.new_relic_license_key}"
   }
 
-  events = ["check_run", "check_suite", "workflow_job", "workflow_run"]
+  events = ["workflow_job"]
   active = true
 }

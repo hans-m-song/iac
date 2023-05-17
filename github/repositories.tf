@@ -30,6 +30,16 @@ resource "github_repository" "axatol-aws_dynamic_dns" {
   delete_branch_on_merge = true
 }
 
+resource "github_repository" "axatol-esoteriguard" {
+  provider    = github.axatol
+  name        = "esoteriguard"
+  description = "vpn stack for bypassing the gfw"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 resource "github_repository" "axatol-home_assistant_integrations" {
   provider    = github.axatol
   name        = "home-assistant-integrations"
@@ -67,14 +77,26 @@ resource "github_repository" "axatol-jayd" {
   delete_branch_on_merge = true
 }
 
+resource "github_repository" "axatol-whats_up" {
+  provider    = github.axatol
+  name        = "whats-up"
+  description = "kindle dashboard for morning notices"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 locals {
   github_repositories_axatol = [
     github_repository.axatol-actions.name,
     github_repository.axatol-actions_runner_broker.name,
     github_repository.axatol-aws_dynamic_dns.name,
+    github_repository.axatol-esoteriguard.name,
     github_repository.axatol-home_assistant_integrations.name,
     github_repository.axatol-hookshot_artillery.name,
     github_repository.axatol-jayd.name,
+    github_repository.axatol-whats_up.name,
   ]
 }
 

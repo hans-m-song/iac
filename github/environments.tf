@@ -23,7 +23,7 @@ resource "github_repository_environment" "hans_m_song-huisheng-deep_thought" {
 
   reviewers {
     users = [
-      local.github_user_hans_m_song,
+      data.github_user.hans_m_song.id,
     ]
   }
 }
