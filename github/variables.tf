@@ -1,8 +1,12 @@
-variable "aws_deploy_role_arn" {
+variable "aws_cdk_deploy_role_arn" {
   type = string
 }
 
-variable "aws_diff_role_arn" {
+variable "aws_cdk_diff_role_arn" {
+  type = string
+}
+
+variable "aws_cloudfront_invalidator_role_arn" {
   type = string
 }
 
@@ -33,24 +37,33 @@ variable "new_relic_license_key" {
   sensitive = true
 }
 
-resource "github_actions_organization_secret" "axatol-aws_ecr_image_publisher_role_arn" {
+resource "github_actions_organization_secret" "axatol" {
+  for_each = {
+    "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_ecr_image_publisher_role_arn
+  }
+
   provider        = github.axatol
   visibility      = "all"
-  secret_name     = "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN"
-  plaintext_value = var.aws_ecr_image_publisher_role_arn
+  secret_name     = each.key
+  plaintext_value = each.value
 }
 
-resource "github_actions_organization_secret" "songmatrix-aws_songmatrix_ecr_image_publisher_role_arn" {
+resource "github_actions_organization_secret" "songmatrix" {
+  for_each = {
+    "AWS_SONGMATRIX_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_songmatrix_ecr_image_publisher_role_arn
+  }
+
   provider        = github.songmatrix
   visibility      = "all"
-  secret_name     = "AWS_SONGMATRIX_ECR_IMAGE_PUBLISHER_ROLE_ARN"
-  plaintext_value = var.aws_songmatrix_ecr_image_publisher_role_arn
+  secret_name     = each.key
+  plaintext_value = each.value
 }
 
 resource "github_actions_secret" "hans_m_song-blog" {
   for_each = {
-    "AWS_DEPLOY_ROLE_ARN" = var.aws_deploy_role_arn
-    "AWS_DIFF_ROLE_ARN"   = var.aws_diff_role_arn
+    "AWS_CDK_DEPLOY_ROLE_ARN"             = var.aws_cdk_deploy_role_arn
+    "AWS_CDK_DIFF_ROLE_ARN"               = var.aws_cdk_diff_role_arn
+    "AWS_CLOUDFRONT_INVALIDATOR_ROLE_ARN" = var.aws_cloudfront_invalidator_role_arn
   }
 
   provider        = github.hans_m_song
@@ -73,9 +86,9 @@ resource "github_actions_secret" "hans_m_song-huisheng" {
 
 resource "github_actions_secret" "hans_m_song-iac" {
   for_each = {
-    "AWS_DEPLOY_ROLE_ARN" = var.aws_deploy_role_arn
-    "AWS_DIFF_ROLE_ARN"   = var.aws_diff_role_arn
-    "TERRAFORM_VERSION"   = "1.3.7"
+    "AWS_CDK_DEPLOY_ROLE_ARN" = var.aws_cdk_deploy_role_arn
+    "AWS_CDK_DIFF_ROLE_ARN"   = var.aws_cdk_diff_role_arn
+    "TERRAFORM_VERSION"       = "1.3.7"
   }
 
   provider        = github.hans_m_song
