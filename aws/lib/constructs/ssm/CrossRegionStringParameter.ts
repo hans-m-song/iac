@@ -13,9 +13,8 @@ import { arn } from "~/lib/utils/arn";
 export interface CrossRegionStringParameterCreatorProps {
   region: string;
   parameterName: string;
+  parameterType?: ParameterValueType;
   stringValue: string;
-  type?: ParameterValueType;
-  overwrite?: boolean;
 }
 
 export class CrossRegionStringParameterCreator extends AwsCustomResource {
@@ -24,11 +23,15 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
     id: string,
     props: CrossRegionStringParameterCreatorProps,
   ) {
+    const { region, parameterName, parameterType, stringValue } = {
+      parameterType: ParameterValueType.STRING,
+      ...props,
+    };
+
     const physicalId = createHash("sha256")
       .update(id)
-      .update(props.type ?? ParameterValueType.STRING)
-      .update(props.stringValue)
-      .update((props.overwrite ?? false).toString())
+      .update(parameterType ?? ParameterValueType.STRING)
+      .update(stringValue)
       .digest("hex");
 
     super(scope, id, {
@@ -36,18 +39,18 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
         action: "putParameter",
         service: "SSM",
         parameters: {
-          Name: props.parameterName,
-          Type: props.type ?? ParameterValueType.STRING,
-          Value: props.stringValue,
-          Overwrite: props.overwrite ?? false,
+          Name: parameterName,
+          Type: parameterType,
+          Value: stringValue,
+          Overwrite: true,
         },
-        region: props.region,
+        region: region,
         physicalResourceId: PhysicalResourceId.of(physicalId),
       },
       policy: AwsCustomResourcePolicy.fromStatements([
         new PolicyStatement({
           actions: ["ssm:PutParameter"],
-          resources: [arn(props.region).ssm.parameter(props.parameterName)],
+          resources: [arn(region).ssm.parameter(parameterName)],
         }),
       ]),
     });
