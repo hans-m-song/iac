@@ -1,4 +1,10 @@
-import { FederatedPrincipal, Role, RoleProps } from "aws-cdk-lib/aws-iam";
+import {
+  FederatedPrincipal,
+  PolicyStatement,
+  PolicyStatementProps,
+  Role,
+  RoleProps,
+} from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 import { Domain } from "~/lib/constants";
@@ -83,9 +89,15 @@ export class GithubActionsRole extends Role {
       ...props,
       assumedBy: new GithubActionsFederatedPrincipal({
         providerArn:
-          providerArn ?? arn().oidcprovider(Domain.GithubActionsToken),
+          providerArn ?? arn().iam.oidcprovider(Domain.GithubActionsToken),
         claims,
       }),
     });
+  }
+
+  addPolicies(...statements: PolicyStatementProps[]) {
+    statements.forEach((statement) =>
+      this.addToPolicy(new PolicyStatement(statement)),
+    );
   }
 }

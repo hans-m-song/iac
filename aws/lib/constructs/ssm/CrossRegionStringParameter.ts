@@ -47,7 +47,7 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
       policy: AwsCustomResourcePolicy.fromStatements([
         new PolicyStatement({
           actions: ["ssm:PutParameter"],
-          resources: [arn(props.region).parameter(props.parameterName)],
+          resources: [arn(props.region).ssm.parameter(props.parameterName)],
         }),
       ]),
     });
@@ -88,7 +88,7 @@ export class CrossRegionStringParameterReader extends AwsCustomResource {
       policy: AwsCustomResourcePolicy.fromStatements([
         new PolicyStatement({
           actions: ["ssm:GetParameter"],
-          resources: [arn(props.region).parameter(props.parameterName)],
+          resources: [arn(props.region).ssm.parameter(props.parameterName)],
         }),
       ]),
     });

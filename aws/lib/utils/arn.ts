@@ -1,6 +1,16 @@
 import { Fn } from "aws-cdk-lib";
 
 export const arn = (region?: string, account?: string) => {
+  const distribution = (distributionId: string) =>
+    [
+      "arn",
+      Fn.ref("AWS::Partition"),
+      "cloudfront",
+      "",
+      account ?? Fn.ref("AWS::AccountId"),
+      `distribution/${distributionId}`,
+    ].join(":");
+
   const hostedzone = (hostedZoneId: string) =>
     [
       "arn",
@@ -47,22 +57,39 @@ export const arn = (region?: string, account?: string) => {
       }`,
     ].join(":");
 
-  const repository = (service: "ecr" | "ecr-public", repositoryName: string) =>
-    [
-      "arn",
-      Fn.ref("AWS::Partition"),
-      service,
-      service === "ecr-public" ? "" : region ?? Fn.ref("AWS::Region"),
-      account ?? Fn.ref("AWS::AccountId"),
-      `repository/${repositoryName}`,
-    ].join(":");
+  const repository =
+    (service: "ecr" | "ecr-public") => (repositoryName: string) =>
+      [
+        "arn",
+        Fn.ref("AWS::Partition"),
+        service,
+        service === "ecr-public" ? "" : region ?? Fn.ref("AWS::Region"),
+        account ?? Fn.ref("AWS::AccountId"),
+        `repository/${repositoryName}`,
+      ].join(":");
 
   return {
-    hostedzone,
-    loggroup,
-    logstream,
-    oidcprovider,
-    parameter,
-    repository,
+    cf: {
+      distribution,
+    },
+    cw: {
+      loggroup,
+      logstream,
+    },
+    ecr: {
+      repository: repository("ecr"),
+    },
+    ecrp: {
+      repository: repository("ecr-public"),
+    },
+    iam: {
+      oidcprovider,
+    },
+    r53: {
+      hostedzone,
+    },
+    ssm: {
+      parameter,
+    },
   };
 };

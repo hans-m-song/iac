@@ -41,14 +41,15 @@ export class CertificateStack extends Stack {
       return null;
     }
 
-    if (!this.hostedZones[attributes.zoneName]) {
-      this.hostedZones[attributes.zoneName] =
-        HostedZone.fromHostedZoneAttributes(
-          this,
-          `HostedZone${urlToPascalCase(domainName)}`,
-          attributes,
-        );
+    if (this.hostedZones[attributes.zoneName]) {
+      return this.hostedZones[attributes.zoneName];
     }
+
+    this.hostedZones[attributes.zoneName] = HostedZone.fromHostedZoneAttributes(
+      this,
+      `HostedZone${urlToPascalCase(domainName)}`,
+      attributes,
+    );
 
     return this.hostedZones[attributes.zoneName];
   }
@@ -62,7 +63,11 @@ export class CertificateStack extends Stack {
       );
     }
 
-    const certificate = new Certificate(
+    if (this.certificates[domainName]) {
+      return this.certificates[domainName];
+    }
+
+    this.certificates[domainName] = new Certificate(
       this,
       `Certificate${urlToPascalCase(domainName)}`,
       { domainName, validation: CertificateValidation.fromDns(zone) },
@@ -70,17 +75,17 @@ export class CertificateStack extends Stack {
 
     new StringParameter(this, `Parameter${urlToPascalCase(domainName)}`, {
       parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
-      stringValue: certificate.certificateArn,
+      stringValue: this.certificates[domainName].certificateArn,
     });
 
-    if (this.region != "ap-southeast-2") {
+    if (this.region !== "ap-southeast-2") {
       new CrossRegionStringParameterCreator(
         this,
         `ParameterAPSE2${urlToPascalCase(domainName)}`,
         {
           parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
           region: "ap-southeast-2",
-          stringValue: certificate.certificateArn,
+          stringValue: this.certificates[domainName].certificateArn,
         },
       );
     }

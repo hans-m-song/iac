@@ -26,8 +26,8 @@ export class ExecutionBoundaryPolicy extends ManagedPolicy {
         effect: Effect.ALLOW,
         actions: ["ssm:GetParameter*"],
         resources: [
-          arn().parameter("infrastructure/*"),
-          arn().parameter("execution/*"),
+          arn().ssm.parameter("infrastructure/*"),
+          arn().ssm.parameter("execution/*"),
         ],
       }),
     );

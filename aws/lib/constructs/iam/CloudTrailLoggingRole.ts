@@ -24,7 +24,7 @@ export class CloudTrailLoggingRole extends Role {
 
     const stack = Stack.of(this);
 
-    const logStreamARN = arn("*").logstream(
+    const logStreamARN = arn("*").cw.logstream(
       `aws-cloudtrail-logs-${stack.account}`,
       `${stack.account}_CloudTrail_*`,
     );

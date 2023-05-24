@@ -34,7 +34,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
       stringValue: provider.attrArn,
     });
 
-    const iacDiffRole = new GithubActionsRole(this, "IACDiffRole", {
+    const cdkDiffRole = new GithubActionsRole(this, "CDKDiffRole", {
       providerArn: provider.attrArn,
       claims: {
         repositories: ["hans-m-song/iac", "hans-m-song/blog"],
@@ -42,7 +42,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
       },
     });
 
-    iacDiffRole.addToPolicy(
+    cdkDiffRole.addPolicies(
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ["sts:AssumeRole"],
@@ -50,14 +50,14 @@ export class GithubActionsOIDCProviderStack extends Stack {
       }),
     );
 
-    this.output("IACDiffRoleARN", iacDiffRole.roleArn);
+    this.output("CDKDiffRoleARN", cdkDiffRole.roleArn);
 
     new StringParameter(this, "IACDiffRoleARNParameter", {
-      parameterName: SSM.GithubActionsIACDiffRoleARN,
-      stringValue: iacDiffRole.roleArn,
+      parameterName: SSM.GithubActionsCDKDiffRoleARN,
+      stringValue: cdkDiffRole.roleArn,
     });
 
-    const iacDeployRole = new GithubActionsRole(this, "IACDeployRole", {
+    const cdkDeployRole = new GithubActionsRole(this, "CDKDeployRole", {
       providerArn: provider.attrArn,
       claims: {
         repositories: ["hans-m-song/iac", "hans-m-song/blog"],
@@ -66,7 +66,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
       },
     });
 
-    iacDeployRole.addToPolicy(
+    cdkDeployRole.addPolicies(
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ["sts:AssumeRole"],
@@ -80,14 +80,14 @@ export class GithubActionsOIDCProviderStack extends Stack {
       }),
     );
 
-    this.output("IACDeployRoleARN", iacDeployRole.roleArn);
+    this.output("CDKDeployRoleARN", cdkDeployRole.roleArn);
 
-    new StringParameter(this, "IACDeployRoleARNParameter", {
-      parameterName: SSM.GithubActionsIACDeployRoleARN,
-      stringValue: iacDeployRole.roleArn,
+    new StringParameter(this, "CDKDeployRoleARNParameter", {
+      parameterName: SSM.GithubActionsCDKDeployRoleARN,
+      stringValue: cdkDeployRole.roleArn,
     });
 
-    const imagePublisherRole = new GithubActionsRole(this, "ECRPublisherRole", {
+    const ecrPublisherRole = new GithubActionsRole(this, "ECRPublisherRole", {
       claims: {
         repositories: [
           "axatol/*",
@@ -99,26 +99,26 @@ export class GithubActionsOIDCProviderStack extends Stack {
       },
     });
 
-    imagePublisherRole.addManagedPolicy(
-      new ECRPublicPublisherPolicy(imagePublisherRole, "PublisherPolicy", {
+    ecrPublisherRole.addManagedPolicy(
+      new ECRPublicPublisherPolicy(ecrPublisherRole, "ECRPublisherPolicy", {
         repositories: [
-          arn().repository("ecr-public", ECR.ActionsRunnerBrokerDispatcher),
-          arn().repository("ecr-public", ECR.GithubActionsRunner),
-          arn().repository("ecr-public", ECR.HomeAssistantIntegrations),
-          arn().repository("ecr-public", ECR.Huisheng),
-          arn().repository("ecr-public", ECR.JAYD),
+          arn().ecrp.repository(ECR.ActionsRunnerBrokerDispatcher),
+          arn().ecrp.repository(ECR.GithubActionsRunner),
+          arn().ecrp.repository(ECR.HomeAssistantIntegrations),
+          arn().ecrp.repository(ECR.Huisheng),
+          arn().ecrp.repository(ECR.JAYD),
         ],
       }),
     );
 
-    this.output("ImagePublisherRole", imagePublisherRole.roleArn);
+    this.output("ECRPublisherRoleARN", ecrPublisherRole.roleArn);
 
     new StringParameter(this, "ECRPublisherRoleARNParameter", {
       parameterName: SSM.GithubActionsECRPublisherRoleARN,
-      stringValue: imagePublisherRole.roleArn,
+      stringValue: ecrPublisherRole.roleArn,
     });
 
-    const songmatrixImagePublisherRole = new GithubActionsRole(
+    const songmatrixECRPublisherRole = new GithubActionsRole(
       this,
       "SongMatrixECRPublisherRole",
       {
@@ -129,28 +129,62 @@ export class GithubActionsOIDCProviderStack extends Stack {
       },
     );
 
-    songmatrixImagePublisherRole.addManagedPolicy(
+    songmatrixECRPublisherRole.addManagedPolicy(
       new ECRPublicPublisherPolicy(
-        songmatrixImagePublisherRole,
-        "PublisherPolicy",
+        songmatrixECRPublisherRole,
+        "SongMatrixECRPublisherPolicy",
         {
           repositories: [
-            arn().repository("ecr-public", ECR.Songmatrix_DataService),
-            arn().repository("ecr-public", ECR.Songmatrix_Gateway),
-            arn().repository("ecr-public", ECR.Songmatrix_SyncService),
+            arn().ecrp.repository(ECR.Songmatrix_DataService),
+            arn().ecrp.repository(ECR.Songmatrix_Gateway),
+            arn().ecrp.repository(ECR.Songmatrix_SyncService),
           ],
         },
       ),
     );
 
     this.output(
-      "SongmatrixImagePublisherRole",
-      songmatrixImagePublisherRole.roleArn,
+      "SongMatrixECRPublisherRoleARN",
+      songmatrixECRPublisherRole.roleArn,
     );
 
-    new StringParameter(this, "SongmatrixImagePublisherRoleARNParameter", {
+    new StringParameter(this, "SongMatrixECRPublisherRoleParameter", {
       parameterName: SSM.GithubActionsSongMatrixECRPublisherRoleARN,
-      stringValue: songmatrixImagePublisherRole.roleArn,
+      stringValue: songmatrixECRPublisherRole.roleArn,
+    });
+
+    const cloudFrontInvalidatorRole = new GithubActionsRole(
+      this,
+      "CloudFrontInvalidatorRole",
+      {
+        providerArn: provider.attrArn,
+        claims: {
+          repositories: ["hans-m-song/blog"],
+          contexts: [{ pullRequest: true }, { branch: "*" }],
+        },
+      },
+    );
+
+    cloudFrontInvalidatorRole.addPolicies(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation",
+          "cloudfront:ListInvalidations",
+        ],
+        resources: [arn().cf.distribution("*")],
+      }),
+    );
+
+    this.output(
+      "CloudFrontInvalidatorRoleARN",
+      cloudFrontInvalidatorRole.roleArn,
+    );
+
+    new StringParameter(this, "CloudFrontInvalidatorRoleARNParameter", {
+      parameterName: SSM.GithubActionsCloudFrontInvalidatorRoleARN,
+      stringValue: cloudFrontInvalidatorRole.roleArn,
     });
   }
 }
