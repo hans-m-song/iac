@@ -79,7 +79,7 @@ resource "github_actions_secret" "hans_m_song-iac" {
   }
 
   provider        = github.hans_m_song
-  repository      = data.github_repository.hans_m_song-iac.name
+  repository      = github_repository.hans_m_song-iac.name
   secret_name     = each.key
   plaintext_value = each.value
 }

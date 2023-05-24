@@ -1,3 +1,9 @@
+resource "github_repository_environment" "hans_m_song-blog-public" {
+  provider    = github.hans_m_song
+  repository  = github_repository.hans_m_song-blog.name
+  environment = "public"
+}
+
 resource "github_repository_environment" "hans_m_song-iac-auth0" {
   provider    = github.hans_m_song
   repository  = github_repository.hans_m_song-iac.name
