@@ -4,7 +4,7 @@ import { Construct } from "constructs";
 import { Stack } from "~/lib/cdk/Stack";
 import { CloudTrailLoggingRole } from "~/lib/constructs/iam/CloudTrailLoggingRole";
 
-export class AWSServicesStack extends Stack {
+export class AWSServiceRoleStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 

@@ -21,6 +21,7 @@ export enum Domain {
 
 export enum SSM {
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
+  CertificateParameterPrefix = "/infrastructure/acm",
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
   ExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
   GithubActionsOIDCProviderARN = "/infrastructure/github/actions_oidc_provider_arn",

@@ -7,7 +7,7 @@ import { SSM } from "~/lib/constants";
 import { ExecutionBoundaryPolicy } from "~/lib/constructs/iam/ExecutionBoundaryPolicy";
 import { UserBoundaryPolicy } from "~/lib/constructs/iam/UserBoundaryPolicy";
 
-export class ManagedIAMStack extends Stack {
+export class BoundaryPolicyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 

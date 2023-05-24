@@ -5,17 +5,23 @@ import { App } from "aws-cdk-lib";
 
 import { ECR, hostedZones } from "~/lib/constants";
 
-import { AWSServicesStack } from "./AWSServicesStack";
+import { AWSServiceRoleStack } from "./AWSServiceRoleStack";
+import { BoundaryPolicyStack } from "./BoundaryPolicyStack";
+import { CertificateStack } from "./CertificateStack";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
-import { ManagedIAMStack } from "./ManagedIAMStack";
 
 const app = new App();
 
-new AWSServicesStack(app, "AWSServicesStack");
+new AWSServiceRoleStack(app, "AWSServiceRoleStack");
 
-new ManagedIAMStack(app, "ManagedIAMStack");
+new BoundaryPolicyStack(app, "BoundaryPolicyStack");
+
+new CertificateStack(app, "CertificateStack-USE1", {
+  env: { region: "us-east-1" },
+  domainNames: ["blog.hsong.me"],
+});
 
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
 

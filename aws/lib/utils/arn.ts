@@ -42,7 +42,9 @@ export const arn = (region?: string, account?: string) => {
       "ssm",
       region ?? Fn.ref("AWS::Region"),
       account ?? Fn.ref("AWS::AccountId"),
-      `parameter/${parameterName}`,
+      `parameter${
+        parameterName.startsWith("/") ? parameterName : `/${parameterName}`
+      }`,
     ].join(":");
 
   const repository = (service: "ecr" | "ecr-public", repositoryName: string) =>
