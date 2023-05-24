@@ -39,6 +39,7 @@ variable "new_relic_license_key" {
 
 resource "github_actions_organization_secret" "axatol" {
   for_each = {
+    "AWS_DEFAULT_REGION"               = "ap-southeast-2"
     "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_ecr_image_publisher_role_arn
   }
 
@@ -50,6 +51,7 @@ resource "github_actions_organization_secret" "axatol" {
 
 resource "github_actions_organization_secret" "songmatrix" {
   for_each = {
+    "AWS_DEFAULT_REGION"                          = "ap-southeast-2"
     "AWS_SONGMATRIX_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_songmatrix_ecr_image_publisher_role_arn
   }
 
@@ -63,6 +65,7 @@ resource "github_actions_secret" "hans_m_song-blog" {
   for_each = {
     "AWS_CDK_DEPLOY_ROLE_ARN"             = var.aws_cdk_deploy_role_arn
     "AWS_CDK_DIFF_ROLE_ARN"               = var.aws_cdk_diff_role_arn
+    "AWS_DEFAULT_REGION"                  = "ap-southeast-2"
     "AWS_CLOUDFRONT_INVALIDATOR_ROLE_ARN" = var.aws_cloudfront_invalidator_role_arn
   }
 
@@ -74,6 +77,7 @@ resource "github_actions_secret" "hans_m_song-blog" {
 
 resource "github_actions_secret" "hans_m_song-huisheng" {
   for_each = {
+    "AWS_DEFAULT_REGION"                 = "ap-southeast-2"
     "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN"   = var.aws_ecr_image_publisher_role_arn
     "DISCORD_GITHUB_ACTIONS_WEBHOOK_URL" = var.discord_github_actions_webhook_url
   }
@@ -88,6 +92,7 @@ resource "github_actions_secret" "hans_m_song-iac" {
   for_each = {
     "AWS_CDK_DEPLOY_ROLE_ARN" = var.aws_cdk_deploy_role_arn
     "AWS_CDK_DIFF_ROLE_ARN"   = var.aws_cdk_diff_role_arn
+    "AWS_DEFAULT_REGION"      = "ap-southeast-2"
     "TERRAFORM_VERSION"       = "1.3.7"
   }
 
@@ -99,6 +104,7 @@ resource "github_actions_secret" "hans_m_song-iac" {
 
 resource "github_actions_secret" "hans_m_song-kube_stack" {
   for_each = {
+    "AWS_DEFAULT_REGION"               = "ap-southeast-2"
     "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_ecr_image_publisher_role_arn
   }
 
