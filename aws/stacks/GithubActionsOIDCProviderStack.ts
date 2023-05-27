@@ -124,7 +124,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const cloudFrontInvalidatorRole = this.role(
       "CloudFrontInvalidatorRole",
-      [{ repo: "hans-m-song/blog", context: { env: "public" } }],
+      [{ repo: "hans-m-song/blog", context: { env: "public", ref: "master" } }],
       SSM.GithubActionsCloudFrontInvalidatorRoleARN,
     );
 
