@@ -1,0 +1,85 @@
+name: Build GitHub Actions Runner
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # once a month
+    - cron: "0 0 1 * *"
+
+  push:
+    branches:
+      - master
+    paths:
+      - "actions-runner/**"
+      - .github/workflows/build-actions-runner.yaml
+      - .github/workflows/runner-tool-cache.yaml
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  image: public.ecr.aws/axatol/github-actions-runner
+
+jobs:
+  build:
+    name: Build GitHub Actions Runner
+
+    runs-on:
+      - self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
+          role-session-name: ${{ github.triggering_actor }}-${{ github.repository }}-${{ github.job }}-${{ github.run_id }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+
+      - uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - uses: axatol/actions/docker-build-push@release
+        with:
+          image: ${{ env.image }}
+          build-context: ./runner
+
+      - uses: axatol/actions/prune-ecr-repository@release
+        with:
+          repository-name: ${{ env.image }}
+
+  tools:
+    name: Populate runner tool cache
+
+    needs: build
+
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        target:
+          - { tool: node, version: "16" }
+          - { tool: node, version: "18" }
+          - { tool: python, version: "3.10" }
+          - { tool: go, version: "1.20" }
+
+    steps:
+      - uses: actions/setup-node@v3
+        if: matrix.target.tool == 'node'
+        with:
+          node-version: ${{ matrix.target.version }}
+
+      - uses: actions/setup-python@v3
+        if: matrix.target.tool == 'python'
+        with:
+          python-version: ${{ matrix.target.version }}
+
+      - uses: actions/setup-go@v3
+        if: matrix.target.tool == 'go'
+        with:
+          go-version: ${{ matrix.target.version }}
