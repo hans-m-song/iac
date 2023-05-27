@@ -55,7 +55,7 @@ jobs:
         with:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_CDK_DIFF_ROLE_ARN }}
-          role-session-name: ${{ github.triggering_actor }}-${{ github.event.repository.name }}-${{ github.job }}-${{ github.run_id }}
+          role-session-name: ${{ github.triggering_actor }}@${{ github.event.repository.owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
@@ -158,7 +158,7 @@ jobs:
         with:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_CDK_DEPLOY_ROLE_ARN }}
-          role-session-name: hans-m-song_iac_cdk-aws_deploy
+          role-session-name: ${{ github.triggering_actor }}@${{ github.event.repository.owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 

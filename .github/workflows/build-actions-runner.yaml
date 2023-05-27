@@ -32,11 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
-          role-session-name: ${{ github.triggering_actor }}-${{ github.repository }}-${{ github.job }}-${{ github.run_id }}
+          role-session-name: ${{ github.triggering_actor }}@${{ github.event.repository.owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
