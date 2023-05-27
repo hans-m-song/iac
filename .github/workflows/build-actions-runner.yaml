@@ -11,9 +11,8 @@ on:
     branches:
       - master
     paths:
-      - "actions-runner/**"
+      - "github/actions-runner/**"
       - .github/workflows/build-actions-runner.yaml
-      - .github/workflows/runner-tool-cache.yaml
 
 permissions:
   id-token: write
@@ -47,7 +46,8 @@ jobs:
       - uses: axatol/actions/docker-build-push@release
         with:
           image: ${{ env.image }}
-          build-context: ./runner
+          build-context: ./github/actions-runner
+          tag-previous: true
 
       - uses: axatol/actions/prune-ecr-repository@release
         with:
