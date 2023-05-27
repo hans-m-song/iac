@@ -8,7 +8,7 @@ import { Construct } from "constructs";
 
 import { arn } from "~/lib/utils/arn";
 
-export class ExecutionBoundaryPolicy extends ManagedPolicy {
+export class LambdaBoundaryPolicy extends ManagedPolicy {
   constructor(scope: Construct, id: string, props?: ManagedPolicyProps) {
     super(scope, id, props);
 
@@ -26,8 +26,9 @@ export class ExecutionBoundaryPolicy extends ManagedPolicy {
         effect: Effect.ALLOW,
         actions: ["ssm:GetParameter*"],
         resources: [
-          arn().ssm.parameter("infrastructure/*"),
-          arn().ssm.parameter("execution/*"),
+          arn().ssm.parameter("cdk-bootstrap/*"),
+          arn().ssm.parameter("infrastructure/iam/*"),
+          arn().ssm.parameter("infrastructure/new_relic/*"),
         ],
       }),
     );

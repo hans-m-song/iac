@@ -130,11 +130,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     cloudFrontInvalidatorRole.addPolicies({
       effect: Effect.ALLOW,
-      actions: [
-        "cloudfront:CreateInvalidation",
-        "cloudfront:GetInvalidation",
-        "cloudfront:ListInvalidations",
-      ],
+      actions: ["cloudfront:CreateInvalidation", "cloudfront:GetInvalidation"],
       resources: [arn().cf.distribution("*")],
     });
 

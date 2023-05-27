@@ -32,8 +32,9 @@ export enum SSM {
   GithubActionsECRPublisherRoleARN = "/infrastructure/github/actions_ecr_image_publisher_role_arn",
   GithubActionsSongMatrixECRPublisherRoleARN = "/infrastructure/github/actions_songmatrix_ecr_image_publisher_role_arn",
   GithubActionsTerraformLookupRoleARN = "/infrastructure/github/actions_terraform_lookup_role_arn",
-  UserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
+  LambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
+  UserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
 }
 
 export enum ECR {
