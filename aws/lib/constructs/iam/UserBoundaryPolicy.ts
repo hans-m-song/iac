@@ -91,7 +91,7 @@ export class UserBoundaryPolicy extends ManagedPolicy {
     this.addStatements(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ["ssm:GetParameters"],
+        actions: ["ssm:GetParameter*"],
         resources: ["*"],
       }),
     );
