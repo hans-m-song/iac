@@ -82,12 +82,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const ecrPublisherRole = this.role(
       "ECRPublisherRole",
-      [
-        "axatol/*",
-        "hans-m-song/huisheng",
-        "hans-m-song/iac",
-        "hans-m-song/kube-stack",
-      ].map((repo) => ({
+      ["axatol/*", "hans-m-song/huisheng"].map((repo) => ({
         repo,
         context: { ref: "master" },
         actor: "hans-m-song",

@@ -90,11 +90,10 @@ resource "github_actions_secret" "hans_m_song-huisheng" {
 
 resource "github_actions_secret" "hans_m_song-iac" {
   for_each = {
-    "AWS_CDK_DEPLOY_ROLE_ARN"          = var.aws_cdk_deploy_role_arn
-    "AWS_CDK_DIFF_ROLE_ARN"            = var.aws_cdk_diff_role_arn
-    "AWS_DEFAULT_REGION"               = "ap-southeast-2"
-    "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.aws_ecr_image_publisher_role_arn
-    "TERRAFORM_VERSION"                = "1.3.7"
+    "AWS_CDK_DEPLOY_ROLE_ARN" = var.aws_cdk_deploy_role_arn
+    "AWS_CDK_DIFF_ROLE_ARN"   = var.aws_cdk_diff_role_arn
+    "AWS_DEFAULT_REGION"      = "ap-southeast-2"
+    "TERRAFORM_VERSION"       = "1.3.7"
   }
 
   provider        = github.hans_m_song
