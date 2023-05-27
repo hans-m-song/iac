@@ -13,21 +13,20 @@ import { arn } from "~/lib/utils/arn";
 /**
  * https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
  */
-export interface GithubActionsSubjectClaimsProps {
-  repositories: string[];
-  contexts: (
-    | { environment: string }
-    | { branch: string }
-    | { pullRequest: true }
-  )[];
-  workflowName?: string;
-  jobWorkflowRef?: string;
-  actors?: string[];
+export interface GithubActionsSubjectClaims {
+  repo: string;
+  context: {
+    env?: string;
+    ref?: string;
+    pr?: boolean;
+  };
+  workflowRef?: string;
+  actor?: string;
 }
 
 export interface GithubActionsFederatedPrincipalProps {
   providerArn: string;
-  claims: GithubActionsSubjectClaimsProps;
+  claims: GithubActionsSubjectClaims[];
 }
 
 export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
@@ -39,44 +38,45 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
           [`${Domain.GithubActionsToken}:aud`]: Domain.AWSSecurityTokenService,
         },
         "ForAnyValue:StringLike": {
-          [`${Domain.GithubActionsToken}:sub`]:
-            GithubActionsFederatedPrincipal.formatClaims(props.claims),
+          [`${Domain.GithubActionsToken}:sub`]: props.claims.flatMap(
+            GithubActionsFederatedPrincipal.formatClaims,
+          ),
         },
       },
       "sts:AssumeRoleWithWebIdentity",
     );
   }
 
-  private static formatClaims(
-    props: GithubActionsSubjectClaimsProps,
-  ): string[] {
-    const actors = !props.actors ? ["*"] : props.actors;
+  private static formatClaims(claims: GithubActionsSubjectClaims): string[] {
+    const contexts = [];
+    const { env, ref, pr } = claims.context;
 
-    const claims = props.repositories.map((repository) =>
-      actors.map((actor) =>
-        props.contexts.map((context) =>
-          [
-            `repo:${repository}`,
-            "environment" in context && `environment:${context.environment}`,
-            "branch" in context && `ref:refs/heads/${context.branch}`,
-            "pullRequest" in context && "pull_request",
-            `workflow:${props.workflowName ?? "*"}`,
-            `job_workflow_ref:${props.jobWorkflowRef ?? "*"}`,
-            `actor:${actor}`,
-          ]
-            .filter(Boolean)
-            .join(":"),
-        ),
-      ),
+    if (pr) {
+      contexts.push("pull_request");
+    }
+
+    if (ref) {
+      contexts.push(`ref:refs/heads/${ref}`);
+    }
+
+    if (env) {
+      contexts.push(`environment:${env}`);
+    }
+
+    return contexts.map((context) =>
+      [
+        `repo:${claims.repo}`,
+        context,
+        `job_workflow_ref:${claims.workflowRef ?? "*"}`,
+        `actor:${claims.actor ?? "*"}`,
+      ].join(":"),
     );
-
-    return claims.flat(2);
   }
 }
 
 export interface GithubActionsRoleProps extends Omit<RoleProps, "assumedBy"> {
   providerArn?: string;
-  claims: GithubActionsSubjectClaimsProps;
+  claims: GithubActionsSubjectClaims[];
 }
 
 export class GithubActionsRole extends Role {

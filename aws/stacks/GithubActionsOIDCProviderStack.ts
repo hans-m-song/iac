@@ -1,6 +1,6 @@
 import { StackProps } from "aws-cdk-lib";
 import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
-import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Effect } from "aws-cdk-lib/aws-iam";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
@@ -12,7 +12,7 @@ import { GithubActionsOIDCProvider } from "~/lib/constructs/iam/GithubActionsOID
 import {
   GithubActionsRole,
   GithubActionsRoleProps,
-  GithubActionsSubjectClaimsProps,
+  GithubActionsSubjectClaims,
 } from "~/lib/constructs/iam/GithubActionsRole";
 import { arn } from "~/lib/utils/arn";
 
@@ -38,10 +38,10 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const cdkDiffRole = this.role(
       "CDKDiffRole",
-      {
-        repositories: ["hans-m-song/iac", "hans-m-song/blog"],
-        contexts: [{ pullRequest: true }, { branch: "*" }],
-      },
+      [
+        { repo: "hans-m-song/iac", context: { pr: true, ref: "*" } },
+        { repo: "hans-m-song/blog", context: { ref: "*", env: "public" } },
+      ],
       SSM.GithubActionsCDKDiffRoleARN,
     );
 
@@ -53,11 +53,18 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const cdkDeployRole = this.role(
       "CDKDeployRole",
-      {
-        repositories: ["hans-m-song/iac", "hans-m-song/blog"],
-        contexts: [{ environment: "aws" }],
-        actors: ["hans-m-song"],
-      },
+      [
+        {
+          repo: "hans-m-song/iac",
+          context: { env: "aws" },
+          actor: "hans-m-song",
+        },
+        {
+          repo: "hans-m-song/blog",
+          context: { env: "public" },
+          actor: "hans-m-song",
+        },
+      ],
       SSM.GithubActionsCDKDeployRoleARN,
     );
 
@@ -75,15 +82,16 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const ecrPublisherRole = this.role(
       "ECRPublisherRole",
-      {
-        repositories: [
-          "axatol/*",
-          "hans-m-song/huisheng",
-          "hans-m-song/kube-stack",
-        ],
-        contexts: [{ branch: "master" }],
-        actors: ["hans-m-song"],
-      },
+      [
+        "axatol/*",
+        "hans-m-song/huisheng",
+        "hans-m-song/iac",
+        "hans-m-song/kube-stack",
+      ].map((repo) => ({
+        repo,
+        context: { ref: "master" },
+        actor: "hans-m-song",
+      })),
       SSM.GithubActionsECRPublisherRoleARN,
     );
 
@@ -101,10 +109,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const songmatrixECRPublisherRole = this.role(
       "SongMatrixECRPublisherRole",
-      {
-        repositories: ["songmatrix/*"],
-        contexts: [{ branch: "master" }],
-      },
+      [{ repo: "songmatrix/*", context: { ref: "master" } }],
       SSM.GithubActionsSongMatrixECRPublisherRoleARN,
     );
 
@@ -124,29 +129,36 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const cloudFrontInvalidatorRole = this.role(
       "CloudFrontInvalidatorRole",
-      {
-        repositories: ["hans-m-song/blog"],
-        contexts: [{ pullRequest: true }, { branch: "*" }],
-      },
+      [{ repo: "hans-m-song/blog", context: { env: "public" } }],
       SSM.GithubActionsCloudFrontInvalidatorRoleARN,
     );
 
-    cloudFrontInvalidatorRole.addPolicies(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "cloudfront:CreateInvalidation",
-          "cloudfront:GetInvalidation",
-          "cloudfront:ListInvalidations",
-        ],
-        resources: [arn().cf.distribution("*")],
-      }),
+    cloudFrontInvalidatorRole.addPolicies({
+      effect: Effect.ALLOW,
+      actions: [
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation",
+        "cloudfront:ListInvalidations",
+      ],
+      resources: [arn().cf.distribution("*")],
+    });
+
+    const terraformLookupRole = this.role(
+      "TerraformLookupRole",
+      [{ repo: "hans-m-song/iac", context: { env: "github" } }],
+      SSM.GithubActionsTerraformLookupRoleARN,
     );
+
+    terraformLookupRole.addPolicies({
+      effect: Effect.ALLOW,
+      actions: ["ssm:GetParameter"],
+      resources: [arn().ssm.parameter("/infrastructure/github/actions_*")],
+    });
   }
 
   role(
     id: string,
-    claims: GithubActionsSubjectClaimsProps,
+    claims: GithubActionsSubjectClaims[],
     parameterName?: string,
   ) {
     const role = new GithubActionsRole(this, id, {
