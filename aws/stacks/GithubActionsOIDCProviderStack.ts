@@ -134,6 +134,12 @@ export class GithubActionsOIDCProviderStack extends Stack {
       resources: [arn().cf.distribution("*")],
     });
 
+    cloudFrontInvalidatorRole.addPolicies({
+      effect: Effect.ALLOW,
+      actions: ["ssm:GetParameter"],
+      resources: [arn().ssm.parameter("/infrastructure/cloudfront/*")],
+    });
+
     const terraformLookupRole = this.role(
       "TerraformLookupRole",
       [{ repo: "hans-m-song/iac", context: { env: "github" } }],

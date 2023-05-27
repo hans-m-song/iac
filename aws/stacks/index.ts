@@ -3,6 +3,7 @@ import "source-map-support/register";
 
 import { App } from "aws-cdk-lib";
 
+import { Stack } from "~/lib/cdk/Stack";
 import { ECR, hostedZones } from "~/lib/constants";
 
 import { AWSServiceRoleStack } from "./AWSServiceRoleStack";
@@ -46,3 +47,7 @@ new ManagedECRPublicStack(app, "SongMatrixManagedECRPublicStack", {
     ECR.Songmatrix_SyncService,
   ],
 });
+
+for (const child of app.node.children) {
+  (child as Stack).tag();
+}
