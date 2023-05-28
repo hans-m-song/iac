@@ -137,7 +137,9 @@ export class GithubActionsOIDCProviderStack extends Stack {
     cloudFrontInvalidatorRole.addPolicies({
       effect: Effect.ALLOW,
       actions: ["ssm:GetParameter"],
-      resources: [arn().ssm.parameter("/infrastructure/cloudfront/*")],
+      resources: [
+        arn("us-east-1").ssm.parameter("/infrastructure/cloudfront/*"),
+      ],
     });
 
     const terraformLookupRole = this.role(

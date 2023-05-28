@@ -21,7 +21,7 @@ new BoundaryPolicyStack(app, "BoundaryPolicyStack");
 
 new CertificateStack(app, "CertificateStack-USE1", {
   env: { region: "us-east-1" },
-  domainNames: ["blog.hsong.me"],
+  domainNames: ["blog.hsong.me", "hsong.me"],
 });
 
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
