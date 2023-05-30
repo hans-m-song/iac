@@ -18,3 +18,4 @@ cdk.out*
 
 # secrets
 k8s/setup-secrets.sh
+skynet/secrets.yaml

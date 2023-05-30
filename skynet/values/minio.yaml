@@ -1,0 +1,17 @@
+mode: standalone
+replicas: 1
+
+persistence:
+  enabled: false
+
+policies:
+  - name: huisheng
+    statements:
+      - actions:
+          - s3:*
+        resources:
+          - arn:aws:s3:::huisheng
+          - arn:aws:s3:::huisheng/*
+
+buckets:
+  - name: huisheng
