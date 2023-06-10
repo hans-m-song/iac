@@ -87,6 +87,16 @@ resource "github_repository" "axatol-whats_up" {
   delete_branch_on_merge = true
 }
 
+resource "github_repository" "axatol-where_gate" {
+  provider    = github.axatol
+  name        = "where-gate"
+  description = "when is baldurs gate coming out?"
+
+  allow_auto_merge       = true
+  allow_update_branch    = true
+  delete_branch_on_merge = true
+}
+
 locals {
   github_repositories_axatol = [
     github_repository.axatol-actions.name,
@@ -97,6 +107,7 @@ locals {
     github_repository.axatol-hookshot_artillery.name,
     github_repository.axatol-jayd.name,
     github_repository.axatol-whats_up.name,
+    github_repository.axatol-where_gate.name,
   ]
 }
 

@@ -1,7 +1,7 @@
 terraform {
   cloud {
     hostname     = "app.terraform.io"
-    organization = "deep-thought"
+    organization = "axatol"
 
     workspaces {
       name = "iac-auth0"

@@ -3,7 +3,8 @@ variable "auth0_domain" {
 }
 
 variable "auth0_client_id" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "auth0_client_secret" {
