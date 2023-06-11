@@ -12,35 +12,14 @@ releases:
     namespace: actions-runner-system
     version: 0.23.0
     values:
-      - authSecret:
-          create: true
-          github_token: {{ $secrets.actions_runner_controller.github_token }}
-        githubWebhookServer:
+      - githubWebhookServer:
           enabled: true
+      - {{ $secrets.actions_runner_controller | toYaml | nindent 8 }}
 
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager
     version: v1.11.0
-
-  - name: external-dns
-    chart: external-dns/external-dns
-    namespace: kube-system
-    version: 1.12.1
-    values:
-      - ./values/external-dns.yaml
-      - env:
-          - name: AWS_SHARED_CREDENTIALS_FILE
-            value: /.aws/credentials
-        secretConfiguration:
-          enabled: true
-          mountPath: /.aws
-          subPath:
-          data:
-            credentials: |
-              [default]
-              aws_access_key_id = {{ $secrets.dns.aws_access_key_id }}
-              aws_secret_access_key = {{ $secrets.dns.aws_secret_access_key }}
 
   - name: metrics-server
     chart: metrics-server/metrics-server
@@ -55,8 +34,7 @@ releases:
     version: 5.0.4
     values:
       - ./values/nri-bundle.yaml
-      - global:
-          licenseKey: {{ $secrets.newrelic.license_key }}
+      - {{ $secrets.newrelic | toYaml | nindent 8 }}
 
   - name: nfs-subdir-external-provisioner
     chart: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner

@@ -14,6 +14,12 @@ releases:
     values:
       - installCRDs: true
 
+  - name: cluster-issuers
+    chart: ../k8s/charts/cluster-issuers
+    namespace: cert-manager
+    values:
+      - {{- $secrets.cluster_issuers | toYaml | nindent 8}}
+
   - name: huisheng
     chart: huisheng/huisheng
     namespace: huisheng
@@ -27,22 +33,6 @@ releases:
     version: 3.8.4
     values:
       - ./values/metrics-server.yaml
-
-  - name: minio
-    chart: minio/minio
-    namespace: minio
-    version: 5.0.10
-    values:
-      - ./values/minio.yaml
-      - {{- $secrets.minio | toYaml | nindent 8 }}
-
-  - name: nri-bundle
-    chart: newrelic/nri-bundle
-    namespace: newrelic
-    version: 5.0.15
-    values:
-      - ./values/nri-bundle.yaml
-      - {{- $secrets.nri_bundle | toYaml | nindent 8 }}
 
   - chart: traefik/traefik
     name: traefik

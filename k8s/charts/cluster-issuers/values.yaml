@@ -1,0 +1,26 @@
+privateKey:
+  secretName: ""
+
+acme:
+  production: https://acme-v02.api.letsencrypt.org/directory
+  staging: https://acme-staging-v02.api.letsencrypt.org/directory
+
+solvers:
+  {}
+  # dns01_route53:
+  #   kind: dns01_route53
+  #   region: ap-southeast-2
+  #   hostedZoneID: ""
+  #   dnsZone: example.com
+  #   accessKeyID: ""
+  #   secretAccessKey: ""
+
+issuers:
+  {}
+  # production:
+  #   email: email@example.com
+  #   # use staging server
+  #   isProduction: true
+  #   # matching key in solvers
+  #   solvers:
+  #     - dns01_route53
