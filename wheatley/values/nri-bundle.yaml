@@ -12,6 +12,12 @@ newrelic-infrastructure:
 
 newrelic-logging:
   enabled: true
+  fluentBit:
+    config:
+      extraFilters: |
+        [FILTER]
+            Name lua
+            Match *
 
 nri-kube-events:
   enabled: true

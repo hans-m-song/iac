@@ -1,0 +1,22 @@
+logLevel: info
+logFormat: json
+interval: 1h
+# triggerLoopOnEvent: true
+sources:
+  - ingress
+policy: sync
+registry: txt
+txtOwnerId: deep-thought
+domainFilters:
+  - k8s.axatol.xyz
+zoneIdFilters:
+  - /hostedzone/Z067173715955IHMKKU3W # axatol.xyz
+provider: aws
+extraArgs:
+  - --annotation-filter=dns.alpha.kubernetes.io/hostname
+  - --aws-zones-cache-duration=24h
+  - --aws-batch-change-size=100
+  - --aws-batch-change-interval=1s
+
+dryRun: true
+# serviceAccount: external-dns

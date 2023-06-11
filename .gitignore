@@ -8,6 +8,7 @@ node_modules
 !*.secret
 .gitsecret/keys/random_seed
 *.diff
+.DS_Store
 
 # cdk
 cdk.out*
@@ -17,5 +18,5 @@ cdk.out*
 *.tfvars
 
 # secrets
-k8s/setup-secrets.sh
-skynet/secrets.yaml
+glados/secrets.yaml
+wheatley/secrets.yaml

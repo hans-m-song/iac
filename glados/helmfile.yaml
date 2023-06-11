@@ -1,0 +1,52 @@
+{{- $secrets :=  readFile "./secrets.yaml" | fromYaml -}}
+
+helmfiles:
+  - ../k8s/helmfile.defaults.yaml
+
+helmDefaults:
+  kubeContext: glados
+
+releases:
+  - name: cert-manager
+    chart: jetstack/cert-manager
+    namespace: cert-manager
+    version: v1.11.0
+    values:
+      - installCRDs: true
+
+  - name: huisheng
+    chart: huisheng/huisheng
+    namespace: huisheng
+    values:
+      - ./values/huisheng.yaml
+      - {{- $secrets.huisheng | toYaml | nindent 8 }}
+
+  - name: metrics-server
+    chart: metrics-server/metrics-server
+    namespace: kube-system
+    version: 3.8.4
+    values:
+      - ./values/metrics-server.yaml
+
+  - name: minio
+    chart: minio/minio
+    namespace: minio
+    version: 5.0.10
+    values:
+      - ./values/minio.yaml
+      - {{- $secrets.minio | toYaml | nindent 8 }}
+
+  - name: nri-bundle
+    chart: newrelic/nri-bundle
+    namespace: newrelic
+    version: 5.0.15
+    values:
+      - ./values/nri-bundle.yaml
+      - {{- $secrets.nri_bundle | toYaml | nindent 8 }}
+
+  - chart: traefik/traefik
+    name: traefik
+    namespace: kube-system
+    version: 21.2.0
+    values:
+      - ./values/traefik.yaml
