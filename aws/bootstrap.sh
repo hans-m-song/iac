@@ -33,3 +33,16 @@ aws cloudformation deploy \
   StackName=$STACK_NAME \
   GitRepository=$GIT_REPOSITORY \
   Purpose=$PURPOSE
+
+aws cloudformation deploy \
+  --region ap-southeast-1 \
+  --template-file ./CDKToolkit.yaml \
+  --stack-name CDKToolkit \
+  --parameter-overrides \
+  Qualifier=$QUALIFIER \
+  FileAssetsBucketKmsKeyId=$FILE_ASSETS_BUCKET_KMS_KEY_ID \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --tags \
+  StackName=$STACK_NAME \
+  GitRepository=$GIT_REPOSITORY \
+  Purpose=$PURPOSE
