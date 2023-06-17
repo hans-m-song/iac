@@ -6,7 +6,7 @@ import { Construct } from "constructs";
 
 import { getContext } from "~/lib/cdk/context";
 import { Stack } from "~/lib/cdk/Stack";
-import { ECR, SSM } from "~/lib/constants";
+import { ECR, Region, SSM } from "~/lib/constants";
 import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
 import { GithubActionsOIDCProvider } from "~/lib/constructs/iam/GithubActionsOIDCProvider";
 import {
@@ -41,6 +41,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
       [
         { repo: "hans-m-song/iac", context: { pr: true, ref: "*" } },
         { repo: "hans-m-song/blog", context: { ref: "*", env: "public" } },
+        { repo: "axatol/where-gate", context: { ref: "master" } },
       ],
       SSM.GithubActionsCDKDiffRoleARN,
     );
@@ -62,6 +63,11 @@ export class GithubActionsOIDCProviderStack extends Stack {
         {
           repo: "hans-m-song/blog",
           context: { env: "public" },
+          actor: "hans-m-song",
+        },
+        {
+          repo: "axatol/where-gate",
+          context: { ref: "master" },
           actor: "hans-m-song",
         },
       ],
@@ -138,7 +144,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
       effect: Effect.ALLOW,
       actions: ["ssm:GetParameter"],
       resources: [
-        arn("us-east-1").ssm.parameter("/infrastructure/cloudfront/*"),
+        arn(Region.NVirginia).ssm.parameter("/infrastructure/cloudfront/*"),
       ],
     });
 

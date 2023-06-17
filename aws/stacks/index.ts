@@ -4,7 +4,7 @@ import "source-map-support/register";
 import { App } from "aws-cdk-lib";
 
 import { Stack } from "~/lib/cdk/Stack";
-import { ECR, hostedZones } from "~/lib/constants";
+import { ECR, Region, hostedZones } from "~/lib/constants";
 
 import { AWSServiceRoleStack } from "./AWSServiceRoleStack";
 import { BoundaryPolicyStack } from "./BoundaryPolicyStack";
@@ -12,16 +12,20 @@ import { CertificateStack } from "./CertificateStack";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
+import { ManagedPolicyStack } from "./ManagedPolicyStack";
+import { XRayAgentStack } from "./XRayAgentStack";
 
 const app = new App();
 
 new AWSServiceRoleStack(app, "AWSServiceRoleStack");
 
+new ManagedPolicyStack(app, "ManagedPolicyStack");
+
 new BoundaryPolicyStack(app, "BoundaryPolicyStack");
 
 new CertificateStack(app, "CertificateStack-USE1", {
-  env: { region: "us-east-1" },
-  domainNames: ["blog.hsong.me", "hsong.me"],
+  env: { region: Region.NVirginia },
+  requests: [{ domainName: "hsong.me" }, { domainName: "axatol.xyz" }],
 });
 
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack");
@@ -46,6 +50,10 @@ new ManagedECRPublicStack(app, "SongMatrixManagedECRPublicStack", {
     ECR.Songmatrix_Gateway,
     ECR.Songmatrix_SyncService,
   ],
+});
+
+new XRayAgentStack(app, "XRayAgentStack", {
+  env: { region: Region.Singapore },
 });
 
 for (const child of app.node.children) {

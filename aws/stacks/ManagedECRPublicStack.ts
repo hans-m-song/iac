@@ -3,6 +3,7 @@ import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
+import { Region } from "~/lib/constants";
 import { kebabToPascalCase } from "~/lib/utils/string";
 
 export interface ManagedECRPublicStackProps extends StackProps {
@@ -21,7 +22,7 @@ export class ManagedECRPublicStack extends Stack {
       ...props,
       env: {
         ...props.env,
-        region: "us-east-1",
+        region: Region.NVirginia,
       },
     });
 

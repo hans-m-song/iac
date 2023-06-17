@@ -1,9 +1,7 @@
 export enum Region {
-  // Sydney
-  APSE2 = "ap-southeast-2",
-
-  // N. Virginia
-  USE1 = "us-east-1",
+  Sydney = "ap-southeast-2",
+  Singapore = "ap-southeast-1",
+  NVirginia = "us-east-1",
 }
 
 export enum URI {

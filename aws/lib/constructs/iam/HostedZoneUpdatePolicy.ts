@@ -20,7 +20,11 @@ export class HostedZoneUpdatePolicy extends aws_iam.ManagedPolicy {
     this.addStatements(
       new aws_iam.PolicyStatement({
         effect: aws_iam.Effect.ALLOW,
-        actions: ["route53:ListHostedZones", "route53:GetChange"],
+        actions: [
+          "route53:GetChange",
+          "route53:ListHostedZones",
+          "route53:ListHostedZonesByName",
+        ],
         resources: ["*"],
       }),
     );
@@ -40,6 +44,11 @@ export class HostedZoneUpdatePolicy extends aws_iam.ManagedPolicy {
             "route53:ListResourceRecordSets",
           ],
           resources: [hz.hostedZoneArn],
+          conditions: {
+            "ForAllValues:StringEquals": {
+              "route53:ChangeResourceRecordSetsRecordTypes": ["A", "CNAME"],
+            },
+          },
         }),
       );
     });

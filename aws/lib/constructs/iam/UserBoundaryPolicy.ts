@@ -73,7 +73,42 @@ export class UserBoundaryPolicy extends ManagedPolicy {
     this.addStatements(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ["iam:ListAccountAliases"],
+        actions: [
+          // "iam:CreateRole",
+          "iam:GetRole",
+          "iam:ListAccountAliases",
+          // "iam:PassRole",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    // route53
+    this.addStatements(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "route53:ChangeResourceRecordSets",
+          "route53:GetChange",
+          "route53:GetHostedZone",
+          "route53:GetHostedZoneCount",
+          "route53:GetHostedZoneLimit",
+          "route53:ListHostedZones",
+          "route53:ListHostedZonesByName",
+          "route53:ListHostedZonesByVPC",
+          "route53:ListResourceRecordSets",
+          "route53:ListTagsForResource",
+          "route53:ListTagsForResources",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    // s3
+    this.addStatements(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ["s3:*"],
         resources: ["*"],
       }),
     );
