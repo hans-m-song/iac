@@ -45,3 +45,15 @@ module "huisheng" {
   enable_actions_runner_webhook = true
   enable_new_relic_webhook      = false
 }
+
+module "iac" {
+  source = "./modules/project"
+  providers = {
+    aws    = aws.ap_southeast_2
+    github = github.hans_m_song
+  }
+
+  github_repository_name        = "iac"
+  enable_actions_runner_webhook = true
+  enable_new_relic_webhook      = true
+}

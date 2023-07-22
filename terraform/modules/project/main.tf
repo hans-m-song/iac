@@ -48,6 +48,6 @@ resource "github_repository_webhook" "new_relic" {
 
   configuration {
     content_type = "json"
-    url          = "https://log-api.newrelic.com/log/v1?Api-Key=${data.aws_ssm_parameter.new_relic_license_key[0].value}"
+    url          = "https://log-api.newrelic.com/log/v1?Api-Key=${data.aws_ssm_parameter.github_new_relic_license_key[0].value}"
   }
 }

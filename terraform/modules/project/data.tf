@@ -18,9 +18,9 @@ data "aws_ssm_parameter" "github_actions_runner_webhook_url" {
   name  = "/infrastructure/github/actions_runner_webhook_url"
 }
 
-data "aws_ssm_parameter" "new_relic_license_key" {
+data "aws_ssm_parameter" "github_new_relic_license_key" {
   count = var.enable_new_relic_webhook ? 1 : 0
-  name  = "/infrastructure/new_relic/license_key"
+  name  = "/infrastructure/github/new_relic_license_key"
 }
 
 data "github_repository" "this" {
