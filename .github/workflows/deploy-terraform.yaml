@@ -1,0 +1,35 @@
+name: Deploy New Relic
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "github/**/*.tf"
+      - .github/workflows/_terraform.yaml
+      - .github/workflows/deploy_terraform.yaml
+
+  pull_request:
+    paths:
+      - "github/**/*.tf"
+      - .github/workflows/_terraform.yaml
+      - .github/workflows/deploy_terraform.yaml
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/_terraform.yaml
+    with:
+      action: plan
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_TERRAFORM_ROLE_ARN: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+
+  apply:
+    if: github.ref_name == 'master' && github.event_name == 'push'
+    uses: ./.github/workflows/_terraform.yaml
+    with:
+      action: apply
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_TERRAFORM_ROLE_ARN: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
