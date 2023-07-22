@@ -60,42 +60,49 @@ jobs:
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
-      - id: state_bucket_name
+      - name: Get state_bucket_name
+        id: state_bucket_name
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/state_bucket_name
 
-      - id: auth0_domain
+      - name: Get auth0_domain
+        id: auth0_domain
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/auth0/domain
           env-name: TF_VAR_auth0_domain
 
-      - id: auth0_client_id
+      - name: Get auth0_client_id
+        id: auth0_client_id
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/auth0_client_id
           env-name: TF_VAR_auth0_client_id
 
-      - id: auth0_client_secret
+      - name: Get auth0_client_secret
+        id: auth0_client_secret
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/auth0_client_secret
           env-name: TF_VAR_auth0_client_secret
 
-      - id: github_token
+      - name: Get github_token
+        id: github_token
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/github_token
           env-name: TF_VAR_github_token
 
-      - id: new_relic_account_id
+      - name: Get new_relic_account_id
+        id: new_relic_account_id
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/new_relic/account_id
           env-name: TF_VAR_new_relic_account_id
 
-      - id: new_relic_api_key
+      - name: Get new_relic_api_key
+        id: new_relic_api_key
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/new_relic_api_key

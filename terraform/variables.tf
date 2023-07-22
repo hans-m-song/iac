@@ -18,12 +18,12 @@ variable "github_token" {
   sensitive = true
 }
 
-variable "newrelic_account_id" {
+variable "new_relic_account_id" {
   type      = string
   sensitive = true
 }
 
-variable "newrelic_api_key" {
+variable "new_relic_api_key" {
   type      = string
   sensitive = true
 }

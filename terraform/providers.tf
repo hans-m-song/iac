@@ -57,6 +57,6 @@ provider "github" {
 }
 
 provider "newrelic" {
-  account_id = var.newrelic_account_id
-  api_key    = var.newrelic_api_key
+  account_id = var.new_relic_account_id
+  api_key    = var.new_relic_api_key
 }
