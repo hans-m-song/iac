@@ -49,6 +49,7 @@ jobs:
           node-version: 16
 
       - name: Configure AWS Credentials
+        id: aws
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -68,7 +69,9 @@ jobs:
 
       - name: Terraform Initialise
         id: init
-        run: terraform init
+        run: |
+          bucket_name=terraform-state-${{ steps.aws.outputs.aws-account-id }}
+          terraform init -input=false -backend-config="bucket=$bucket_name"
 
       - name: Terraform Validate
         id: validate
