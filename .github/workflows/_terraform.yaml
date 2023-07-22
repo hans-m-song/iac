@@ -89,17 +89,17 @@ jobs:
           path: /infrastructure/terraform/github_token
           env-name: TF_VAR_github_token
 
-      - id: newrelic_account_id
+      - id: new_relic_account_id
         uses: axatol/actions/get-ssm-parameter@release
         with:
-          path: /infrastructure/newrelic/account_id
-          env-name: TF_VAR_newrelic_account_id
+          path: /infrastructure/new_relic/account_id
+          env-name: TF_VAR_new_relic_account_id
 
-      - id: newrelic_api_key
+      - id: new_relic_api_key
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/new_relic_api_key
-          env-name: TF_VAR_newrelic_api_key
+          env-name: TF_VAR_new_relic_api_key
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
