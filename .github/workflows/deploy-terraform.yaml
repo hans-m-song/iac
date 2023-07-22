@@ -1,4 +1,4 @@
-name: Deploy New Relic
+name: Deploy Terraform
 
 on:
   push:

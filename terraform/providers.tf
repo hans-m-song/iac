@@ -1,7 +1,8 @@
 terraform {
   backend "s3" {
-    region = "ap-southeast-2"
-    key    = "terraform.tfstate"
+    region         = "ap-southeast-2"
+    key            = "terraform.tfstate"
+    dynamodb_table = "terraform-state-lock"
   }
 
   required_providers {

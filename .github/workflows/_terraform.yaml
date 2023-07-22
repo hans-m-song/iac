@@ -26,6 +26,8 @@ on:
 
 env:
   TERRAFORM_VERSION: 1.5.1
+  TF_INPUT: 0
+  TF_IN_AUTOMATION: 1
 
 jobs:
   terraform:
@@ -58,6 +60,47 @@ jobs:
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
+      - id: state_bucket_name
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/terraform/state_bucket_name
+
+      - id: auth0_domain
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/auth0/domain
+          env-name: TF_VAR_auth0_domain
+
+      - id: auth0_client_id
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/terraform/auth0_client_id
+          env-name: TF_VAR_auth0_client_id
+
+      - id: auth0_client_secret
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/terraform/auth0_client_secret
+          env-name: TF_VAR_auth0_client_secret
+
+      - id: github_token
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/terraform/github_token
+          env-name: TF_VAR_github_token
+
+      - id: newrelic_account_id
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/newrelic/account_id
+          env-name: TF_VAR_newrelic_account_id
+
+      - id: newrelic_api_key
+        uses: axatol/actions/get-ssm-parameter@release
+        with:
+          path: /infrastructure/terraform/new_relic_api_key
+          env-name: TF_VAR_newrelic_api_key
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -69,9 +112,7 @@ jobs:
 
       - name: Terraform Initialise
         id: init
-        run: |
-          bucket_name=terraform-state-${{ steps.aws.outputs.aws-account-id }}
-          terraform init -input=false -backend-config="bucket=$bucket_name"
+        run: terraform init -backend-config="bucket=${{ steps.state_bucket_name.outputs.value }}"
 
       - name: Terraform Validate
         id: validate
@@ -133,4 +174,4 @@ jobs:
 
       - name: Terraform Apply
         if: inputs.action == 'apply'
-        run: terraform apply -auto-approve -input=false plan.out
+        run: terraform apply -auto-approve plan.out
