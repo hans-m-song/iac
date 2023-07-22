@@ -60,7 +60,7 @@ export class CloudFormationExecutionPolicy extends ManagedPolicy {
         resources: ["*"],
         conditions: {
           "ForAnyValue:StringEquals": {
-            "iam:PermissionsBoundary": [SSM.LambdaBoundaryPolicyARN].map(
+            "iam:PermissionsBoundary": [SSM.IAMLambdaBoundaryPolicyARN].map(
               (arn) => StringParameter.valueForStringParameter(this, arn),
             ),
           },

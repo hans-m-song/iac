@@ -7,12 +7,15 @@ export enum Region {
 export enum URI {
   Auth0Tenant = "https://axatol.au.auth0.com",
   GithubActionsToken = "https://token.actions.githubusercontent.com",
+  Terraform = "https://app.terraform.io",
   NewRelicLogsFirehose = "https://aws-api.newrelic.com/firehose/v1",
 }
 
 export enum Domain {
   Auth0Tenant = "axatol.au.auth0.com",
   AWS = "aws.amazon.com",
+  Terraform = "app.terraform.io",
+  TerraformAudience = "aws.workload.identity",
   AWSSecurityTokenService = "sts.amazonaws.com",
   GithubActionsToken = "token.actions.githubusercontent.com",
 }
@@ -21,7 +24,6 @@ export enum SSM {
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
   CertificateParameterPrefix = "/infrastructure/acm",
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
-  ExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
   GithubActionsCloudFrontInvalidatorRoleARN = "/infrastructure/github/actions_cloudfront_invalidator_role_arn",
   GithubActionsOIDCProviderARN = "/infrastructure/github/actions_oidc_provider_arn",
   GithubActionsLookupRoleARN = "/infrastructure/github/actions_lookup_role_arn",
@@ -29,14 +31,17 @@ export enum SSM {
   GithubActionsCDKDeployRoleARN = "/infrastructure/github/actions_cdk_deploy_role_arn",
   GithubActionsECRPublisherRoleARN = "/infrastructure/github/actions_ecr_image_publisher_role_arn",
   GithubActionsSongMatrixECRPublisherRoleARN = "/infrastructure/github/actions_songmatrix_ecr_image_publisher_role_arn",
-  GithubActionsTerraformLookupRoleARN = "/infrastructure/github/actions_terraform_lookup_role_arn",
-  LambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
+  GithubActionsTerraformRoleARN = "/infrastructure/github/actions_terraform_role_arn",
+  IAMExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
+  IAMLambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
+  IAMUserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
   NewRelicLicenseKey = "/infrastructure/new_relic/license_key",
-  UserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
+  TerraformLockTableName = "/infrastructure/terraform/lock_table_name",
+  TerraformStateBucketName = "/infrastructure/terraform/state_bucket_name",
 }
 
 export enum ECR {
-  ActionsRunnerBrokerDispatcher = "actions-runner-broker-dispatcher",
+  ActionsJobDispatcher = "actions-job-dispatcher",
   GithubActionsRunner = "github-actions-runner",
   HomeAssistantIntegrations = "home-assistant-integrations",
   Huisheng = "huisheng",

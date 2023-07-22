@@ -1,7 +1,9 @@
-import { StackProps } from "aws-cdk-lib";
-import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
-import { Effect } from "aws-cdk-lib/aws-iam";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import * as cdk from "aws-cdk-lib";
+import * as ddb from "aws-cdk-lib/aws-dynamodb";
+import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as s3 from "aws-cdk-lib/aws-s3";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { getContext } from "~/lib/cdk/context";
@@ -18,20 +20,20 @@ import { arn } from "~/lib/utils/arn";
 
 export interface CreateGithubActionsECRPublisherRoleProps
   extends GithubActionsRoleProps {
-  repositories: CfnPublicRepository[];
+  repositories: ecr.CfnPublicRepository[];
 }
 
 export class GithubActionsOIDCProviderStack extends Stack {
   provider: GithubActionsOIDCProvider;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const ctx = getContext(this);
 
     this.provider = new GithubActionsOIDCProvider(this, "OIDCProvider");
     this.output("OIDCProviderARN", this.provider.attrArn);
 
-    new StringParameter(this, "OIDCProviderARNParameter", {
+    new ssm.StringParameter(this, "OIDCProviderARNParameter", {
       parameterName: SSM.GithubActionsOIDCProviderARN,
       stringValue: this.provider.attrArn,
     });
@@ -47,7 +49,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     );
 
     cdkDiffRole.addPolicies({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       actions: ["sts:AssumeRole"],
       resources: [ctx.bootstrapRoleARN("lookup-role")],
     });
@@ -75,7 +77,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     );
 
     cdkDeployRole.addPolicies({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       actions: ["sts:AssumeRole"],
       resources: [
         ctx.bootstrapRoleARN("lookup-role"),
@@ -99,7 +101,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     ecrPublisherRole.addManagedPolicy(
       new ECRPublicPublisherPolicy(this, "ECRPublisherPolicy", {
         repositories: [
-          arn().ecrp.repository(ECR.ActionsRunnerBrokerDispatcher),
+          arn().ecrp.repository(ECR.ActionsJobDispatcher),
           arn().ecrp.repository(ECR.GithubActionsRunner),
           arn().ecrp.repository(ECR.HomeAssistantIntegrations),
           arn().ecrp.repository(ECR.Huisheng),
@@ -135,29 +137,49 @@ export class GithubActionsOIDCProviderStack extends Stack {
     );
 
     cloudFrontInvalidatorRole.addPolicies({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       actions: ["cloudfront:CreateInvalidation", "cloudfront:GetInvalidation"],
       resources: [arn().cf.distribution("*")],
     });
 
     cloudFrontInvalidatorRole.addPolicies({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       actions: ["ssm:GetParameter"],
       resources: [
         arn(Region.NVirginia).ssm.parameter("/infrastructure/cloudfront/*"),
       ],
     });
 
-    const terraformLookupRole = this.role(
-      "TerraformLookupRole",
-      [{ repo: "hans-m-song/iac", context: { env: "github" } }],
-      SSM.GithubActionsTerraformLookupRoleARN,
+    const terraformLockTable = ddb.Table.fromTableName(
+      this,
+      "LockTable",
+      ssm.StringParameter.valueForStringParameter(
+        this,
+        SSM.TerraformLockTableName,
+      ),
     );
 
-    terraformLookupRole.addPolicies({
-      effect: Effect.ALLOW,
+    const terraformStateBucket = s3.Bucket.fromBucketName(
+      this,
+      "StateBucket",
+      ssm.StringParameter.valueForStringParameter(
+        this,
+        SSM.TerraformStateBucketName,
+      ),
+    );
+
+    const terraformRole = this.role(
+      "TerraformRole",
+      [{ repo: "hans-m-song/iac", context: { env: "github" } }],
+      SSM.GithubActionsTerraformRoleARN,
+    );
+
+    terraformLockTable.grantReadWriteData(terraformRole);
+    terraformStateBucket.grantReadWrite(terraformRole);
+    terraformRole.addPolicies({
+      effect: iam.Effect.ALLOW,
       actions: ["ssm:GetParameter"],
-      resources: [arn().ssm.parameter("/infrastructure/github/actions_*")],
+      resources: [arn(Region.Sydney).ssm.parameter("/infrastructure/*")],
     });
   }
 
@@ -174,7 +196,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     this.output(`${id}ARN`, role.roleArn);
 
     if (parameterName) {
-      new StringParameter(this, `${id}ARNParameter`, {
+      new ssm.StringParameter(this, `${id}ARNParameter`, {
         parameterName,
         stringValue: role.roleArn,
       });

@@ -17,7 +17,7 @@ export class BoundaryPolicyStack extends Stack {
     );
 
     new StringParameter(this, "LambdaBoundaryPolicyARNParameter", {
-      parameterName: SSM.LambdaBoundaryPolicyARN,
+      parameterName: SSM.IAMLambdaBoundaryPolicyARN,
       stringValue: lambdaBoundaryPolicy.managedPolicyArn,
     });
 
@@ -27,7 +27,7 @@ export class BoundaryPolicyStack extends Stack {
     );
 
     new StringParameter(this, "UserBoundaryPolicyARNParameter", {
-      parameterName: SSM.UserBoundaryPolicyARN,
+      parameterName: SSM.IAMUserBoundaryPolicyARN,
       stringValue: userBoundaryPolicy.managedPolicyArn,
     });
   }

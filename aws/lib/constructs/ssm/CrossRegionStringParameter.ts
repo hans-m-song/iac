@@ -30,7 +30,7 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
 
     const physicalId = createHash("sha256")
       .update(id)
-      .update(parameterType ?? ParameterValueType.STRING)
+      .update(parameterType)
       .update(stringValue)
       .digest("hex");
 
