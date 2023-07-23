@@ -16,12 +16,16 @@ releases:
           enabled: true
       - {{ $secrets.actions_runner_controller | toYaml | nindent 8 }}
 
+  - name: actions-runners
+    chart: ../k8s/charts/actions-runners
+    namespace: actions-runner-system
+    values:
+      - ./values/actions-runners.yaml
+
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager
     version: v1.11.0
-    values:
-      - installCRDs: true
 
   - name: huisheng
     chart: huisheng/huisheng
@@ -59,13 +63,13 @@ releases:
     version: 2023.2.12482
     values:
       - ./values/octopus-deploy.yaml
-      - {{ $secrets.octopus | toYaml | nindent 8 }}
+      - {{- $secrets.octopus | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql
     chart: ../k8s/charts/mssql
     namespace: octopus
     values:
-      - {{ $secrets.octopus_mssql | toYaml | nindent 8 }}
+      - {{- $secrets.octopus_mssql | toYaml | nindent 8 }}
 
   - chart: traefik/traefik
     name: traefik

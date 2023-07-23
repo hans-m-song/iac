@@ -4,3 +4,6 @@ nfs:
 
 storageClass:
   create: false
+
+nodeSelector:
+  axatol.xyz/supports-nfs: "true"

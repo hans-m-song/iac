@@ -1,0 +1,27 @@
+image: public.ecr.aws/axatol/github-actions-runner:latest
+
+runners:
+  - organization: ""
+    repository: ""
+    max_replicas: 3
+    min_replicas: 0
+    authorized_namespaces: []
+    node_selector: {}
+    env: {}
+    volumeMounts: {}
+    volumes: {}
+
+# resources shared across all runner deployments
+shared:
+  # mapping of name to value
+  env: {}
+  # mapping of name to volume
+  volumes:
+    {}
+    # # name of volume
+    # volume:
+    #   mountPath: ""
+    #   # config for volume block
+    #   config:
+    #     persistentVolumeClaim:
+    #       claimName: ""

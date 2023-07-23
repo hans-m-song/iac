@@ -1,0 +1,90 @@
+{{- range .Values.runners }}
+{{- $scope := ternary .organization .repository (hasKey . "organization") }}
+{{- $name := join "-" (list "arc" (replace "/" "-" $scope)) }}
+{{- $env := merge (default (dict) .env) $.Values.shared.env }}
+{{- $volumes := merge (default (dict) .volumes) $.Values.shared.volumes }}
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: HorizontalRunnerAutoscaler
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "actions-runners.labels" $ | nindent 4 }}
+spec:
+  maxReplicas: {{ .max_replicas }}
+  minReplicas: {{ .min_replicas }}
+  scaleTargetRef:
+    kind: RunnerDeployment
+    name: {{ $name }}
+  scaleUpTriggers:
+    - amount: 1
+      duration: 5m
+      githubEvent:
+        workflowJob: {}
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "actions-runners.labels" $ | nindent 4 }}
+spec:
+  template:
+    spec:
+      image: {{ $.Values.image }}
+      imagePullPolicy: Always
+      {{- if (hasKey . "node_selectors")}}
+      nodeSelector: {{ toYaml .node_selectors | nindent 8 }}
+      {{- end }}
+      {{- if (hasKey . "organization") }}
+      organization: {{ .organization }}
+      {{- else }}
+      repository: {{ .repository }}
+      {{- end }}
+      serviceAccountName: {{ $name }}
+      security:
+        fsGroup: 1001
+        runAsGroup: 1001
+        runAsUser: 1001
+      dockerMTU: 1400
+      dockerdWithinRunnerContainer: true
+      env:
+        {{- range $key, $value := $env }}
+        - name: {{ $key | toString | quote }}
+          value: {{ $value | toString | quote }}
+        {{- end }}
+      volumeMounts: 
+        {{- range $key, $value := $volumes }}
+        - name: {{ $key }}
+          mountPath: {{ $value.mountPath }}
+        {{- end }}
+      volumes: 
+        {{- range $key, $value := $volumes }}
+        - name: {{ $key }}{{ toYaml $value.config | nindent 10 }}
+        {{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "actions-runners.labels" $ | nindent 4 }}
+{{- if .authorized_namespaces }}
+{{- range .authorized_namespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $name }}
+  namespace: {{ . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: ServiceAccount
+    name: {{ $name }}
+    namespace: {{ $.Release.Namespace }}
+{{- end }}
+{{- end }}
+{{- end }}
