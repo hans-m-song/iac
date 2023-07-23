@@ -170,7 +170,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const terraformRole = this.role(
       "TerraformRole",
-      [{ repo: "hans-m-song/iac", context: { env: "github" } }],
+      [{ repo: "hans-m-song/iac", context: { ref: "master" } }],
       SSM.GithubActionsTerraformRoleARN,
     );
 
