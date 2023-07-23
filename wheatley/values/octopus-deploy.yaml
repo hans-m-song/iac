@@ -1,0 +1,16 @@
+octopus:
+  acceptEula: "Y"
+
+  packageRepositoryVolume:
+    size: 1Gi
+  artifactVolume:
+    size: 1Gi
+  taskLogVolume:
+    size: 1Gi
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: traefik
+    path: /
+    hosts:
+      - octopus.k8s.axatol.xyz

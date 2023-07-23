@@ -7,7 +7,6 @@ module "actions" {
 
   github_repository_name        = "actions"
   enable_actions_runner_webhook = true
-  enable_new_relic_webhook      = false
 }
 
 module "actions_job_dispatcher" {
@@ -19,7 +18,6 @@ module "actions_job_dispatcher" {
 
   github_repository_name        = "actions-job-dispatcher"
   enable_actions_runner_webhook = true
-  enable_new_relic_webhook      = false
 }
 
 module "blog" {
@@ -31,7 +29,7 @@ module "blog" {
 
   github_repository_name        = "blog"
   enable_actions_runner_webhook = true
-  enable_new_relic_webhook      = false
+  enable_new_relic_webhook      = true
 }
 
 module "huisheng" {
@@ -43,7 +41,6 @@ module "huisheng" {
 
   github_repository_name        = "huisheng"
   enable_actions_runner_webhook = true
-  enable_new_relic_webhook      = false
 }
 
 module "iac" {

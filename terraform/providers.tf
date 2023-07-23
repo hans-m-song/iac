@@ -25,6 +25,11 @@ terraform {
       source  = "newrelic/newrelic"
       version = "~> 3.25.2"
     }
+
+    octopusdeploy = {
+      source  = "OctopusDeployLabs/octopusdeploy"
+      version = "~> 0.12.4"
+    }
   }
 }
 
@@ -59,4 +64,9 @@ provider "github" {
 provider "newrelic" {
   account_id = var.new_relic_account_id
   api_key    = var.new_relic_api_key
+}
+
+provider "octopusdeploy" {
+  address = "http://octopus.k8s.axatol.xyz"
+  api_key = var.octopus_deploy_api_key
 }

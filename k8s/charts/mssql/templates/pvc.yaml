@@ -1,0 +1,15 @@
+{{- if .Values.storage.create -}}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.storage.name }}
+  namespace: {{ .Release.namespace }}
+  labels: {{- include "mssql.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+{{- end -}}

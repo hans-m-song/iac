@@ -93,3 +93,21 @@ provider "registry.terraform.io/newrelic/newrelic" {
     "zh:fbd1fee2c9df3aa19cf8851ce134dea6e45ea01cb85695c1726670c285797e25",
   ]
 }
+
+provider "registry.terraform.io/octopusdeploylabs/octopusdeploy" {
+  version     = "0.12.4"
+  constraints = "~> 0.12.4"
+  hashes = [
+    "h1:otVpQS8dNIK+WslzvC3vdjTDRgN8egPT1eNR8Z1GkMI=",
+    "zh:290130012c35de7c28260036ba347bd7f8c68e4548d709058052e506dcbf4c33",
+    "zh:2cca85ee21732d9589fc0c2492cbccf4ebfe572b8ce79e37213818bf1cadb2b0",
+    "zh:57d0891266a67a80472511b1b35915a4092813e19c1bda2a551b9dad878e0bcb",
+    "zh:8198c75cb4ba9d464e7da063100f28221bdf892ee4ddf356a206f7bfe7550b29",
+    "zh:a379c44f1cb3cd496297da290f2ea7c7c2565715b52197f0d6b33e648e1882bc",
+    "zh:b9b80cccdfcf942b4f85ee62c1e121281c3af627dc2009421c871b36bc31453a",
+    "zh:ddf4079203242c61e675268eb95910182e963c34306dde61d9b2eaff295e1dd8",
+    "zh:e3819cabb7003dfdeb79a8cf161e3904a5017f0744e06cbb7b92186047e09680",
+    "zh:eb986e33b36b0cc134bbf1b604917ed73e329afcdc779aa7f6746604baad515b",
+    "zh:ff511a654ccad0603f3d660473d784578b046b8c9c1d6620671ca2556b8e0c12",
+  ]
+}

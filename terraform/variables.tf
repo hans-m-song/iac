@@ -27,3 +27,8 @@ variable "new_relic_api_key" {
   type      = string
   sensitive = true
 }
+
+variable "octopus_deploy_api_key" {
+  type      = string
+  sensitive = true
+}

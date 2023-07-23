@@ -15,5 +15,9 @@ terraform {
     # newrelic = {
     #   source = "newrelic/newrelic"
     # }
+
+    # octopusdeploy = {
+    #   source = "OctopusDeployLabs/octopusdeploy"
+    # }
   }
 }

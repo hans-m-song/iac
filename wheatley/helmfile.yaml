@@ -20,6 +20,15 @@ releases:
     chart: jetstack/cert-manager
     namespace: cert-manager
     version: v1.11.0
+    values:
+      - installCRDs: true
+
+  - name: huisheng
+    chart: huisheng/huisheng
+    namespace: huisheng
+    values:
+      - ./values/huisheng.yaml
+      - {{- $secrets.huisheng | toYaml | nindent 8 }}
 
   - name: metrics-server
     chart: metrics-server/metrics-server
@@ -32,6 +41,7 @@ releases:
     chart: newrelic/nri-bundle
     namespace: newrelic
     version: 5.0.4
+    installed: false
     values:
       - ./values/nri-bundle.yaml
       - {{ $secrets.newrelic | toYaml | nindent 8 }}
@@ -42,6 +52,20 @@ releases:
     version: 4.0.18
     values:
       - ./values/nfs-subdir-external-provisioner.yaml
+
+  - name: octopus-deploy
+    chart: oci://registry-1.docker.io/octopusdeploy/octopusdeploy-helm
+    namespace: octopus
+    version: 2023.2.12482
+    values:
+      - ./values/octopus-deploy.yaml
+      - {{ $secrets.octopus | toYaml | nindent 8 }}
+
+  - name: octopus-deploy-mssql
+    chart: ../k8s/charts/mssql
+    namespace: octopus
+    values:
+      - {{ $secrets.octopus_mssql | toYaml | nindent 8 }}
 
   - chart: traefik/traefik
     name: traefik
