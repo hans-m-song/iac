@@ -78,23 +78,23 @@ jobs:
           path: /infrastructure/terraform/auth0_client_id
           env-name: TF_VAR_auth0_client_id
 
-      - name: Get auth0_client_secret
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/auth0_client_secret
-          env-name: TF_VAR_auth0_client_secret
+      # - name: Get auth0_client_secret
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/auth0_client_secret
+      #     env-name: TF_VAR_auth0_client_secret
 
-      - name: Get github_token
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/github_token
-          env-name: TF_VAR_github_token
+      # - name: Get github_token
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/github_token
+      #     env-name: TF_VAR_github_token
 
-      - name: Get new_relic_account_id
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/new_relic/account_id
-          env-name: TF_VAR_new_relic_account_id
+      # - name: Get new_relic_account_id
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/new_relic/account_id
+      #     env-name: TF_VAR_new_relic_account_id
 
       - name: Get new_relic_api_key
         uses: axatol/actions/get-ssm-parameter@release
