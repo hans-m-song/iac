@@ -50,15 +50,15 @@ jobs:
         with:
           node-version: 16
 
-      - name: Configure AWS Credentials
-        id: aws
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
-          role-session-name: ${{ github.triggering_actor }}@${{ github.repository_owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
-          role-skip-session-tagging: true
-          role-duration-seconds: 3600
+      # - name: Configure AWS Credentials
+      #   id: aws
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      #     role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+      #     role-session-name: ${{ github.triggering_actor }}@${{ github.repository_owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
+      #     role-skip-session-tagging: true
+      #     role-duration-seconds: 3600
 
       - name: Get state_bucket_name
         id: state_bucket_name
@@ -66,47 +66,47 @@ jobs:
         with:
           path: /infrastructure/terraform/state_bucket_name
 
-      - name: Get auth0_domain
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/auth0/domain
-          env-name: TF_VAR_auth0_domain
+      # - name: Get auth0_domain
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/auth0/domain
+      #     env-name: TF_VAR_auth0_domain
 
-      - name: Get auth0_client_id
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/auth0_client_id
-          env-name: TF_VAR_auth0_client_id
+      # - name: Get auth0_client_id
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/auth0_client_id
+      #     env-name: TF_VAR_auth0_client_id
 
-      - name: Get auth0_client_secret
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/auth0_client_secret
-          env-name: TF_VAR_auth0_client_secret
+      # - name: Get auth0_client_secret
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/auth0_client_secret
+      #     env-name: TF_VAR_auth0_client_secret
 
-      - name: Get github_token
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/github_token
-          env-name: TF_VAR_github_token
+      # - name: Get github_token
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/github_token
+      #     env-name: TF_VAR_github_token
 
-      - name: Get new_relic_account_id
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/new_relic/account_id
-          env-name: TF_VAR_new_relic_account_id
+      # - name: Get new_relic_account_id
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/new_relic/account_id
+      #     env-name: TF_VAR_new_relic_account_id
 
-      - name: Get new_relic_api_key
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/new_relic_api_key
-          env-name: TF_VAR_new_relic_api_key
+      # - name: Get new_relic_api_key
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/new_relic_api_key
+      #     env-name: TF_VAR_new_relic_api_key
 
-      - name: Get octopus_deploy_api_key
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/octopus_deploy_api_key
-          env-name: TF_VAR_octopus_deploy_api_key
+      # - name: Get octopus_deploy_api_key
+      #   uses: axatol/actions/get-ssm-parameter@release
+      #   with:
+      #     path: /infrastructure/terraform/octopus_deploy_api_key
+      #     env-name: TF_VAR_octopus_deploy_api_key
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
