@@ -58,7 +58,7 @@ jobs:
         with:
           path: /infrastructure/terraform/state_bucket_name
 
-      - uses: ./.github/.actions/get-terraform-variables
+      - uses: ./.github/actions/get-terraform-variables
 
       - uses: hashicorp/setup-terraform@v2
         with:
