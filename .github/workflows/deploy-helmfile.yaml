@@ -1,0 +1,27 @@
+name: Deploy Helmfile
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "github/**/*.tf"
+      - .github/workflows/_helmfile.yaml
+      - .github/workflows/deploy_helmfile.yaml
+
+  pull_request:
+    paths:
+      - "github/**/*.tf"
+      - .github/workflows/_helmfile.yaml
+      - .github/workflows/deploy_helmfile.yaml
+
+jobs:
+  diff:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/_helmfile.yaml
+
+  # sync:
+  #   if: github.ref_name == 'master' && github.event_name == 'push'
+  #   uses: ./.github/workflows/_helmfile.yaml
+  #   with:
+  #     sync: true

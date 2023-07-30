@@ -3,20 +3,17 @@ name: Terraform
 on:
   workflow_dispatch:
     inputs:
-      action:
-        description: Action to take
-        required: true
-        type: choice
-        options:
-          - plan
-          - apply
+      apply:
+        description: Whether or not to apply
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
-      action:
-        description: Action to take
-        required: true
-        type: string
+      apply:
+        description: Whether or not to apply
+        type: boolean
+        default: false
 
     secrets:
       AWS_DEFAULT_REGION:
@@ -42,17 +39,13 @@ jobs:
         working-directory: terraform
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - name: Configure AWS Credentials
-        id: aws
-        uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
@@ -60,78 +53,29 @@ jobs:
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
-      - name: Get state_bucket_name
-        id: state_bucket_name
+      - id: state_bucket_name
         uses: axatol/actions/get-ssm-parameter@release
         with:
           path: /infrastructure/terraform/state_bucket_name
 
-      - name: Get auth0_domain
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/auth0/domain
-          env-name: TF_VAR_auth0_domain
+      - uses: ./.github/.actions/get-terraform-variables
 
-      - name: Get auth0_client_id
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/auth0_client_id
-          env-name: TF_VAR_auth0_client_id
-
-      # - name: Get auth0_client_secret
-      #   uses: axatol/actions/get-ssm-parameter@release
-      #   with:
-      #     path: /infrastructure/terraform/auth0_client_secret
-      #     env-name: TF_VAR_auth0_client_secret
-
-      # - name: Get github_token
-      #   uses: axatol/actions/get-ssm-parameter@release
-      #   with:
-      #     path: /infrastructure/terraform/github_token
-      #     env-name: TF_VAR_github_token
-
-      # - name: Get new_relic_account_id
-      #   uses: axatol/actions/get-ssm-parameter@release
-      #   with:
-      #     path: /infrastructure/new_relic/account_id
-      #     env-name: TF_VAR_new_relic_account_id
-
-      - name: Get new_relic_api_key
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/new_relic_api_key
-          env-name: TF_VAR_new_relic_api_key
-
-      - name: Get octopus_deploy_api_key
-        uses: axatol/actions/get-ssm-parameter@release
-        with:
-          path: /infrastructure/terraform/octopus_deploy_api_key
-          env-name: TF_VAR_octopus_deploy_api_key
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check
+      - run: terraform fmt -check
 
-      - name: Terraform Initialise
-        id: init
-        run: terraform init -backend-config="bucket=${{ steps.state_bucket_name.outputs.value }}"
+      - run: terraform init -backend-config="bucket=${{ steps.state_bucket_name.outputs.value }}"
 
-      - name: Terraform Validate
-        id: validate
+      - id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Plan
-        id: plan
-        continue-on-error: true
+      - id: plan
         run: terraform plan -no-color -out=plan.out
 
-      - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
+      - if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
         env:
           validate_stdout: ${{ steps.validate.outputs.stdout }}
           plan_stdout: ${{ steps.plan.outputs.stdout }}
@@ -140,9 +84,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `
-            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
@@ -150,8 +91,6 @@ jobs:
             \`\`\`
 
             </details>
-
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
@@ -175,10 +114,5 @@ jobs:
               body: output
             });
 
-      - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
-
-      - name: Terraform Apply
-        if: inputs.action == 'apply'
+      - if: inputs.apply == true || inputs.apply == 'true'
         run: terraform apply -auto-approve plan.out

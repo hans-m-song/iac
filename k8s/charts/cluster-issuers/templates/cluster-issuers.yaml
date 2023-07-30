@@ -8,6 +8,7 @@ kind: ClusterIssuer
 metadata:
   name: {{ $.Release.Name }}-{{ $name | kebabcase }}
   namespace: {{ $.Release.Namespace }}
+  labels: {{- include "cluster-issuers.labels" $ | nindent 4 }}
 spec:
   acme:
     email: {{ $email }}

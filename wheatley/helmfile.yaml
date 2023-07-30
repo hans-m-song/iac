@@ -27,6 +27,15 @@ releases:
     namespace: cert-manager
     version: v1.11.0
 
+  - name: cluster-issuer
+    chart: ../k8s/charts/cluster-issuers
+    namespace: cert-manager
+    values:
+      - {{- $secrets.cluster_issuers | toYaml | nindent 8 }}
+
+  - name: custom
+    chart: ./custom
+
   - name: huisheng
     chart: huisheng/huisheng
     namespace: huisheng

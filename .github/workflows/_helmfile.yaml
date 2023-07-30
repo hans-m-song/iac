@@ -1,0 +1,86 @@
+name: Helmfile
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync:
+        description: Whether or not to sync
+        type: boolean
+        default: false
+
+  workflow_call:
+    inputs:
+      sync:
+        description: Whether or not to sync
+        type: boolean
+        default: false
+
+jobs:
+  helmfile:
+    runs-on: [self-hosted]
+
+    permissions:
+      pull-requests: write
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: wheatley
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: lint
+        run: |
+          set -o pipefail
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "stdout<<$EOF" >> $GITHUB_OUTPUT
+          helmfile lint | tee -a $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - id: diff
+        run: |
+          set -o pipefail
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          helmfile diff | tee -a $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        env:
+          lint_stdout: ${{ steps.lint.outputs.stdout }}
+          diff_stdout: ${{ steps.diff.outputs.stdout }}
+        with:
+          script: |
+            const output = `
+            <details><summary>Lint Output</summary>
+
+            \`\`\`\n
+            ${process.env.lint_stdout.trim()}
+            \`\`\`
+
+            </details>
+
+            <details><summary>Diff Output</summary>
+
+            \`\`\`\n
+            ${process.env.diff_stdout.trim()}
+            \`\`\`
+
+            </details>
+
+            *${[
+              "Pusher: @${{ github.actor }}",
+              "Action: `${{ github.event_name }}`",
+            ].join(", ")}*
+            `.trim();
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - if: inputs.sync == true || inputs.sync == 'true'
+        run: helmfile sync
