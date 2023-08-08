@@ -46,7 +46,11 @@ export class HostedZoneUpdatePolicy extends aws_iam.ManagedPolicy {
           resources: [hz.hostedZoneArn],
           conditions: {
             "ForAllValues:StringEquals": {
-              "route53:ChangeResourceRecordSetsRecordTypes": ["A", "CNAME"],
+              "route53:ChangeResourceRecordSetsRecordTypes": [
+                "A",
+                "CNAME",
+                "TXT",
+              ],
             },
           },
         }),
