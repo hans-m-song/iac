@@ -53,7 +53,7 @@ releases:
   - name: nri-bundle
     chart: newrelic/nri-bundle
     namespace: newrelic
-    version: 5.0.4
+    version: 5.0.25
     installed: false
     values:
       - ./values/nri-bundle.yaml
@@ -79,6 +79,12 @@ releases:
     namespace: octopus
     values:
       - {{- $secrets.octopus_mssql | toYaml | nindent 8 }}
+
+  - name: octopus-deploy-worker
+    chart: ../k8s/charts/octopus-deploy-worker
+    namespace: octopus
+    values:
+      - {{- $secrets.octopus_deploy_worker | toYaml | nindent 8 }}
 
   - chart: traefik/traefik
     name: traefik

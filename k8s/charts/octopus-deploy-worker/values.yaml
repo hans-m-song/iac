@@ -1,0 +1,12 @@
+image: octopusdeploy/tentacle:latest
+
+rbac:
+  create: true
+  serviceAccountName: od-worker
+
+octopus:
+  space: ""
+  serverUrl: http://octopus-deploy.octopus.svc.cluster.local
+  serverPort: "10943"
+  serverApiKey: ""
+  targetWorkerPool: ""

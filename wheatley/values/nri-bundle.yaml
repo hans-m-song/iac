@@ -4,26 +4,38 @@ global:
   cluster: deep-thought
   lowDataMode: true
 
-kube-state-metrics:
-  enabled: true
-
 newrelic-infrastructure:
   privileged: true
-
-newrelic-logging:
-  enabled: true
-  fluentBit:
-    config:
-      extraFilters: |
-        [FILTER]
-            Name lua
-            Match *
-
-nri-kube-events:
-  enabled: true
 
 nri-metadata-injection:
   enabled: true
 
+kube-state-metrics:
+  enabled: true
+
+nri-kube-events:
+  enabled: true
+
+newrelic-infra-operator:
+  enabled: false
+
+newrelic-k8s-metrics-adapter:
+  enabled: false
+
+newrelic-logging:
+  enabled: true
+  # fluentBit:
+  #   config:
+  #     extraFilters: |
+  #       [FILTER]
+  #           Name lua
+  #           Match *
+
 nri-prometheus:
+  enabled: false
+
+newrelic-prometheus-configurator:
+  enabled: false
+
+newrelic-pixie:
   enabled: false

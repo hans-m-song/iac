@@ -1,0 +1,27 @@
+name: Deploy AWS CDK
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "aws/**"
+      - .github/workflows/_aws-cdk.yaml
+      - .github/workflows/deploy_aws-cdk.yaml
+
+  pull_request:
+    paths:
+      - "aws/**"
+      - .github/workflows/_aws-cdk.yaml
+      - .github/workflows/deploy_aws-cdk.yaml
+
+jobs:
+  diff:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/_aws-cdk.yaml
+
+  # sync:
+  #   if: github.ref_name == 'master' && github.event_name == 'push'
+  #   uses: ./.github/workflows/_aws-cdk.yaml
+  #   with:
+  #     sync: true

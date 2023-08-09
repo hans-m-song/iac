@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "octopus-deploy-worker.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "octopus-deploy-worker.selectors" . | nindent 6 }}
+  replicas: {{ default 1 .Values.replicaCount | int }}
+  template:
+    metadata:
+      labels: {{- include "octopus-deploy-worker.selectors" . | nindent 8 }}
+    spec:
+      containers:
+      - name: worker
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        serviceAccountName: {{ .Values.rbac.serviceAccountName }}
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        {{- if .Values.octopus.space }}
+        - name: Space
+          value: {{ .Values.octopus.space | toString | quote }}
+        {{- end }}
+        - name: ServerUrl
+          value: {{ .Values.octopus.serverUrl | toString | quote }}
+        - name: ServerPort
+          value: {{ .Values.octopus.serverPort | toString | quote }}
+        - name: TargetWorkerPool
+          value: {{ .Values.octopus.targetWorkerPool | toString | quote }}
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-secrets

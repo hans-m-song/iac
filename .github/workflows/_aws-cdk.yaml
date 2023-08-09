@@ -1,0 +1,47 @@
+name: AWS CDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Whether or not to deploy
+        type: boolean
+        default: false
+
+  workflow_call:
+    inputs:
+      deploy:
+        description: Whether or not to deploy
+        type: boolean
+        default: false
+
+jobs:
+  aws-cdk:
+    runs-on: [self-hosted]
+
+    permissions:
+      pull-requests: write
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: aws
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: lint
+        run: npm run lint
+
+      - id: diff
+        run: npm run diff:ci
+
+      # TODO pr comment
+      # - if: github.event_name == 'pull_request'
+      #   uses: actions/github-script@v6
+
+      # TODO credentials
+      # - uses: aws-actions/configure-aws-credentials@v2
+
+      - if: inputs.deploy == true || inputs.deploy == 'true'
+        run: npm run deploy:ci
