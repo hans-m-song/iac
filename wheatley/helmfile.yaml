@@ -54,7 +54,6 @@ releases:
     chart: newrelic/nri-bundle
     namespace: newrelic
     version: 5.0.25
-    installed: false
     values:
       - ./values/nri-bundle.yaml
       - {{ $secrets.newrelic | toYaml | nindent 8 }}
@@ -86,6 +85,20 @@ releases:
     values:
       - {{- $secrets.octopus_deploy_worker | toYaml | nindent 8 }}
 
+  - name: redis
+    chart: oci://registry-1.docker.io/bitnamicharts/redis
+    namespace: redis
+    version: 17.15.3
+    values:
+      - architecture: standalone
+      - {{- $secrets.redis | toYaml | nindent 8}}
+
+  - name: redis-insight
+    chart: ../k8s/charts/redis-insight
+    namespace: redis
+    values:
+      - ./values/redis-insight.yaml
+      
   - chart: traefik/traefik
     name: traefik
     namespace: kube-system

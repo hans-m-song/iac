@@ -8,9 +8,9 @@ octopus:
   taskLogVolume:
     size: 1Gi
   ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: traefik
-    path: /
-    hosts:
-      - octopus.k8s.axatol.xyz
+    enabled: false
+    # annotations:
+    #   kubernetes.io/ingress.class: traefik
+    # path: /
+    # hosts:
+    #   - octopus.k8s.axatol.xyz

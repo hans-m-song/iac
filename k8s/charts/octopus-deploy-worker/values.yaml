@@ -5,6 +5,7 @@ rbac:
   serviceAccountName: od-worker
 
 octopus:
+  workerName: ""
   space: ""
   serverUrl: http://octopus-deploy.octopus.svc.cluster.local
   serverPort: "10943"

@@ -16,20 +16,20 @@ resource "octopusdeploy_environment" "production" {
 
 # tenants
 
-resource "octopusdeploy_tenant" "aws_us_east_1" {
-  name = "AWS - US East - North Virginia (us-east-1)"
-}
-
 resource "octopusdeploy_tenant" "aws_ap_southeast_1" {
-  name = "AWS - Asia Pacific - Singapore (ap-southeast-1)"
+  name = "AWS - Singapore (ap-southeast-1)"
 }
 
 resource "octopusdeploy_tenant" "aws_ap_southeast_2" {
-  name = "AWS - Asia Pacific - Sydney (ap-southeast-2)"
+  name = "AWS - Sydney (ap-southeast-2)"
+}
+
+resource "octopusdeploy_tenant" "aws_us_east_1" {
+  name = "AWS - North Virginia (us-east-1)"
 }
 
 resource "octopusdeploy_tenant" "k8s_wheatley" {
-  name = "Kubernetes - Wheatley"
+  name = "K8S - Wheatley"
 }
 
 # worker pools
@@ -44,10 +44,17 @@ resource "octopusdeploy_user_role" "tentacle" {
   name = "Tentacle"
 
   granted_space_permissions = [
+    "WorkerView",
     "MachinePolicyView",
     "ProjectView",
     "WorkerEdit",
-    "WorkerView",
+
+    # EnvironmentEdit
+    # EnvironmentView
+    # MachineCreate
+    # MachineEdit
+    # MachinePolicyView
+    # MachineView
   ]
 }
 

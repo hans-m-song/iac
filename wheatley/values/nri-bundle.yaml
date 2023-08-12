@@ -1,7 +1,5 @@
 global:
-  customSecretName: newrelic-secret
-  customSecretLicenseKey: license_key
-  cluster: deep-thought
+  cluster: wheatley
   lowDataMode: true
 
 newrelic-infrastructure:

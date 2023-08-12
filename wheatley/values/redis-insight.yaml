@@ -1,0 +1,5 @@
+ingress:
+  hosts:
+    - redis-insight.k8s.axatol.xyz
+  # annotations:
+  #   cert-manager.io/cluster-issuer: cluster-issuer-prd

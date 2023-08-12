@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "redis-insight.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "redis-insight.selectors" . | nindent 6 }}
+  replicas: {{ default 1 .Values.replicaCount | int }}
+  template:
+    metadata:
+      labels: {{- include "redis-insight.selectors" . | nindent 8 }}
+    spec:
+      containers:
+      - name: redis-insight
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        {{- if  .Values.rbac.serviceAccountName }}
+        serviceAccountName: {{ .Values.rbac.serviceAccountName }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: 8001
+          protocol: TCP
+        volumeMounts:
+        - name: db
+          mountPath: /db
+      volumes:
+      - name: db
+        emptyDir: {}

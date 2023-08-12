@@ -23,7 +23,7 @@ terraform {
 
     newrelic = {
       source  = "newrelic/newrelic"
-      version = "~> 3.25.2"
+      version = "~> 3.26.0"
     }
 
     octopusdeploy = {
