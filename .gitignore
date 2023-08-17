@@ -15,8 +15,8 @@ cdk.out*
 
 # terraform
 .terraform
-*.tfvars
+.terraform.lock.hcl
+local*.tfvars
 
 # secrets
-glados/secrets.yaml
-wheatley/secrets.yaml
+k8s/secrets.yaml

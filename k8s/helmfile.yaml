@@ -1,7 +1,7 @@
 {{- $secrets :=  readFile "./secrets.yaml" | fromYaml -}}
 
 helmfiles:
-  - ../k8s/helmfile.defaults.yaml
+  - ./helmfile.defaults.yaml
 
 helmDefaults:
   kubeContext: wheatley
@@ -17,7 +17,7 @@ releases:
       - {{ $secrets.actions_runner_controller | toYaml | nindent 8 }}
 
   - name: actions-runners
-    chart: ../k8s/charts/actions-runners
+    chart: ./charts/actions-runners
     namespace: actions-runner-system
     values:
       - ./values/actions-runners.yaml
@@ -28,13 +28,13 @@ releases:
     version: v1.11.0
 
   - name: cluster-issuer
-    chart: ../k8s/charts/cluster-issuers
+    chart: ./charts/cluster-issuers
     namespace: cert-manager
     values:
       - {{- $secrets.cluster_issuers | toYaml | nindent 8 }}
 
   - name: custom
-    chart: ./custom
+    chart: ./charts/custom
 
   - name: huisheng
     chart: huisheng/huisheng
@@ -74,13 +74,13 @@ releases:
       - {{- $secrets.octopus | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql
-    chart: ../k8s/charts/mssql
+    chart: ./charts/mssql
     namespace: octopus
     values:
       - {{- $secrets.octopus_mssql | toYaml | nindent 8 }}
 
   - name: octopus-deploy-worker
-    chart: ../k8s/charts/octopus-deploy-worker
+    chart: ./charts/octopus-deploy-worker
     namespace: octopus
     values:
       - {{- $secrets.octopus_deploy_worker | toYaml | nindent 8 }}
@@ -94,7 +94,7 @@ releases:
       - {{- $secrets.redis | toYaml | nindent 8}}
 
   - name: redis-insight
-    chart: ../k8s/charts/redis-insight
+    chart: ./charts/redis-insight
     namespace: redis
     values:
       - ./values/redis-insight.yaml

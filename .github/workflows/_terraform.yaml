@@ -49,7 +49,7 @@ jobs:
         with:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
-          role-session-name: ${{ github.triggering_actor }}@${{ github.repository_owner }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
+          role-session-name: ${{ github.triggering_actor }}@${{ github.repository_owner.login }}@${{ github.event.repository.name }}@${{ github.job }}@${{ github.run_id }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 

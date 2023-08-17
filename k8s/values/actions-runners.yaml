@@ -4,6 +4,10 @@ runners:
     min_replicas: 0
     node_selectors:
       axatol.xyz/supports-nfs: "true"
+    authorized_namespaces:
+      - actions-runners
+      - home-assistant
+      - jayd
 
   - repository: hans-m-song/blog
     max_replicas: 3
