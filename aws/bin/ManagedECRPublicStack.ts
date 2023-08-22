@@ -1,12 +1,12 @@
 import { StackProps } from "aws-cdk-lib";
 import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
 import { IManagedPolicy } from "aws-cdk-lib/aws-iam";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { Region, SSM } from "~/lib/constants";
 import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
+import { MultiRegionStringParameter } from "~/lib/constructs/ssm/MultiRegionStringParameter";
 import { kebabToPascalCase } from "~/lib/utils/string";
 
 export interface ManagedECRPublicStackProps extends StackProps {
@@ -22,13 +22,7 @@ export class ManagedECRPublicStack extends Stack {
     id: string,
     { repositories, ...props }: ManagedECRPublicStackProps,
   ) {
-    super(scope, id, {
-      ...props,
-      env: {
-        ...props.env,
-        region: Region.NVirginia,
-      },
-    });
+    super(scope, id, props);
 
     this.repositories = repositories.map((repo) => {
       const id = kebabToPascalCase(repo.replace(/\//g, "-"));
@@ -42,7 +36,8 @@ export class ManagedECRPublicStack extends Stack {
       repositories: this.repositories,
     });
 
-    new StringParameter(this, "ManagedPolicyParameter", {
+    new MultiRegionStringParameter(this, "ManagedPolicyParameter", {
+      regions: [Region.NVirginia, Region.Sydney],
       parameterName: SSM.IAMECRImagePublisherManagedPolicyARN,
       stringValue: this.managedPolicy.managedPolicyArn,
     });

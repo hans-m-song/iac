@@ -29,7 +29,7 @@ new BoundaryPolicyStack(app, "BoundaryPolicyStack", {
   env: { region: Region.Sydney },
 });
 
-new CertificateStack(app, "CertificateStack-USE1", {
+new CertificateStack(app, "CertificateStack", {
   env: { region: Region.NVirginia },
   requests: [
     { domainName: "hsong.me" },
@@ -47,7 +47,7 @@ new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
 });
 
 new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
-  env: { region: Region.Sydney },
+  env: { region: Region.NVirginia },
   repositories: Object.values(ECR),
 });
 

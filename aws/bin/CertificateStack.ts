@@ -4,12 +4,11 @@ import {
   CertificateValidation,
 } from "aws-cdk-lib/aws-certificatemanager";
 import { HostedZone, IHostedZone } from "aws-cdk-lib/aws-route53";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { Region, SSM, hostedZones } from "~/lib/constants";
-import { CrossRegionStringParameterCreator } from "~/lib/constructs/ssm/CrossRegionStringParameter";
+import { MultiRegionStringParameter } from "~/lib/constructs/ssm/MultiRegionStringParameter";
 import { urlToPascalCase } from "~/lib/utils/string";
 
 export interface CertificateRequest {
@@ -64,7 +63,7 @@ export class CertificateStack extends Stack {
 
     this.certificates[domainName] = new Certificate(
       this,
-      `Certificate${urlToPascalCase(domainName)}`,
+      `${urlToPascalCase(domainName)}Certificate`,
       {
         domainName,
         validation: CertificateValidation.fromDns(zone),
@@ -72,22 +71,15 @@ export class CertificateStack extends Stack {
       },
     );
 
-    new StringParameter(this, `Parameter${urlToPascalCase(domainName)}`, {
-      parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
-      stringValue: this.certificates[domainName].certificateArn,
-    });
-
-    if (this.region !== Region.Sydney) {
-      new CrossRegionStringParameterCreator(
-        this,
-        `ParameterAPSE2${urlToPascalCase(domainName)}`,
-        {
-          parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
-          region: Region.Sydney,
-          stringValue: this.certificates[domainName].certificateArn,
-        },
-      );
-    }
+    new MultiRegionStringParameter(
+      this,
+      `${urlToPascalCase(domainName)}Parameter`,
+      {
+        regions: [Region.Sydney, Region.NVirginia],
+        parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
+        stringValue: this.certificates[domainName].certificateArn,
+      },
+    );
   }
 
   hostedZone(domainName: string) {

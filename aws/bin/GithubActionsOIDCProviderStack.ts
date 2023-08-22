@@ -112,7 +112,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     ecrPublisherRole.addManagedPolicy(
       iam.ManagedPolicy.fromManagedPolicyArn(
         this,
-        "ECRImagePublisherManagedPolicyARN",
+        "ECRImagePublisherManagedPolicy",
         ssm.StringParameter.valueForStringParameter(
           this,
           SSM.IAMECRImagePublisherManagedPolicyARN,
