@@ -1,0 +1,51 @@
+name: ECR Publish
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Image name
+        required: true
+        type: string
+
+      context:
+        description: Directory for build context
+        required: true
+        type: string
+
+    secrets:
+      AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN:
+        required: true
+
+jobs:
+  publish:
+    runs-on:
+      - self-hosted
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.context }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
+          role-session-name: ${{ format('{0}@{1}@{2}@{3}@{4}', github.triggering_actor, github.repository_owner.login, github.event.repository.name, github.job, github.run_id) }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+
+      - uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+          mask-password: true
+
+      - uses: axatol/actions/docker-build-push@release
+        with:
+          image: ${{ inputs.image }}
+
+      - uses: axatol/actions/prune-ecr-repository@release
+        with:
+          repository-name: ${{ inputs.image }}

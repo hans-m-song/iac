@@ -1,0 +1,25 @@
+name: Deploy Terraform
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # once a month
+    - cron: "0 0 1 * *"
+
+  push:
+    branches:
+      - master
+    paths:
+      - "github/images/github-actions-runner/**"
+      - .github/workflows/_ecr-publish.yaml
+      - .github/workflows/publish-github-actions-runner.yaml
+
+jobs:
+  publish-ecr:
+    uses: ./.github/workflows/_ecr-publish.yaml
+    with:
+      context: ./images/github-actions-runner
+      image: public.ecr.aws/axatol/github-actions-runner
+    secrets:
+      AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
