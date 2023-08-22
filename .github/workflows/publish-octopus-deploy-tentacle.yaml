@@ -20,6 +20,6 @@ jobs:
     uses: ./.github/workflows/_ecr-publish.yaml
     with:
       context: ./images/octopus-deploy-tentacle
-      image: public.ecr.aws/axatol/octopus-deploy-octopus-deploy-tentacle
+      image: public.ecr.aws/axatol/octopus-deploy-tentacle
     secrets:
       AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
