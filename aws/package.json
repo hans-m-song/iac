@@ -7,7 +7,7 @@
     "deploy": "cdk deploy",
     "deploy:all": "npm run deploy -- --all",
     "deploy:ci": "npm run deploy:all -- --ci --app cdk.out --require-approval never --progress events",
-    "lint": "eslint {lib,stacks}/**/*.ts",
+    "lint": "eslint {lib,bin}/**/*.ts",
     "lint:fix": "npm run lint -- --fix"
   },
   "repository": {

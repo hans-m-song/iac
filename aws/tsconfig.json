@@ -10,5 +10,5 @@
       "~/*": ["./*"]
     }
   },
-  "include": ["stacks", "lib"]
+  "include": ["bin", "lib"]
 }
