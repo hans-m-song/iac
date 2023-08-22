@@ -36,8 +36,8 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
 
     super(scope, id, {
       onUpdate: {
-        action: "putParameter",
         service: "SSM",
+        action: "putParameter",
         parameters: {
           Name: parameterName,
           Type: parameterType,
@@ -54,10 +54,6 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
         }),
       ]),
     });
-  }
-
-  get tier() {
-    return this.getResponseFieldReference("Tier").toString();
   }
 
   get version() {
@@ -110,6 +106,6 @@ export class CrossRegionStringParameterReader extends AwsCustomResource {
   }
 
   get value() {
-    return this.getResponseFieldReference("Parameter.Version").toString();
+    return this.getResponseFieldReference("Parameter.Value").toString();
   }
 }

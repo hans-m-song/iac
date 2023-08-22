@@ -14,7 +14,6 @@ import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
 import { ManagedPolicyStack } from "./ManagedPolicyStack";
 import { TerraformBackendStack } from "./TerraformBackendStack";
-import { XRayAgentStack } from "./XRayAgentStack";
 
 const app = new App();
 
@@ -49,30 +48,11 @@ new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
 
 new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
   env: { region: Region.Sydney },
-  repositories: [
-    ECR.ActionsJobDispatcher,
-    ECR.GithubActionsRunner,
-    ECR.HomeAssistantIntegrations,
-    ECR.Huisheng,
-    ECR.JAYD,
-  ],
-});
-
-new ManagedECRPublicStack(app, "SongMatrixManagedECRPublicStack", {
-  env: { region: Region.Sydney },
-  repositories: [
-    ECR.Songmatrix_DataService,
-    ECR.Songmatrix_Gateway,
-    ECR.Songmatrix_SyncService,
-  ],
+  repositories: Object.values(ECR),
 });
 
 new TerraformBackendStack(app, "TerraformBackendStack", {
   env: { region: Region.Sydney },
-});
-
-new XRayAgentStack(app, "XRayAgentStack", {
-  env: { region: Region.Singapore },
 });
 
 for (const child of app.node.children) {

@@ -32,6 +32,7 @@ export enum SSM {
   GithubActionsECRPublisherRoleARN = "/infrastructure/github/actions_ecr_image_publisher_role_arn",
   GithubActionsSongMatrixECRPublisherRoleARN = "/infrastructure/github/actions_songmatrix_ecr_image_publisher_role_arn",
   GithubActionsTerraformRoleARN = "/infrastructure/github/actions_terraform_role_arn",
+  IAMECRImagePublisherManagedPolicyARN = "/infrastructure/iam/ecr_image_publisher_managed_policy_arn",
   IAMExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
   IAMLambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
   IAMUserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
@@ -46,9 +47,7 @@ export enum ECR {
   HomeAssistantIntegrations = "home-assistant-integrations",
   Huisheng = "huisheng",
   JAYD = "jayd",
-  Songmatrix_DataService = "songmatrix/data-service",
-  Songmatrix_Gateway = "songmatrix/gateway",
-  Songmatrix_SyncService = "songmatrix/sync-service",
+  OctopusDeployTentacle = "octopus-deploy-tentacle",
 }
 
 export const hostedZones = {

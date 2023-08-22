@@ -1,9 +1,12 @@
 import { StackProps } from "aws-cdk-lib";
 import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
+import { IManagedPolicy } from "aws-cdk-lib/aws-iam";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
-import { Region } from "~/lib/constants";
+import { Region, SSM } from "~/lib/constants";
+import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
 import { kebabToPascalCase } from "~/lib/utils/string";
 
 export interface ManagedECRPublicStackProps extends StackProps {
@@ -12,6 +15,7 @@ export interface ManagedECRPublicStackProps extends StackProps {
 
 export class ManagedECRPublicStack extends Stack {
   repositories: CfnPublicRepository[];
+  managedPolicy: IManagedPolicy;
 
   constructor(
     scope: Construct,
@@ -32,6 +36,15 @@ export class ManagedECRPublicStack extends Stack {
       return new CfnPublicRepository(this, `${id}PublicRepository`, {
         repositoryName: repo,
       });
+    });
+
+    this.managedPolicy = new ECRPublicPublisherPolicy(this, "ManagedPolicy", {
+      repositories: this.repositories,
+    });
+
+    new StringParameter(this, "ManagedPolicyParameter", {
+      parameterName: SSM.IAMECRImagePublisherManagedPolicyARN,
+      stringValue: this.managedPolicy.managedPolicyArn,
     });
   }
 }

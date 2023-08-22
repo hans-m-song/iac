@@ -75,7 +75,6 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
 }
 
 export interface GithubActionsRoleProps extends Omit<RoleProps, "assumedBy"> {
-  providerArn?: string;
   claims: GithubActionsSubjectClaims[];
 }
 
@@ -83,16 +82,24 @@ export class GithubActionsRole extends Role {
   constructor(
     scope: Construct,
     id: string,
-    { providerArn, claims, ...props }: GithubActionsRoleProps,
+    { claims, ...props }: GithubActionsRoleProps,
   ) {
     super(scope, id, {
       ...props,
       assumedBy: new GithubActionsFederatedPrincipal({
-        providerArn:
-          providerArn ?? arn().iam.oidcprovider(Domain.GithubActionsToken),
+        providerArn: arn().iam.oidcprovider(Domain.GithubActionsToken),
         claims,
       }),
     });
+  }
+
+  addClaim(...claims: GithubActionsSubjectClaims[]) {
+    this.grantAssumeRole(
+      new GithubActionsFederatedPrincipal({
+        providerArn: arn().iam.oidcprovider(Domain.GithubActionsToken),
+        claims,
+      }),
+    );
   }
 
   addPolicies(...statements: PolicyStatementProps[]) {

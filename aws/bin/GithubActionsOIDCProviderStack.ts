@@ -8,8 +8,7 @@ import { Construct } from "constructs";
 
 import { getContext } from "~/lib/cdk/context";
 import { Stack } from "~/lib/cdk/Stack";
-import { ECR, Region, SSM } from "~/lib/constants";
-import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublisherPolicy";
+import { Region, SSM } from "~/lib/constants";
 import { GithubActionsOIDCProvider } from "~/lib/constructs/iam/GithubActionsOIDCProvider";
 import {
   GithubActionsRole,
@@ -90,43 +89,34 @@ export class GithubActionsOIDCProviderStack extends Stack {
 
     const ecrPublisherRole = this.role(
       "ECRPublisherRole",
-      ["axatol/*", "hans-m-song/huisheng"].map((repo) => ({
-        repo,
-        context: { ref: "master" },
-        actor: "hans-m-song",
-      })),
+      [
+        {
+          repo: "axatol/*",
+          context: { ref: "master" },
+          actor: "hans-m-song",
+        },
+        {
+          repo: "hans-m-song/huisheng",
+          context: { ref: "master" },
+          actor: "hans-m-song",
+        },
+        {
+          repo: "hans-m-song/iac",
+          context: { ref: "master" },
+          actor: "hans-m-song",
+        },
+      ],
       SSM.GithubActionsECRPublisherRoleARN,
     );
 
     ecrPublisherRole.addManagedPolicy(
-      new ECRPublicPublisherPolicy(this, "ECRPublisherPolicy", {
-        repositories: [
-          arn().ecrp.repository(ECR.ActionsJobDispatcher),
-          arn().ecrp.repository(ECR.GithubActionsRunner),
-          arn().ecrp.repository(ECR.HomeAssistantIntegrations),
-          arn().ecrp.repository(ECR.Huisheng),
-          arn().ecrp.repository(ECR.JAYD),
-        ],
-      }),
-    );
-
-    const songmatrixECRPublisherRole = this.role(
-      "SongMatrixECRPublisherRole",
-      [{ repo: "songmatrix/*", context: { ref: "master" } }],
-      SSM.GithubActionsSongMatrixECRPublisherRoleARN,
-    );
-
-    songmatrixECRPublisherRole.addManagedPolicy(
-      new ECRPublicPublisherPolicy(
-        songmatrixECRPublisherRole,
-        "SongMatrixECRPublisherPolicy",
-        {
-          repositories: [
-            arn().ecrp.repository(ECR.Songmatrix_DataService),
-            arn().ecrp.repository(ECR.Songmatrix_Gateway),
-            arn().ecrp.repository(ECR.Songmatrix_SyncService),
-          ],
-        },
+      iam.ManagedPolicy.fromManagedPolicyArn(
+        this,
+        "ECRImagePublisherManagedPolicyARN",
+        ssm.StringParameter.valueForStringParameter(
+          this,
+          SSM.IAMECRImagePublisherManagedPolicyARN,
+        ),
       ),
     );
 
@@ -188,10 +178,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     claims: GithubActionsSubjectClaims[],
     parameterName?: string,
   ) {
-    const role = new GithubActionsRole(this, id, {
-      providerArn: this.provider.attrArn,
-      claims,
-    });
+    const role = new GithubActionsRole(this, id, { claims });
 
     this.output(`${id}ARN`, role.roleArn);
 
