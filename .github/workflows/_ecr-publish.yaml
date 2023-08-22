@@ -22,22 +22,16 @@ jobs:
     runs-on:
       - self-hosted
 
-    defaults:
-      run:
-        working-directory: ${{ inputs.context }}
-
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
-
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
-          role-session-name: ${{ format('{0}@{1}@{2}@{3}@{4}', github.triggering_actor, github.repository_owner.login, github.event.repository.name, github.job, github.run_id) }}
+          role-session-name: ${{ format('{0}@{1}@{2}@{3}@{4}', github.triggering_actor, github.event.repository.owner.login, github.event.repository.name, github.job, github.run_id) }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
 
@@ -46,9 +40,12 @@ jobs:
           registry-type: public
           mask-password: true
 
+      - uses: actions/checkout@v3
+
       - uses: axatol/actions/docker-build-push@release
         with:
           image: ${{ inputs.image }}
+          build-context: ${{ inputs.context }}
 
       - uses: axatol/actions/prune-ecr-repository@release
         with:
