@@ -1,58 +1,60 @@
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { ParameterValueType } from "aws-cdk-lib/aws-ssm";
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  PhysicalResourceId,
-} from "aws-cdk-lib/custom-resources";
+import * as cr from "aws-cdk-lib/custom-resources";
 import { Construct } from "constructs";
 import { createHash } from "crypto";
 
 import { arn } from "~/lib/utils/arn";
 
-export interface CrossRegionStringParameterCreatorProps {
+export interface StringParameterCreatorProps {
   region: string;
   parameterName: string;
-  parameterType?: ParameterValueType;
   stringValue: string;
 }
 
-export class CrossRegionStringParameterCreator extends AwsCustomResource {
+export class StringParameterCreator extends cr.AwsCustomResource {
   constructor(
     scope: Construct,
     id: string,
-    props: CrossRegionStringParameterCreatorProps,
+    props: StringParameterCreatorProps,
   ) {
-    const { region, parameterName, parameterType, stringValue } = {
-      parameterType: ParameterValueType.STRING,
-      ...props,
-    };
+    const { region, parameterName, stringValue } = props;
 
-    const physicalId = createHash("sha256")
+    const creatorPhysicalId = createHash("sha256")
       .update(id)
-      .update(parameterType)
-      .update(stringValue)
+      .update(region)
+      .update(parameterName)
       .digest("hex");
 
+    const policy = cr.AwsCustomResourcePolicy.fromStatements([
+      new PolicyStatement({
+        actions: ["ssm:PutParameter", "ssm:DeleteParameter"],
+        resources: [arn(region).ssm.parameter(parameterName)],
+      }),
+    ]);
+
     super(scope, id, {
+      policy,
       onUpdate: {
+        physicalResourceId: cr.PhysicalResourceId.of(creatorPhysicalId),
+        region,
         service: "SSM",
         action: "putParameter",
         parameters: {
           Name: parameterName,
-          Type: parameterType,
+          Type: ParameterValueType.STRING,
           Value: stringValue,
           Overwrite: true,
         },
-        region: region,
-        physicalResourceId: PhysicalResourceId.of(physicalId),
       },
-      policy: AwsCustomResourcePolicy.fromStatements([
-        new PolicyStatement({
-          actions: ["ssm:PutParameter"],
-          resources: [arn(region).ssm.parameter(parameterName)],
-        }),
-      ]),
+      onDelete: {
+        region,
+        service: "SSM",
+        action: "deleteParameter",
+        parameters: {
+          Name: parameterName,
+        },
+      },
     });
   }
 
@@ -61,18 +63,14 @@ export class CrossRegionStringParameterCreator extends AwsCustomResource {
   }
 }
 
-export interface CrossRegionStringParameterReaderProps {
+export interface StringParameterReaderProps {
   region: string;
   parameterName: string;
   withDecryption?: boolean;
 }
 
-export class CrossRegionStringParameterReader extends AwsCustomResource {
-  constructor(
-    scope: Construct,
-    id: string,
-    props: CrossRegionStringParameterReaderProps,
-  ) {
+export class StringParameterReader extends cr.AwsCustomResource {
+  constructor(scope: Construct, id: string, props: StringParameterReaderProps) {
     super(scope, id, {
       onUpdate: {
         action: "getParameter",
@@ -82,9 +80,9 @@ export class CrossRegionStringParameterReader extends AwsCustomResource {
           WithDecryption: props.withDecryption,
         },
         region: props.region,
-        physicalResourceId: PhysicalResourceId.of(Date.now().toString()),
+        physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
       },
-      policy: AwsCustomResourcePolicy.fromStatements([
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
         new PolicyStatement({
           actions: ["ssm:GetParameter"],
           resources: [arn(props.region).ssm.parameter(props.parameterName)],

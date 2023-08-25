@@ -9,6 +9,7 @@ import { ECR, Region, hostedZones } from "~/lib/constants";
 import { AWSServiceRoleStack } from "./AWSServiceRoleStack";
 import { BoundaryPolicyStack } from "./BoundaryPolicyStack";
 import { CertificateStack } from "./CertificateStack";
+import { DNSStack } from "./DNSStack";
 import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
@@ -35,6 +36,17 @@ new CertificateStack(app, "CertificateStack", {
     { domainName: "hsong.me" },
     { domainName: "axatol.xyz", alternateNames: ["*.axatol.xyz"] },
   ],
+});
+
+new DNSStack(app, "DNSStack", {
+  env: { region: Region.Sydney },
+  hostedZones,
+  records: {
+    "huisheng.helm.axatol.xyz.": {
+      type: "cname",
+      cname: "hans-m-song.github.io",
+    },
+  },
 });
 
 new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack", {

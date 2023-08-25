@@ -1,6 +1,5 @@
 export enum Region {
   Sydney = "ap-southeast-2",
-  Singapore = "ap-southeast-1",
   NVirginia = "us-east-1",
 }
 

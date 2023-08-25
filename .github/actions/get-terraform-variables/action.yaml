@@ -5,12 +5,6 @@ runs:
   using: composite
 
   steps:
-    - name: Get auth0_domain
-      uses: axatol/actions/get-ssm-parameter@release
-      with:
-        path: /infrastructure/auth0/domain
-        env-name: TF_VAR_auth0_domain
-
     - name: Get auth0_client_id
       uses: axatol/actions/get-ssm-parameter@release
       with:
@@ -22,6 +16,24 @@ runs:
       with:
         path: /infrastructure/terraform/auth0_client_secret
         env-name: TF_VAR_auth0_client_secret
+
+    - name: Get auth0_domain
+      uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/auth0/domain
+        env-name: TF_VAR_auth0_domain
+
+    - name: Get dockerhub_access_token
+      uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/terraform/dockerhub_access_token
+        env-name: TF_VAR_docker_access_token
+
+    - name: Get dockerhub_username
+      uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/terraform/dockerhub_username
+        env-name: TF_VAR_docker_username
 
     - name: Get github_token
       uses: axatol/actions/get-ssm-parameter@release

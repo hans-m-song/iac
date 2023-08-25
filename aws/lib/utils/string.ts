@@ -11,7 +11,10 @@ export const kebabToPascalCase = (input: string) =>
   delimetedToPascalCase(input, "-");
 
 export const urlToPascalCase = (input: string) =>
-  delimetedToPascalCase(input, ".");
+  [".", "/", "_", "-"].reduce(
+    (result, delim) => delimetedToPascalCase(result, delim),
+    input,
+  );
 
 export const pascalToWords = (input: string) =>
   input
