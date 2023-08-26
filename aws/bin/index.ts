@@ -14,6 +14,7 @@ import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack
 import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
 import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
 import { ManagedPolicyStack } from "./ManagedPolicyStack";
+import { NewRelicIntegrationStack } from "./NewRelicIntegrationStack";
 import { TerraformBackendStack } from "./TerraformBackendStack";
 
 const app = new App();
@@ -64,6 +65,10 @@ new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
 });
 
 new TerraformBackendStack(app, "TerraformBackendStack", {
+  env: { region: Region.Sydney },
+});
+
+new NewRelicIntegrationStack(app, "NewRelicIntegrationStack", {
   env: { region: Region.Sydney },
 });
 

@@ -1,5 +1,5 @@
-import { PolicyStatement } from "aws-cdk-lib/aws-iam";
-import { ParameterValueType } from "aws-cdk-lib/aws-ssm";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cr from "aws-cdk-lib/custom-resources";
 import { Construct } from "constructs";
 import { createHash } from "crypto";
@@ -20,29 +20,27 @@ export class StringParameterCreator extends cr.AwsCustomResource {
   ) {
     const { region, parameterName, stringValue } = props;
 
-    const creatorPhysicalId = createHash("sha256")
-      .update(id)
-      .update(region)
-      .update(parameterName)
-      .digest("hex");
-
-    const policy = cr.AwsCustomResourcePolicy.fromStatements([
-      new PolicyStatement({
-        actions: ["ssm:PutParameter", "ssm:DeleteParameter"],
-        resources: [arn(region).ssm.parameter(parameterName)],
-      }),
-    ]);
-
     super(scope, id, {
-      policy,
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ["ssm:PutParameter", "ssm:DeleteParameter"],
+          resources: [arn(region).ssm.parameter(parameterName)],
+        }),
+      ]),
       onUpdate: {
-        physicalResourceId: cr.PhysicalResourceId.of(creatorPhysicalId),
+        physicalResourceId: cr.PhysicalResourceId.of(
+          createHash("sha256")
+            .update(id)
+            .update(region)
+            .update(parameterName)
+            .digest("hex"),
+        ),
         region,
         service: "SSM",
         action: "putParameter",
         parameters: {
           Name: parameterName,
-          Type: ParameterValueType.STRING,
+          Type: ssm.ParameterValueType.STRING,
           Value: stringValue,
           Overwrite: true,
         },
@@ -72,22 +70,22 @@ export interface StringParameterReaderProps {
 export class StringParameterReader extends cr.AwsCustomResource {
   constructor(scope: Construct, id: string, props: StringParameterReaderProps) {
     super(scope, id, {
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ["ssm:GetParameter"],
+          resources: [arn(props.region).ssm.parameter(props.parameterName)],
+        }),
+      ]),
       onUpdate: {
+        physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+        region: props.region,
         action: "getParameter",
         service: "SSM",
         parameters: {
           Name: props.parameterName,
           WithDecryption: props.withDecryption,
         },
-        region: props.region,
-        physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
       },
-      policy: cr.AwsCustomResourcePolicy.fromStatements([
-        new PolicyStatement({
-          actions: ["ssm:GetParameter"],
-          resources: [arn(props.region).ssm.parameter(props.parameterName)],
-        }),
-      ]),
     });
   }
 

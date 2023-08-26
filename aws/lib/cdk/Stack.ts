@@ -1,9 +1,11 @@
-import { CfnOutput, Stack as CDKStack, StackProps, Tags } from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { getContext } from "./context";
 
-export class Stack extends CDKStack {
+export type StackProps = cdk.StackProps;
+
+export class Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     const context = getContext(scope);
     const stackName = props?.stackName ?? id;
@@ -22,11 +24,11 @@ export class Stack extends CDKStack {
 
   tag() {
     Object.entries(this.tags.tagValues()).forEach(([name, value]) => {
-      Tags.of(this).add(name, value);
+      cdk.Tags.of(this).add(name, value);
     });
   }
 
   output(name: string, value: string) {
-    return new CfnOutput(this, name, { value });
+    return new cdk.CfnOutput(this, name, { value });
   }
 }
