@@ -1,4 +1,4 @@
-import { StackProps } from "aws-cdk-lib";
+import { Duration, StackProps } from "aws-cdk-lib";
 import {
   ARecord,
   CnameRecord,
@@ -13,8 +13,8 @@ import { Stack } from "~/lib/cdk/Stack";
 import { snakeToPascalCase, urlToPascalCase } from "~/lib/utils/string";
 
 export type RecordProps =
-  | { type: "a"; a: string[] }
-  | { type: "cname"; cname: string };
+  | { type: "a"; a: string[]; ttl?: number }
+  | { type: "cname"; cname: string; ttl?: number };
 
 export interface CNamesStackProps extends StackProps {
   records: Record<string, RecordProps>;
@@ -49,6 +49,7 @@ export class DNSStack extends Stack {
 
       const recordName = record.replace(/\.$/, "");
       const recordID = urlToPascalCase(recordName);
+      const ttl = props.ttl ? Duration.minutes(props.ttl) : undefined;
 
       const zone = this.hostedZone(recordName);
 
@@ -67,14 +68,20 @@ export class DNSStack extends Stack {
           zone,
           recordName: record,
           target: RecordTarget.fromIpAddresses(...props.a),
+          ttl,
         });
       }
 
       if (props.type === "cname") {
+        const value = props.cname.endsWith(".")
+          ? props.cname
+          : `${props.cname}.`;
+
         new CnameRecord(zone, `${recordID}CNameRecord`, {
           zone,
           recordName: record,
-          domainName: props.cname,
+          domainName: value,
+          ttl,
         });
       }
     });

@@ -43,7 +43,7 @@ new DNSStack(app, "DNSStack", {
   env: { region: Region.Sydney },
   hostedZones,
   records: {
-    "huisheng.helm.axatol.xyz.": {
+    "huisheng.charts.axatol.xyz.": {
       type: "cname",
       cname: "hans-m-song.github.io",
     },
