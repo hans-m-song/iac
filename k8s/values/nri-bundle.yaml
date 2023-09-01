@@ -3,6 +3,7 @@ global:
   lowDataMode: true
 
 newrelic-infrastructure:
+  enabled: true
   privileged: true
 
 nri-metadata-injection:

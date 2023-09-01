@@ -17,3 +17,13 @@ tolerations:
 
 service:
   ipFamilyPolicy: PreferDualStack
+
+logs:
+  general:
+    level: WARN
+  access:
+    enabled: true
+    filters:
+      statuscodes: 400-499,500-599
+      retryAttempts: true
+      minDuration: "10ms"
