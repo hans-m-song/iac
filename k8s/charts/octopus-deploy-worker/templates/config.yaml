@@ -8,3 +8,70 @@ metadata:
 type: Opaque
 data:
   ServerApiKey: {{ .Values.octopus.serverApiKey | b64enc }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prestop-script
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "octopus-deploy-worker.labels" . | nindent 4 }}
+data:
+  prestop.sh: |
+    #!/bin/bash
+
+    all_spaces=$(
+      curl "${ServerUrl}/api/spaces" \
+        --silent \
+        --header "X-Octopus-ApiKey: ${ServerApiKey}"
+    )
+
+    space_id=$(
+      echo ${all_spaces} | jq \
+        --raw-output \
+        --monochrome-output \
+        --compact-output \
+        --arg space "${Space}" \
+        '.Items | map(select(.Name == $space))[0].Id'
+    )
+
+    all_workers=$(
+      curl "${ServerUrl}/api/${space_id}/workers/all" \
+        --silent \
+        --header "X-Octopus-ApiKey: ${ServerApiKey}"
+    )
+
+    worker_id=$(
+      echo $all_workers | jq \
+        --raw-output \
+        --monochrome-output \
+        --compact-output \
+        --arg hostname $HOSTNAME \
+        'map(select(.Name == $hostname))[0].Id'
+    )
+
+    curl "${ServerUrl}/api/${SPACEID}/workers/${worker_id}" \
+      --request DELETE \
+      --silent \
+      --header "X-Octopus-ApiKey: ${ServerApiKey}"
+---
+{{-
+$data := dict
+"ACCEPT_EULA" "Y"
+"Space" .Values.octopus.space 
+"ServerUrl" .Values.octopus.serverUrl 
+"ServerPort" .Values.octopus.serverPort
+"TargetName" (default .Release.Name .Values.octopus.targetName)
+"TargetWorkerPool" .Values.octopus.targetWorkerPool
+}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "octopus-deploy-worker.labels" . | nindent 4 }}
+data:
+  {{- range $key, $value := $data }}
+  {{- if $value }}
+  {{ $key }}: {{ $value | toString | quote }}
+  {{- end }}
+  {{- end }}

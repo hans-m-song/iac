@@ -2,7 +2,7 @@ image: octopusdeploy/tentacle:latest
 
 rbac:
   create: true
-  serviceAccountName: od-worker
+  # serviceAccountName: ""
 
 octopus:
   workerName: ""
@@ -10,4 +10,5 @@ octopus:
   serverUrl: http://octopus-deploy.octopus.svc.cluster.local
   serverPort: "10943"
   serverApiKey: ""
+  targetName: ""
   targetWorkerPool: ""

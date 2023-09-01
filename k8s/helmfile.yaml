@@ -90,6 +90,7 @@ releases:
     namespace: octopus
     values:
       - {{- $secrets.octopus_deploy_worker | toYaml | nindent 8 }}
+      - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
   - name: redis
     chart: oci://registry-1.docker.io/bitnamicharts/redis
@@ -108,6 +109,6 @@ releases:
   - chart: traefik/traefik
     name: traefik
     namespace: kube-system
-    version: 21.2.0
+    version: 24.0.0
     values:
       - ./values/traefik.yaml
