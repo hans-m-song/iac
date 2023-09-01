@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  LOG_LEVEL: {{ .Values.logLevel | toString | quote }}
+  LOG_JSON: {{ .Values.logJson | toString | quote }}
+  TZ: {{ .Values.tz | toString | quote }}
+  {{- range $index, $record := .Values.domains }}
+  {{- if $record.name }}
+  DDNSR53_ROUTE53_RECORDSSET_{{ $index }}_NAME: {{ $record.name | toString | quote }}
+  DDNSR53_ROUTE53_RECORDSSET_{{ $index }}_TTL: {{ default 300 $record.ttl | toString | quote }}
+  DDNSR53_ROUTE53_RECORDSSET_{{ $index }}_TYPE: {{ default "A" $record.type | toString | quote }}
+  {{- end }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-credentials
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  DDNSR53_CREDENTIALS_ACCESSKEYID: {{ .Values.credentials.accessKeyId| toString | b64enc }}
+  DDNSR53_CREDENTIALS_SECRETACCESSKEY: {{ .Values.credentials.secretAccessKey | toString | b64enc }}
+  DDNSR53_ROUTE53_HOSTEDZONEID: {{ .Values.credentials.hostedZoneId | toString | b64enc }}

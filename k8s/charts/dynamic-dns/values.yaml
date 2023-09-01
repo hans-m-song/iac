@@ -1,0 +1,17 @@
+image: crazymax/ddns-route53
+schedule: 0 * * * * # hourly
+
+logLevel: info
+logJson: true
+tz: Australia/Brisbane
+
+domains:
+  []
+  # - name: ""
+  #   ttl: 300
+  #   type: A
+
+credentials:
+  accessKeyId: ""
+  secretAccessKey: ""
+  hostedZoneId: ""

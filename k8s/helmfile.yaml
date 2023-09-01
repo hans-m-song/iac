@@ -12,9 +12,8 @@ releases:
     namespace: actions-runner-system
     version: 0.23.0
     values:
-      - githubWebhookServer:
-          enabled: true
-      - {{ $secrets.actions_runner_controller | toYaml | nindent 8 }}
+      - githubWebhookServer: { enabled: true }
+      - {{- $secrets.actions_runner_controller | toYaml | nindent 8 }}
 
   - name: actions-runners
     chart: ./charts/actions-runners
@@ -35,6 +34,13 @@ releases:
 
   - name: custom
     chart: ./charts/custom
+
+  - name: dynamic-dns
+    chart: ./charts/dynamic-dns
+    namespace: ddns
+    values:
+      - ./values/dynamic-dns.yaml
+      - {{- $secrets.dynamic_dns | toYaml | nindent 8 }}
 
   - name: huisheng
     chart: huisheng/huisheng
