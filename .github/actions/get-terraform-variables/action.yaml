@@ -5,56 +5,97 @@ runs:
   using: composite
 
   steps:
-    - name: Get auth0_client_id
-      uses: axatol/actions/get-ssm-parameter@release
-      with:
-        path: /infrastructure/terraform/auth0_client_id
-        env-name: TF_VAR_auth0_client_id
-
-    - name: Get auth0_client_secret
-      uses: axatol/actions/get-ssm-parameter@release
-      with:
-        path: /infrastructure/terraform/auth0_client_secret
-        env-name: TF_VAR_auth0_client_secret
-
-    - name: Get auth0_domain
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
         path: /infrastructure/auth0/domain
         env-name: TF_VAR_auth0_domain
 
-    - name: Get dockerhub_access_token
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
-        path: /infrastructure/terraform/dockerhub_access_token
-        env-name: TF_VAR_docker_access_token
+        path: /infrastructure/github_actions/cdk_deploy_role_arn
+        env-name: TF_VAR_github_actions_cdk_deploy_role_arn
 
-    - name: Get dockerhub_username
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
-        path: /infrastructure/terraform/dockerhub_username
-        env-name: TF_VAR_docker_username
+        path: /infrastructure/github_actions/cdk_diff_role_arn
+        env-name: TF_VAR_github_actions_cdk_diff_role_arn
 
-    - name: Get github_token
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
-        path: /infrastructure/terraform/github_token
-        env-name: TF_VAR_github_token
+        path: /infrastructure/github_actions/cloudfront_invalidator_role_arn
+        env-name: TF_VAR_github_actions_cloudfront_invalidator_role_arn
 
-    - name: Get new_relic_account_id
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/github_actions/discord_webhook_url
+        env-name: TF_VAR_github_actions_discord_webhook_url
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/github_actions/ecr_image_publisher_role_arn
+        env-name: TF_VAR_github_actions_ecr_image_publisher_role_arn
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/github_actions/new_relic_api_key
+        env-name: TF_VAR_github_actions_new_relic_api_key
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/github_actions/runner_webhook_url
+        env-name: TF_VAR_github_actions_runner_webhook_url
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/github/new_relic_license_key
+        env-name: TF_VAR_github_new_relic_license_key
+
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
         path: /infrastructure/new_relic/account_id
         env-name: TF_VAR_new_relic_account_id
 
-    - name: Get new_relic_api_key
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/new_relic/discord_webhook_url
+        env-name: TF_VAR_new_relic_discord_webhook_url
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/octopus_deploy/dockerhub_access_token
+        env-name: TF_VAR_octopus_deploy_dockerhub_access_token
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/octopus_deploy/dockerhub_username
+        env-name: TF_VAR_octopus_deploy_dockerhub_username
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/octopus_deploy/github_token
+        env-name: TF_VAR_octopus_deploy_github_token
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/terraform/auth0_client_id
+        env-name: TF_VAR_terraform_auth0_client_id
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/terraform/auth0_client_secret
+        env-name: TF_VAR_terraform_auth0_client_secret
+
+    - uses: axatol/actions/get-ssm-parameter@release
+      with:
+        path: /infrastructure/terraform/github_token
+        env-name: TF_VAR_terraform_github_token
+
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
         path: /infrastructure/terraform/new_relic_api_key
-        env-name: TF_VAR_new_relic_api_key
+        env-name: TF_VAR_terraform_new_relic_api_key
 
-    - name: Get octopus_deploy_api_key
-      uses: axatol/actions/get-ssm-parameter@release
+    - uses: axatol/actions/get-ssm-parameter@release
       with:
         path: /infrastructure/terraform/octopus_deploy_api_key
-        env-name: TF_VAR_octopus_deploy_api_key
+        env-name: TF_VAR_terraform_octopus_deploy_api_key

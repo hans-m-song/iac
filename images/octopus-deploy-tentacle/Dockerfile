@@ -1,5 +1,24 @@
 FROM octopusdeploy/tentacle:latest
 
+RUN sudo apt-get update \
+  && sudo apt-get install -y --no-install-recommends \
+  apt-transport-https \
+  ca-certificates \
+  curl \
+  groff \
+  jq \
+  net-tools \
+  xz-utils \
+  && sudo apt-get clean \
+  && sudo rm -rf /var/lib/apt/lists/*
+
+# aws cli
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip" \
+  && unzip -q awscli.zip \
+  && sudo ./aws/install \
+  && rm -rf aws awscli.zip \
+  && export AWS_PAGER=""
+
 # helm
 RUN sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 \
   && sudo chmod +x get_helm.sh \
