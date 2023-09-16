@@ -1,0 +1,11 @@
+volume:
+  nfs:
+    server: 192.168.1.42
+    path: /mnt/data/nfs/k8s/mongo/data
+
+ingress:
+  hosts:
+    - mongo.k8s.axatol.xyz
+
+webEnv:
+  ME_CONFIG_MONGODB_ENABLE_ADMIN: true

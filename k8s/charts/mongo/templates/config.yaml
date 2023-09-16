@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-credentials
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "mongo.labels" . | nindent 4 }}
+data:
+  MONGO_INITDB_ROOT_USERNAME: {{ b64enc .Values.rootUsername }}
+  MONGO_INITDB_ROOT_PASSWORD: {{ b64enc .Values.rootPassword }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "mongo.labels" . | nindent 4 }}
+data:
+  {{- range $key, $value := .Values.env }}
+  {{ $key }}: {{ $value | toString  | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-web-credentials
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "mongo.labels" . | nindent 4 }}
+data:
+  ME_CONFIG_MONGODB_ADMINUSERNAME: {{ b64enc .Values.webUsername }}
+  ME_CONFIG_MONGODB_ADMINPASSWORD: {{ b64enc .Values.webPassword }}
+  {{- $url := printf "mongodb://%s:%s@mongo:27017" .Values.rootUsername .Values.rootPassword }}
+  ME_CONFIG_MONGODB_URL: {{ b64enc $url }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-web-config
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "mongo.labels" . | nindent 4 }}
+data:
+  {{- range $key, $value := .Values.webEnv }}
+  {{ $key }}: {{ $value | toString  | quote }}
+  {{- end }}

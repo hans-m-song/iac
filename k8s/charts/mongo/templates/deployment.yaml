@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "mongo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "mongo.selectors" . | nindent 6 }}
+  replicas: 1
+  template:
+    metadata:
+      labels: {{- include "mongo.selectors" . | nindent 8 }}
+    spec:
+      containers:
+      - name: mongo
+        image: {{ .Values.image }}
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-credentials
+        - configMapRef:
+            name: {{ .Release.Name}}-config
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+      - name: mongo-express
+        image: {{ .Values.webImage }}
+        command:
+        - /bin/bash
+        - -c
+        - sleep 10s && node app
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-web-credentials
+        - configMapRef:
+            name: {{ .Release.Name}}-web-config
+        ports:
+        - containerPort: 8081
+      volumes:
+      - name: data
+        {{- .Values.volume | toYaml | nindent 8 }}

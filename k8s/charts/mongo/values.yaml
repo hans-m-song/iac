@@ -1,0 +1,20 @@
+image: mongo
+webImage: mongo-express
+
+rootUsername: mongo
+rootPassword: mongo
+webUsername: mongo
+webPassword: mongo
+
+service:
+  port: 27017
+  webPort: 8081
+
+ingress:
+  hosts: []
+
+volume:
+  # emptyDir: {}
+
+env: {}
+webEnv: {}

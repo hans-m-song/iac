@@ -56,6 +56,12 @@ releases:
     values:
       - ./values/metrics-server.yaml
 
+  - name: mongo
+    chart: ./charts/mongo
+    namespace: mongo
+    values:
+      - ./values/mongo.yaml
+
   - name: nri-bundle
     chart: newrelic/nri-bundle
     namespace: newrelic
