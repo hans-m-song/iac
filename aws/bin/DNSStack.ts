@@ -1,28 +1,32 @@
-import { Duration, StackProps } from "aws-cdk-lib";
-import {
-  ARecord,
-  CnameRecord,
-  HostedZone,
-  HostedZoneAttributes,
-  IHostedZone,
-  RecordTarget,
-} from "aws-cdk-lib/aws-route53";
+import * as cdk from "aws-cdk-lib";
+import * as r53 from "aws-cdk-lib/aws-route53";
+import * as r53t from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
 
-import { Stack } from "~/lib/cdk/Stack";
+import { Stack, StackProps } from "~/lib/cdk/Stack";
 import { snakeToPascalCase, urlToPascalCase } from "~/lib/utils/string";
 
-export type RecordProps =
-  | { type: "a"; a: string[]; ttl?: number }
-  | { type: "cname"; cname: string; ttl?: number };
+export interface RecordProps {
+  a?: string[];
+  aaaa?: string[];
+  cname?: string;
+  ttl?: number;
+}
+
+interface Records {
+  a?: r53.ARecord[];
+  aaaa?: r53.AaaaRecord[];
+  cname?: r53.CnameRecord;
+}
 
 export interface CNamesStackProps extends StackProps {
   records: Record<string, RecordProps>;
-  hostedZones: Record<string, HostedZoneAttributes>;
+  hostedZones: Record<string, r53.HostedZoneAttributes>;
 }
 
 export class DNSStack extends Stack {
-  hostedZones: Record<string, IHostedZone> = {};
+  hostedZones: Record<string, r53.IHostedZone> = {};
+  records: Record<string, Records> = {};
 
   constructor(
     scope: Construct,
@@ -34,7 +38,7 @@ export class DNSStack extends Stack {
     this.hostedZones = Object.fromEntries(
       Object.entries(hostedZones).map(([name, attributes]) => [
         attributes.zoneName,
-        HostedZone.fromHostedZoneAttributes(
+        r53.HostedZone.fromHostedZoneAttributes(
           this,
           `${snakeToPascalCase(name)}HostedZone`,
           attributes,
@@ -49,35 +53,34 @@ export class DNSStack extends Stack {
 
       const recordName = record.replace(/\.$/, "");
       const recordID = urlToPascalCase(recordName);
-      const ttl = props.ttl ? Duration.minutes(props.ttl) : undefined;
+      const ttl = props.ttl ? cdk.Duration.minutes(props.ttl) : undefined;
 
       const zone = this.hostedZone(recordName);
 
-      if (props.type === "a" && props.a.length > 0) {
-        const invalid = props.a.filter((a) => {
-          if (!/^\d+\.\d+\.\d+\.\d+$/.test(a)) {
-            throw new Error("a record was not a valid ip");
-          }
-        });
-
-        if (invalid.length > 0) {
-          throw new Error(`invalid ips: [${invalid.join(", ")}]`);
-        }
-
-        new ARecord(zone, `${recordID}ARecord`, {
+      if (props.a?.length) {
+        new r53.ARecord(zone, `${recordID}ARecord`, {
           zone,
           recordName: record,
-          target: RecordTarget.fromIpAddresses(...props.a),
+          target: r53.RecordTarget.fromIpAddresses(...props.a),
           ttl,
         });
       }
 
-      if (props.type === "cname") {
+      if (props.aaaa?.length) {
+        new r53.AaaaRecord(zone, `${recordID}AAAARecord`, {
+          zone,
+          recordName: record,
+          target: r53.RecordTarget.fromIpAddresses(...props.aaaa),
+          ttl,
+        });
+      }
+
+      if (props.cname) {
         const value = props.cname.endsWith(".")
           ? props.cname
           : `${props.cname}.`;
 
-        new CnameRecord(zone, `${recordID}CNameRecord`, {
+        new r53.CnameRecord(zone, `${recordID}CNameRecord`, {
           zone,
           recordName: record,
           domainName: value,

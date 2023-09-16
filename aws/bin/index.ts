@@ -44,8 +44,21 @@ new DNSStack(app, "DNSStack", {
   hostedZones,
   records: {
     "huisheng.charts.axatol.xyz.": {
-      type: "cname",
       cname: "hans-m-song.github.io",
+    },
+    "hsong.me.": {
+      a: [
+        "185.199.108.153",
+        "185.199.109.153",
+        "185.199.110.153",
+        "185.199.111.153",
+      ],
+      aaaa: [
+        "2606:50c0:8000::153",
+        "2606:50c0:8001::153",
+        "2606:50c0:8002::153",
+        "2606:50c0:8003::153",
+      ],
     },
   },
 });

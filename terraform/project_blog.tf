@@ -7,6 +7,14 @@ module "blog" {
   enable_new_relic_webhook      = true
 }
 
+module "blog_github_pages" {
+  source          = "./modules/github_environment"
+  providers       = { github = github.hans_m_song }
+  name            = "github-pages"
+  repository_name = module.blog.github_repository_name
+  branches        = ["master"]
+}
+
 module "blog_public" {
   source          = "./modules/github_environment"
   providers       = { github = github.hans_m_song }
