@@ -1,19 +1,3 @@
-resource "newrelic_synthetics_cert_check_monitor" "hosted_services" {
-  for_each = toset([
-    "arc.k8s.axatol.xyz",
-    "hass.k8s.axatol.xyz",
-    "minio.k8s.axatol.xyz",
-    "api.minio.k8s.axatol.xyz",
-  ])
-
-  name                   = each.value
-  domain                 = each.value
-  period                 = "EVERY_DAY"
-  status                 = "ENABLED"
-  certificate_expiration = 3
-  locations_public       = ["AP_SOUTHEAST_2"]
-}
-
 resource "newrelic_nrql_drop_rule" "mqtt_container_logs" {
   action = "drop_data"
   nrql = replace(

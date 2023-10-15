@@ -7,6 +7,23 @@ module "newrelic_kubernetes_alerts" {
   source    = "./modules/newrelic_kubernetes_alerts"
   policy_id = newrelic_alert_policy.kubernetes.id
 }
+resource "newrelic_alert_policy" "synthetics" {
+  name = "Synthetics alerts"
+}
+
+module "newrelic_synthetics" {
+  source    = "./modules/newrelic_synthetics"
+  policy_id = newrelic_alert_policy.synthetics.id
+
+  cert_check_domains = [
+    "api.minio.k8s.axatol.xyz",
+    "arc.k8s.axatol.xyz",
+    "hass.k8s.axatol.xyz",
+    "minio.k8s.axatol.xyz",
+    "octopus.k8s.axatol.xyz",
+  ]
+}
+
 
 module "newrelic_discord_webhook_fite_club_bot_spam" {
   source      = "./modules/newrelic_discord_webhook"
@@ -29,9 +46,9 @@ resource "newrelic_workflow" "discord_fite_club_bot_spam" {
     predicate {
       attribute = "labels.policyIds"
       operator  = "EXACTLY_MATCHES"
-
       values = [
         newrelic_alert_policy.kubernetes.id,
+        newrelic_alert_policy.synthetics.id,
       ]
     }
   }

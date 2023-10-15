@@ -24,6 +24,5 @@ resource "auth0_client" "glados_cli" {
   jwt_configuration {
     alg                 = "RS256"
     lifetime_in_seconds = 36000
-    scopes              = {}
   }
 }
