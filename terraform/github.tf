@@ -31,3 +31,12 @@ module "actions_job_dispatcher" {
   enable_actions_runner_webhook = true
 }
 
+
+module "terraform_provider_octopusdeploy" {
+  source     = "./modules/project"
+  providers  = { github = github.axatol }
+  parameters = local.github_project_parameters
+
+  github_repository_name        = "terraform-provider-octopusdeploy"
+  enable_actions_runner_webhook = true
+}
