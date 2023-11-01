@@ -3,8 +3,6 @@ module "jayd" {
   providers                     = { github = github.axatol }
   github_repository_name        = "jayd"
   enable_actions_runner_webhook = true
-  enable_aws_ecr_publish        = true
-  enable_new_relic_api          = true
   parameters                    = local.github_project_parameters
 }
 

@@ -4,30 +4,6 @@ variable "enable_actions_runner_webhook" {
   default     = false
 }
 
-variable "enable_aws_cdk_deploy" {
-  description = "(Optional) Provide configuration to assume CDK roles"
-  type        = bool
-  default     = false
-}
-
-variable "enable_aws_ecr_publish" {
-  description = "(Optional) Provide configuration to allow pushing to ECR"
-  type        = bool
-  default     = false
-}
-
-variable "enable_discord_notifications" {
-  description = "(Optional) Provide configuration to allow publishing a notification to discord"
-  type        = bool
-  default     = false
-}
-
-variable "enable_new_relic_api" {
-  description = "(Optional) Provide configuration to access New Relic API"
-  type        = bool
-  default     = false
-}
-
 variable "enable_new_relic_webhook" {
   description = "(Optional) Configure webhooks for New Relic"
   type        = bool

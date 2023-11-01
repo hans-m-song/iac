@@ -5,7 +5,6 @@ module "iac" {
 
   github_repository_name        = "iac"
   enable_actions_runner_webhook = true
-  enable_aws_ecr_publish        = true
   enable_new_relic_webhook      = true
 }
 
