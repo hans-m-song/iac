@@ -17,6 +17,7 @@ RUN sudo apt-get update \
   openssl \
   python3 \
   python3-pip \
+  unzip \
   wget \
   xz-utils \
   && sudo ln -sf /usr/bin/python3 /usr/bin/python \
