@@ -8,6 +8,7 @@ RUN sudo apt-get update \
   groff \
   jq \
   net-tools \
+  unzip \
   xz-utils \
   && sudo apt-get clean \
   && sudo rm -rf /var/lib/apt/lists/*
