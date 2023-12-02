@@ -5,8 +5,6 @@ node_modules
 .dccache
 .iac-data
 .env
-!*.secret
-.gitsecret/keys/random_seed
 *.diff
 .DS_Store
 
@@ -17,6 +15,3 @@ cdk.out*
 .terraform
 .terraform.lock.hcl
 local*.tfvars
-
-# secrets
-k8s/secrets.yaml
