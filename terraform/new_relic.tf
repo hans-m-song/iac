@@ -7,12 +7,20 @@ resource "newrelic_nrql_drop_rule" "kubernetes_logs" {
     WHERE
       (
         namespace_name = 'kube-system' 
-        AND container_name = 'coredns 
+        AND container_name = 'coredns'
         AND message LIKE '%No files matching import glob pattern%'
       ) OR (
         namespace_name = 'newrelic'
         AND container_name = 'kubelet'
         AND message LIKE '%cpuLimitCores metric not available. using default max 96 cores%'
+      ) OR (
+        namespace_name = 'mqtt'
+        AND container_name = 'mqtt-broker'
+        AND (
+          message LIKE '%PUBLISH%'
+          OR message LIKE '%PINGREQ%'
+          OR message LIKE '%PINGRESP%'
+        )
       )
     EOT
   , "/\\s*\n\\s*/", " ")
