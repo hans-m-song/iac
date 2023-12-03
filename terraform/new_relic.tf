@@ -1,31 +1,19 @@
-resource "newrelic_nrql_drop_rule" "mqtt_container_logs" {
+resource "newrelic_nrql_drop_rule" "kubernetes_logs" {
   action = "drop_data"
   nrql = replace(
     <<-EOT
     FROM Log
     SELECT *
     WHERE
-      namespace_name = 'mqtt'
-      AND container_name = 'mqtt-broker'
-      AND (
-        message LIKE '%PUBLISH%'
-        OR message LIKE '%PINGREQ%'
-        OR message LIKE '%PINGRESP%'
+      (
+        namespace_name = 'kube-system' 
+        AND container_name = 'coredns 
+        AND message LIKE '%No files matching import glob pattern%'
+      ) OR (
+        namespace_name = 'newrelic'
+        AND container_name = 'kubelet'
+        AND message LIKE '%cpuLimitCores metric not available. using default max 96 cores%'
       )
-    EOT
-  , "/\\s*\n\\s*/", " ")
-}
-
-resource "newrelic_nrql_drop_rule" "newrelic_kubelet_cpu_metric_warning" {
-  action = "drop_data"
-  nrql = replace(
-    <<-EOT
-    FROM Log
-    SELECT *
-    WHERE
-      namespace_name = 'newrelic'
-      AND container_name = 'kubelet'
-      AND message LIKE '%cpuLimitCores metric not available. using default max 96 cores%'
     EOT
   , "/\\s*\n\\s*/", " ")
 }
@@ -53,4 +41,59 @@ resource "newrelic_log_parsing_rule" "actions_runner_controller_hra" {
   nrql      = "FROM Log SELECT * WHERE namespace_name = 'actions-runner-system' AND container_name = 'manager'"
   lucene    = ""
   attribute = "message"
+}
+
+resource "newrelic_alert_policy" "kubernetes" {
+  name                = "Kubernetes alerts"
+  incident_preference = "PER_CONDITION"
+}
+
+module "newrelic_kubernetes_alerts" {
+  source    = "./modules/newrelic_kubernetes_alerts"
+  policy_id = newrelic_alert_policy.kubernetes.id
+}
+resource "newrelic_alert_policy" "synthetics" {
+  name = "Synthetics alerts"
+}
+
+module "newrelic_synthetics" {
+  source    = "./modules/newrelic_synthetics"
+  policy_id = newrelic_alert_policy.synthetics.id
+
+  cert_check_domains = [
+    "api.minio.k8s.axatol.xyz",
+    "arc.k8s.axatol.xyz",
+    "hass.k8s.axatol.xyz",
+    "minio.k8s.axatol.xyz",
+    "octopus.k8s.axatol.xyz",
+  ]
+}
+
+module "newrelic_discord_webhook_fite_club_bot_spam" {
+  source      = "./modules/newrelic_discord_webhook"
+  name        = "Discord - Fite Club - #bot-spam"
+  webhook_url = var.new_relic_discord_webhook_url
+}
+
+resource "newrelic_workflow" "discord_fite_club_bot_spam" {
+  name                  = "Discord - Fite Club - #bot-spam"
+  muting_rules_handling = "DONT_NOTIFY_FULLY_MUTED_ISSUES"
+
+  destination {
+    channel_id = module.newrelic_discord_webhook_fite_club_bot_spam.channel_id
+  }
+
+  issues_filter {
+    name = "Filter"
+    type = "FILTER"
+
+    predicate {
+      attribute = "labels.policyIds"
+      operator  = "EXACTLY_MATCHES"
+      values = [
+        newrelic_alert_policy.kubernetes.id,
+        newrelic_alert_policy.synthetics.id,
+      ]
+    }
+  }
 }

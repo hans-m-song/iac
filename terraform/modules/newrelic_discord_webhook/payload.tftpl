@@ -35,14 +35,21 @@
         },
         {{/if}}
         {
+          "name": "Policy",
+          "value": "{{policyUrl}}",
+          "inline": false
+        },
+        {
+          "name": "Workflow",
+          "value": "{{workflowUrl}}",
+          "inline": false
+        },
+        {
           "name": "{{impactedEntitiesCount}} impacted entities",
           "value": "{{#each entitiesData.names}}- {{this}}{{#unless @last}}\n{{/unless}}{{/each}}",
           "inline": false
         }
-      ],
-      "footer": {
-        "text": "[Policy]({{policyUrl}}), [Workflow]({{workflowUrl}})"
-      }
+      ]
     }
   ]
 }
