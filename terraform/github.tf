@@ -40,6 +40,15 @@ module "go_utils" {
   enable_actions_runner_webhook = true
 }
 
+module "home_assistant_integrations" {
+  source     = "./modules/project"
+  providers  = { github = github.axatol }
+  parameters = local.github_project_parameters
+
+  github_repository_name        = "home-assistant-integrations"
+  enable_actions_runner_webhook = true
+}
+
 module "terraform_provider_octopusdeploy" {
   source     = "./modules/project"
   providers  = { github = github.axatol }

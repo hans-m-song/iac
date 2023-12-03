@@ -64,6 +64,18 @@ variable "new_relic_discord_webhook_url" {
   sensitive   = true
 }
 
+variable "oci_tenancy_ocid" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
+variable "oci_user_ocid" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
 variable "octopus_deploy_dockerhub_access_token" {
   description = "/infrastructure/octopus_deploy/dockerhub_access_token"
   type        = string
@@ -106,8 +118,26 @@ variable "terraform_new_relic_api_key" {
   sensitive   = true
 }
 
+variable "terraform_oci_api_private_key" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
+variable "terraform_oci_fingerprint" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
 variable "terraform_octopus_deploy_api_key" {
   description = "/infrastructure/terraform/octopus_deploy_api_key"
+  type        = string
+  sensitive   = true
+}
+
+variable "terraform_zerotier_token" {
+  description = "/infrastructure/terraform/zerotier_token"
   type        = string
   sensitive   = true
 }

@@ -1,7 +1,7 @@
 resource "github_actions_secret" "this" {
   for_each = merge(
     {
-      "AWS_DEFAULT_REGION"               = "ap-southeast-2"
+      # "AWS_DEFAULT_REGION"               = "ap-southeast-2"
       "AWS_CDK_DEPLOY_ROLE_ARN"          = var.parameters.github_actions_cdk_deploy_role_arn
       "AWS_CDK_DIFF_ROLE_ARN"            = var.parameters.github_actions_cdk_diff_role_arn
       "AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN" = var.parameters.github_actions_ecr_image_publisher_role_arn
@@ -17,16 +17,10 @@ resource "github_actions_secret" "this" {
 }
 
 resource "github_actions_variable" "this" {
-  for_each = merge(
-    {
-    },
-    var.github_repository_actions_variables,
-  )
-
+  for_each      = var.github_repository_actions_variables
   repository    = var.github_repository_name
   variable_name = "value"
   value         = "value"
-
 }
 
 resource "github_actions_repository_oidc_subject_claim_customization_template" "this" {

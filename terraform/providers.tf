@@ -31,7 +31,18 @@ provider "newrelic" {
   api_key    = var.terraform_new_relic_api_key
 }
 
+provider "oci" {
+  tenancy_ocid = var.oci_tenancy_ocid
+  user_ocid    = var.oci_user_ocid
+  fingerprint  = var.terraform_oci_fingerprint
+  private_key  = var.terraform_oci_api_private_key
+}
+
 provider "octopusdeploy" {
   address = "http://octopus.k8s.axatol.xyz"
   api_key = var.terraform_octopus_deploy_api_key
+}
+
+provider "zerotier" {
+  zerotier_central_token = var.terraform_zerotier_token
 }

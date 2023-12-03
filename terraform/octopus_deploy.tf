@@ -1,5 +1,8 @@
 locals {
-  octopusdeploy_space_id = "Spaces-1"
+  od_space_id          = "Spaces-1"
+  od_role_aws_use1     = "aws/us-east-1"
+  od_role_aws_apse2    = "aws/ap-southeast-2"
+  od_role_k8s_wheatley = "k8s/wheatley"
 }
 
 # library
@@ -46,13 +49,17 @@ resource "octopusdeploy_lifecycle" "standard" {
   }
 
   phase {
-    name                         = "Development"
-    automatic_deployment_targets = [octopusdeploy_environment.development.id]
+    name                                  = "Development"
+    minimum_environments_before_promotion = 1
+    is_optional_phase                     = false
+    optional_deployment_targets           = [octopusdeploy_environment.development.id]
   }
 
   phase {
-    name                         = "Production"
-    automatic_deployment_targets = [octopusdeploy_environment.production.id]
+    name                                  = "Production"
+    minimum_environments_before_promotion = 1
+    is_optional_phase                     = false
+    optional_deployment_targets           = [octopusdeploy_environment.production.id]
   }
 }
 
@@ -104,12 +111,12 @@ resource "octopusdeploy_tag" "cluster_wheatley" {
 }
 
 resource "octopusdeploy_tenant" "apse2" {
-  name        = "ap-southeast-2 (Sydney)"
+  name        = "ap-southeast-2"
   tenant_tags = [octopusdeploy_tag.region_apse2.canonical_tag_name]
 }
 
 resource "octopusdeploy_tenant" "use1" {
-  name        = "us-east-1 (North Virginia)"
+  name        = "us-east-1"
   tenant_tags = [octopusdeploy_tag.region_use1.canonical_tag_name]
 }
 
@@ -126,14 +133,14 @@ resource "octopusdeploy_static_worker_pool" "octopi" {
 
 resource "octopusdeploy_cloud_region_deployment_target" "apse2" {
   name         = "ap-southeast-2"
-  roles        = ["aws/ap-southeast-2"]
+  roles        = [local.od_role_aws_apse2]
   environments = [octopusdeploy_environment.development.id, octopusdeploy_environment.production.id]
   tenant_tags  = [octopusdeploy_tag.region_apse2.canonical_tag_name]
 }
 
 resource "octopusdeploy_cloud_region_deployment_target" "use1" {
   name         = "us-east-1"
-  roles        = ["aws/us-east-1"]
+  roles        = [local.od_role_aws_use1]
   environments = [octopusdeploy_environment.development.id, octopusdeploy_environment.production.id]
   tenant_tags  = [octopusdeploy_tag.region_use1.canonical_tag_name]
 }
@@ -141,7 +148,7 @@ resource "octopusdeploy_cloud_region_deployment_target" "use1" {
 resource "octopusdeploy_kubernetes_cluster_deployment_target" "wheatley" {
   name         = "wheatley"
   cluster_url  = "https://kubernetes.default.svc.cluster.local"
-  roles        = ["k8s/wheatley"]
+  roles        = [local.od_role_k8s_wheatley]
   environments = [octopusdeploy_environment.development.id, octopusdeploy_environment.production.id]
   tenant_tags  = [octopusdeploy_tag.cluster_wheatley.canonical_tag_name]
 
@@ -157,8 +164,49 @@ resource "octopusdeploy_kubernetes_cluster_deployment_target" "wheatley" {
 
 # rbac
 
+resource "octopusdeploy_user_role" "deployer" {
+  name        = "Deployer"
+  description = "Role to publish packages, create releases, and create deployments"
+
+  granted_space_permissions = [
+    "BuildInformationPush",
+    "BuiltInFeedPush",
+    "DeploymentCreate",
+    "DeploymentView",
+    "EnvironmentView",
+    "FeedView",
+    "LifecycleView",
+    "ProjectView",
+    "ReleaseCreate",
+    "ReleaseView",
+    "TaskView",
+    "TenantView",
+  ]
+}
+
+resource "octopusdeploy_user" "squidward" {
+  username     = "squidward"
+  display_name = "Squidward"
+  is_active    = true
+  is_service   = true
+}
+
+resource "octopusdeploy_team" "deployer" {
+  name = "Deployer"
+
+  users = [
+    octopusdeploy_user.squidward.id,
+  ]
+
+  user_role {
+    space_id     = local.od_space_id
+    user_role_id = octopusdeploy_user_role.deployer.id
+  }
+}
+
 resource "octopusdeploy_user_role" "tentacle" {
-  name = "Tentacle"
+  name        = "Tentacle"
+  description = "Worker registration role"
 
   granted_space_permissions = [
     "WorkerView",
@@ -183,7 +231,7 @@ resource "octopusdeploy_team" "tentacles" {
   ]
 
   user_role {
-    space_id     = local.octopusdeploy_space_id
+    space_id     = local.od_space_id
     user_role_id = octopusdeploy_user_role.tentacle.id
   }
 }
@@ -192,4 +240,5 @@ resource "octopusdeploy_team" "tentacles" {
 
 resource "octopusdeploy_project_group" "kubernetes" {
   name = "Kubernetes"
+
 }
