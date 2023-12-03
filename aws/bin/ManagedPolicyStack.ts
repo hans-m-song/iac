@@ -1,4 +1,4 @@
-import { StackProps } from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
@@ -6,7 +6,7 @@ import { AssumeCDKDeployRolePolicy } from "~/lib/constructs/iam/AssumeCDKDeployR
 import { AssumeCDKLookupRolePolicy } from "~/lib/constructs/iam/AssumeCDKLookupRolePolicy";
 
 export class ManagedPolicyStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const assumeCDKLookupRolePolicy = new AssumeCDKLookupRolePolicy(
@@ -15,7 +15,7 @@ export class ManagedPolicyStack extends Stack {
     );
 
     this.output(
-      "assumeCDKLookupRolePolicyARN",
+      "AssumeCDKLookupRolePolicyARN",
       assumeCDKLookupRolePolicy.managedPolicyArn,
     );
 

@@ -1,11 +1,11 @@
-import { StackProps } from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { CloudTrailLoggingRole } from "~/lib/constructs/iam/CloudTrailLoggingRole";
 
 export class AWSServiceRoleStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const cloudTrailLoggingRole = new CloudTrailLoggingRole(

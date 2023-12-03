@@ -1,6 +1,5 @@
 import * as cdk from "aws-cdk-lib";
 import * as r53 from "aws-cdk-lib/aws-route53";
-import * as r53t from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
 
 import { Stack, StackProps } from "~/lib/cdk/Stack";

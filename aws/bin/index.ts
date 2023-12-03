@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { App } from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { ECR, Region, hostedZones } from "~/lib/constants";
@@ -17,7 +17,7 @@ import { ManagedPolicyStack } from "./ManagedPolicyStack";
 import { NewRelicIntegrationStack } from "./NewRelicIntegrationStack";
 import { TerraformBackendStack } from "./TerraformBackendStack";
 
-const app = new App();
+const app = new cdk.App();
 
 new AWSServiceRoleStack(app, "AWSServiceRoleStack", {
   env: { region: Region.Sydney },
@@ -35,7 +35,10 @@ new CertificateStack(app, "CertificateStack", {
   env: { region: Region.NVirginia },
   requests: [
     { domainName: "hsong.me" },
-    { domainName: "axatol.xyz", alternateNames: ["*.axatol.xyz"] },
+    {
+      domainName: "axatol.xyz",
+      alternateNames: ["*.axatol.xyz", "*.oidc.axatol.xyz"],
+    },
   ],
 });
 

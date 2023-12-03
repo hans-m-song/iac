@@ -1,5 +1,5 @@
-import { StackProps } from "aws-cdk-lib";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import * as cdk from "aws-cdk-lib";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
@@ -8,7 +8,7 @@ import { LambdaBoundaryPolicy } from "~/lib/constructs/iam/LambdaBoundaryPolicy"
 import { UserBoundaryPolicy } from "~/lib/constructs/iam/UserBoundaryPolicy";
 
 export class BoundaryPolicyStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const lambdaBoundaryPolicy = new LambdaBoundaryPolicy(
@@ -16,7 +16,7 @@ export class BoundaryPolicyStack extends Stack {
       "LambdaBoundaryPolicy",
     );
 
-    new StringParameter(this, "LambdaBoundaryPolicyARNParameter", {
+    new ssm.StringParameter(this, "LambdaBoundaryPolicyARNParameter", {
       parameterName: SSM.IAMLambdaBoundaryPolicyARN,
       stringValue: lambdaBoundaryPolicy.managedPolicyArn,
     });
@@ -26,7 +26,7 @@ export class BoundaryPolicyStack extends Stack {
       "UserBoundaryPolicy",
     );
 
-    new StringParameter(this, "UserBoundaryPolicyARNParameter", {
+    new ssm.StringParameter(this, "UserBoundaryPolicyARNParameter", {
       parameterName: SSM.IAMUserBoundaryPolicyARN,
       stringValue: userBoundaryPolicy.managedPolicyArn,
     });

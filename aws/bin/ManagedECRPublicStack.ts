@@ -1,6 +1,6 @@
-import { StackProps } from "aws-cdk-lib";
-import { CfnPublicRepository } from "aws-cdk-lib/aws-ecr";
-import { IManagedPolicy } from "aws-cdk-lib/aws-iam";
+import * as cdk from "aws-cdk-lib";
+import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
@@ -9,13 +9,13 @@ import { ECRPublicPublisherPolicy } from "~/lib/constructs/iam/ECRPublicPublishe
 import { MultiRegionStringParameter } from "~/lib/constructs/ssm/MultiRegionStringParameter";
 import { kebabToPascalCase } from "~/lib/utils/string";
 
-export interface ManagedECRPublicStackProps extends StackProps {
+export interface ManagedECRPublicStackProps extends cdk.StackProps {
   repositories: string[];
 }
 
 export class ManagedECRPublicStack extends Stack {
-  repositories: CfnPublicRepository[];
-  managedPolicy: IManagedPolicy;
+  repositories: ecr.CfnPublicRepository[];
+  managedPolicy: iam.IManagedPolicy;
 
   constructor(
     scope: Construct,
@@ -27,7 +27,7 @@ export class ManagedECRPublicStack extends Stack {
     this.repositories = repositories.map((repo) => {
       const id = kebabToPascalCase(repo.replace(/\//g, "-"));
 
-      return new CfnPublicRepository(this, `${id}PublicRepository`, {
+      return new ecr.CfnPublicRepository(this, `${id}PublicRepository`, {
         repositoryName: repo,
       });
     });

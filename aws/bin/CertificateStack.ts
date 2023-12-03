@@ -1,9 +1,6 @@
 import { StackProps } from "aws-cdk-lib";
-import {
-  Certificate,
-  CertificateValidation,
-} from "aws-cdk-lib/aws-certificatemanager";
-import { HostedZone, IHostedZone } from "aws-cdk-lib/aws-route53";
+import * as acm from "aws-cdk-lib/aws-certificatemanager";
+import * as r53 from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
@@ -21,8 +18,8 @@ export interface CertificateStackProps extends StackProps {
 }
 
 export class CertificateStack extends Stack {
-  hostedZones: Record<string, IHostedZone> = {};
-  certificates: Record<string, Certificate> = {};
+  hostedZones: Record<string, r53.IHostedZone> = {};
+  certificates: Record<string, acm.Certificate> = {};
 
   constructor(
     scope: Construct,
@@ -61,12 +58,12 @@ export class CertificateStack extends Stack {
       return this.certificates[domainName];
     }
 
-    this.certificates[domainName] = new Certificate(
+    this.certificates[domainName] = new acm.Certificate(
       this,
       `${urlToPascalCase(domainName)}Certificate`,
       {
         domainName,
-        validation: CertificateValidation.fromDns(zone),
+        validation: acm.CertificateValidation.fromDns(zone),
         subjectAlternativeNames: alternateNames,
       },
     );
@@ -95,11 +92,12 @@ export class CertificateStack extends Stack {
       return this.hostedZones[attributes.zoneName];
     }
 
-    this.hostedZones[attributes.zoneName] = HostedZone.fromHostedZoneAttributes(
-      this,
-      `HostedZone${urlToPascalCase(domainName)}`,
-      attributes,
-    );
+    this.hostedZones[attributes.zoneName] =
+      r53.HostedZone.fromHostedZoneAttributes(
+        this,
+        `HostedZone${urlToPascalCase(domainName)}`,
+        attributes,
+      );
 
     return this.hostedZones[attributes.zoneName];
   }

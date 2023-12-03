@@ -1,4 +1,4 @@
-import { StackProps } from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib";
 import { User } from "aws-cdk-lib/aws-iam";
 import { HostedZoneAttributes } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
@@ -6,7 +6,7 @@ import { Construct } from "constructs";
 import { Stack } from "~/lib/cdk/Stack";
 import { HostedZoneUpdatePolicy } from "~/lib/constructs/iam/HostedZoneUpdatePolicy";
 
-export interface HostedZoneUpdateStackProps extends StackProps {
+export interface HostedZoneUpdateStackProps extends cdk.StackProps {
   hostedZones: HostedZoneAttributes[];
 }
 
