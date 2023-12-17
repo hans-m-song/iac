@@ -1,5 +1,7 @@
 octopus:
   acceptEula: "Y"
+  image:
+    tag: 2023.4
 
   packageRepositoryVolume:
     size: 1Gi

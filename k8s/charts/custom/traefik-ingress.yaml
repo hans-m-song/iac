@@ -25,10 +25,10 @@ spec:
     - host: traefik.k8s.axatol.xyz
       http:
         paths:
-          - backend:
+          - path: /
+            pathType: Prefix
+            backend:
               service:
                 name: traefik-dashboard
                 port:
-                  number: 9000
-            path: /
-            pathType: Prefix
+                  name: traefik

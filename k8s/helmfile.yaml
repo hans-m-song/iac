@@ -10,7 +10,7 @@ releases:
   - name: actions-runner-controller
     chart: actions-runner-controller/actions-runner-controller
     namespace: actions-runner-system
-    version: 0.23.0
+    version: 0.23.5
     values:
       - githubWebhookServer: { enabled: true }
       - {{- $secrets.actions_runner_controller | toYaml | nindent 8 }}
@@ -52,7 +52,7 @@ releases:
   - name: metrics-server
     chart: metrics-server/metrics-server
     namespace: kube-system
-    version: 3.8.4
+    version: 3.11.0
     values:
       - ./values/metrics-server.yaml
 
@@ -62,20 +62,20 @@ releases:
     values:
       - ./values/mongo.yaml
 
-  - name: nri-bundle
-    chart: newrelic/nri-bundle
-    namespace: newrelic
-    version: 5.0.25
-    values:
-      - ./values/nri-bundle.yaml
-      - {{ $secrets.newrelic | toYaml | nindent 8 }}
-
   - name: nfs-subdir-external-provisioner
     chart: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
     namespace: kube-system
     version: 4.0.18
     values:
       - ./values/nfs-subdir-external-provisioner.yaml
+
+  - name: nri-bundle
+    chart: newrelic/nri-bundle
+    namespace: newrelic
+    version: 5.0.45
+    values:
+      - ./values/nri-bundle.yaml
+      - {{ $secrets.newrelic | toYaml | nindent 8 }}
 
   - name: octopus-deploy
     chart: oci://registry-1.docker.io/octopusdeploy/octopusdeploy-helm
@@ -99,6 +99,7 @@ releases:
       - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
   - name: redis
+    installed: false
     chart: oci://registry-1.docker.io/bitnamicharts/redis
     namespace: redis
     version: 17.15.3
@@ -111,10 +112,10 @@ releases:
     namespace: redis
     values:
       - ./values/redis-insight.yaml
-      
+
   - chart: traefik/traefik
     name: traefik
     namespace: kube-system
-    version: 24.0.0
+    version: 25.0.0
     values:
       - ./values/traefik.yaml
