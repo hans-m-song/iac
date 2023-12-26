@@ -1,17 +1,14 @@
-mode: standalone
-replicas: 1
-
 persistence:
-  enabled: false
+  storageClass: nfs-persistent
 
-policies:
-  - name: huisheng
-    statements:
-      - actions:
-          - s3:*
-        resources:
-          - arn:aws:s3:::huisheng
-          - arn:aws:s3:::huisheng/*
-
-buckets:
-  - name: huisheng
+ingress:
+  ingressClass: traefik
+  apiHost: api.minio.k8s.axatol.xyz
+  consoleHost: minio.k8s.axatol.xyz
+  tls:
+    - secretName: minio-k8s-axatol-xyz-tls
+      hosts:
+        - minio.k8s.axatol.xyz
+    - secretName: api-minio-k8s-axatol-xyz-tls
+      hosts:
+        - api.minio.k8s.axatol.xyz

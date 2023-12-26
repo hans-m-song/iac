@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.namespace }}
+  labels: {{- include "minio.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "minio.selectors" . | nindent 6 }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: {{- include "minio.selectors" . | nindent 8 }}
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.claimName }}
+      containers:
+      - name: minio
+        image: {{ .Values.deployment.image }}
+        args:
+        - server
+        - /data
+        - --console-address
+        - :9001
+        ports:
+        - name: api
+          containerPort: 9000
+          protocol: TCP
+        - name: console
+          containerPort: 9001
+          protocol: TCP
+        envFrom:
+        - secretRef:
+            name: {{ .Values.secret.name }}
+        volumeMounts:
+        - name: data
+          mountPath: /data

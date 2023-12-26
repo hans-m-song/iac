@@ -6,4 +6,4 @@ storageClass:
   create: false
 
 nodeSelector:
-  axatol.xyz/supports-nfs: "true"
+  k8s.axatol.xyz/supports-nfs: "true"

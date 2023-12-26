@@ -4,12 +4,12 @@ resource "zerotier_network" "apeture" {
   private     = true
 
   route {
-    target = "10.10.0.0/16"
+    target = "10.0.0.0/16"
   }
 
   assignment_pool {
-    end   = "10.10.255.254"
-    start = "10.10.0.1"
+    start = "10.0.0.1"
+    end   = "10.0.0.254"
   }
 
   flow_rules = <<-EOT
@@ -31,8 +31,8 @@ resource "zerotier_network" "apeture" {
 
     # Allow only specific ports
     accept
-      dport 22 
-      or dport 443 
+      dport 22
+      or dport 443
       or dport 6443
       and ipprotocol tcp
     ;
@@ -57,7 +57,7 @@ resource "zerotier_member" "wheatley" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.10.0.42"]
+  ip_assignments          = ["10.0.0.42"]
 }
 
 resource "zerotier_member" "glados" {
@@ -67,7 +67,7 @@ resource "zerotier_member" "glados" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.10.0.43"]
+  ip_assignments          = ["10.0.0.43"]
 }
 
 resource "zerotier_member" "chell" {
@@ -77,7 +77,7 @@ resource "zerotier_member" "chell" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.10.0.10"]
+  ip_assignments          = ["10.0.0.10"]
 }
 
 resource "zerotier_member" "freeman" {
@@ -87,7 +87,7 @@ resource "zerotier_member" "freeman" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.10.0.20"]
+  ip_assignments          = ["10.0.0.20"]
 }
 
 # resource "zerotier_member" "barney" {
@@ -97,5 +97,5 @@ resource "zerotier_member" "freeman" {
 #   network_id              = zerotier_network.apeture.id
 #   authorized              = true
 #   allow_ethernet_bridging = false
-#   ip_assignments          = ["10.10.0.30"]
+#   ip_assignments          = ["10.0.0.30"]
 # }

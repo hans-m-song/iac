@@ -56,7 +56,16 @@ releases:
     values:
       - ./values/metrics-server.yaml
 
+  - name: minio
+    # installed: false
+    chart: ./charts/minio
+    namespace: minio
+    values:
+      - ./values/minio.yaml
+      - {{- $secrets.minio | toYaml | nindent 8 }}
+
   - name: mongo
+    installed: false
     chart: ./charts/mongo
     namespace: mongo
     values:
@@ -78,6 +87,7 @@ releases:
       - {{ $secrets.newrelic | toYaml | nindent 8 }}
 
   - name: octopus-deploy
+    installed: false
     chart: oci://registry-1.docker.io/octopusdeploy/octopusdeploy-helm
     namespace: octopus
     version: 2023.2.12482
@@ -86,12 +96,14 @@ releases:
       - {{- $secrets.octopus | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql
+    installed: false
     chart: ./charts/mssql
     namespace: octopus
     values:
       - {{- $secrets.octopus_mssql | toYaml | nindent 8 }}
 
   - name: octopus-deploy-worker
+    installed: false
     chart: ./charts/octopus-deploy-worker
     namespace: octopus
     values:
@@ -108,6 +120,7 @@ releases:
       - {{- $secrets.redis | toYaml | nindent 8}}
 
   - name: redis-insight
+    installed: false
     chart: ./charts/redis-insight
     namespace: redis
     values:

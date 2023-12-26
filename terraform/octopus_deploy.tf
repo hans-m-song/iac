@@ -181,6 +181,7 @@ resource "octopusdeploy_user_role" "deployer" {
     "ReleaseView",
     "TaskView",
     "TenantView",
+    "ProcessView",
   ]
 }
 
@@ -192,11 +193,8 @@ resource "octopusdeploy_user" "squidward" {
 }
 
 resource "octopusdeploy_team" "deployer" {
-  name = "Deployer"
-
-  users = [
-    octopusdeploy_user.squidward.id,
-  ]
+  name  = "Deployer"
+  users = [octopusdeploy_user.squidward.id]
 
   user_role {
     space_id     = local.od_space_id
@@ -224,11 +222,8 @@ resource "octopusdeploy_user" "octodad" {
 }
 
 resource "octopusdeploy_team" "tentacles" {
-  name = "Tentacles"
-
-  users = [
-    octopusdeploy_user.octodad.id,
-  ]
+  name  = "Tentacles"
+  users = [octopusdeploy_user.octodad.id]
 
   user_role {
     space_id     = local.od_space_id
@@ -240,5 +235,4 @@ resource "octopusdeploy_team" "tentacles" {
 
 resource "octopusdeploy_project_group" "kubernetes" {
   name = "Kubernetes"
-
 }
