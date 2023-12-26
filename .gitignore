@@ -5,8 +5,8 @@ node_modules
 .dccache
 .iac-data
 .env
-*.diff
 .DS_Store
+k8s/secrets.yaml
 
 # cdk
 cdk.out*

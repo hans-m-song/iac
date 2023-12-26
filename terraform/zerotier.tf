@@ -30,12 +30,10 @@ resource "zerotier_network" "apeture" {
     ;
 
     # Allow only specific ports
-    accept
-      dport 22
-      or dport 443
-      or dport 6443
-      and ipprotocol tcp
-    ;
+    accept ipprotocol tcp and dport 22;   # ssh
+    accept ipprotocol tcp and dport 443;  # http
+    accept ipprotocol tcp and dport 6443; # kubeapi
+    accept ipprotocol tcp and dport 2049; # nfs
 
     # Drop TCP SYN,!ACK packets (new connections) not explicitly whitelisted above
     #
