@@ -1,0 +1,68 @@
+rbac:
+  create: true
+  serviceAccountName: ""
+
+deployment:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+
+containers:
+  {}
+  # app:
+  #   image: ""
+  #   imagePullPolicy: IfNotPresent
+  #   args: []
+  #   env:
+  #     FOO: bar
+  #   envFrom:
+  #     - configMapRef:
+  #         name: config
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #   volumes:
+  #     config:
+  #       mount:
+  #         mountPath: /etc/config
+  #         readOnly: true
+  #       spec:
+  #         configMap:
+  #           name: config
+  #   livenessProbe:
+  #     tcpSocket:
+  #       port: 8080
+  #       initialDelaySeconds: 5
+  #       periodSeconds: 10
+  #   readinessProbe: {}
+  #   ports:
+  #     http:
+  #       protocol: TCP
+  #       internalPort: 8080 # exposed by pod
+  #       externalPort: 0    # specify to expose by service
+
+secrets:
+  {}
+  # FOO: bar
+
+ingress:
+  ingressClassName: ""
+  annotations: {}
+  hosts:
+    {}
+    # example.com:
+    #   - path: /
+    #     pathType: ImplementationSpecific
+    #     portNumber: 8080
+    #     portName: http
+    #     tlsSecretName: example-com-tls
+
+pvc:
+  {}
+  # data:
+  #   storageClassName: ""
+  #   capacity: 1Gi

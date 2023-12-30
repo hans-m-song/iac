@@ -1,0 +1,9 @@
+{{- if .Values.rbac.create -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ default .Release.Name .Values.rbac.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "generic.labels" . | nindent 4 }}
+{{- end }}

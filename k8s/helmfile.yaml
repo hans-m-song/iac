@@ -13,7 +13,18 @@ releases:
     version: 0.23.5
     values:
       - githubWebhookServer: { enabled: true }
-      - {{- $secrets.actions_runner_controller | toYaml | nindent 8 }}
+      - {{- $secrets.actionsRunnerController | toYaml | nindent 8 }}
+
+  - name: arc
+    installed: false
+    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+    namespace: arc-systems
+    version: 0.8.1
+    values:
+      - flags:
+          logLevel: debug
+          logFormat: json
+          updateStrategy: eventual
 
   - name: actions-runners
     chart: ./charts/actions-runners
@@ -30,7 +41,7 @@ releases:
     chart: ./charts/cluster-issuers
     namespace: cert-manager
     values:
-      - {{- $secrets.cluster_issuers | toYaml | nindent 8 }}
+      - {{- $secrets.clusterIssuers | toYaml | nindent 8 }}
 
   - name: custom
     chart: ./charts/custom
@@ -40,7 +51,7 @@ releases:
     namespace: ddns
     values:
       - ./values/dynamic-dns.yaml
-      - {{- $secrets.dynamic_dns | toYaml | nindent 8 }}
+      - {{- $secrets.dynamicDns | toYaml | nindent 8 }}
 
   - name: huisheng
     chart: huisheng/huisheng
@@ -57,8 +68,7 @@ releases:
       - ./values/metrics-server.yaml
 
   - name: minio
-    # installed: false
-    chart: ./charts/minio
+    chart: ./charts/generic
     namespace: minio
     values:
       - ./values/minio.yaml
@@ -100,14 +110,14 @@ releases:
     chart: ./charts/mssql
     namespace: octopus
     values:
-      - {{- $secrets.octopus_mssql | toYaml | nindent 8 }}
+      - {{- $secrets.octopusMssql | toYaml | nindent 8 }}
 
   - name: octopus-deploy-worker
     installed: false
     chart: ./charts/octopus-deploy-worker
     namespace: octopus
     values:
-      - {{- $secrets.octopus_deploy_worker | toYaml | nindent 8 }}
+      - {{- $secrets.octopusDeployWorker | toYaml | nindent 8 }}
       - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
   - name: redis

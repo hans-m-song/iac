@@ -1,0 +1,14 @@
+{{- $replicas := int .Values.deployment.replicas -}}
+{{- if gt $replicas 1 }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "generic.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ ceil (div $replicas 2) }}
+  selector:
+    matchLabels: {{ include "generic.selectors" . | nindent 6 }}
+{{- end }}
