@@ -3,10 +3,10 @@ image: public.ecr.aws/axatol/github-actions-runner:latest
 runners:
   - organization: ""
     repository: ""
-    max_replicas: 3
-    min_replicas: 0
-    authorized_namespaces: []
-    node_selector: {}
+    maxReplicas: 3
+    minReplicas: 0
+    authorizedNamespaces: []
+    nodeSelectors: {}
     env: {}
     volumeMounts: {}
     volumes: {}

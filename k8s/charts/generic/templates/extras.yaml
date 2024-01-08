@@ -1,0 +1,13 @@
+{{- if .Values.extra.yaml }}
+{{ .Values.extra.yaml | toYaml }}
+{{- end }}
+
+{{- if .Values.extra.raw }}
+{{ .Values.extra.raw }}
+{{- end }}
+
+{{- if .Values.extra.yamlList }}
+{{- range  .Values.extra.yamlList }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}

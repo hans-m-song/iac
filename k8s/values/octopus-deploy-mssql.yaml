@@ -1,0 +1,47 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Gi
+    env:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+    ports:
+      mssql:
+        protocol: TCP
+        internalPort: 1433
+        externalPort: 1433
+    readinessProbe:
+      tcpSocket:
+        port: 1433
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    securityContext:
+      fsGroup: 10001
+    volumes:
+      data:
+        mount:
+          mountPath: /var/opt/mssql
+        spec:
+          persistentVolumeClaim:
+            claimName: mssql-data
+      config:
+        mount:
+          mountPath: /var/opt/config
+        spec:
+          persistentVolumeClaim:
+            claimName: mssql-config
+
+pvc:
+  mssql-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+  mssql-config:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

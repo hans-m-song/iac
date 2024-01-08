@@ -1,0 +1,61 @@
+deployment:
+  strategy:
+    type: Recreate
+  nodeSelector:
+    k8s.axatol.xyz/supports-zigbee: "true"
+
+containers:
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    resources:
+      limits:
+        cpu: 400m
+        memory: 512Mi
+    env:
+      TZ: Australia/Brisbane
+      ZIGBEE2MQTT_CONFIG_HOMEASSISTANT: "true"
+      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: tcp://mqtt.mqtt.svc.cluster.local:1883
+      ZIGBEE2MQTT_CONFIG_FRONTEND: "true"
+      ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: ezsp
+      ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
+    ports:
+      console:
+        protocol: TCP
+        internalPort: 8080
+        externalPort: 8080
+    # required to mount the usb dongle
+    securityContext:
+      privileged: true
+    volumes:
+      data:
+        mount:
+          mountPath: /app/data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: zigbee2mqtt-data
+      zigbee-dongle:
+        mount:
+          mountPath: /dev/ttyACM0
+          readOnly: false
+        spec:
+          hostPath:
+            path: /dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20220818083418-if00
+            type: ""
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    zigbee2mqtt.k8s.axatol.xyz:
+      - path: /
+        portName: console
+
+pvc:
+  zigbee2mqtt-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

@@ -1,0 +1,60 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    resources:
+      limits:
+        cpu: 400m
+        memory: 512Mi
+    ports:
+      console:
+        protocol: TCP
+        internalPort: 8123
+        externalPort: 8123
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8123
+        scheme: HTTP
+      initialDelaySeconds: 3
+      periodSeconds: 10
+    lifecycle:
+      postStart:
+        exec:
+          command:
+            - /bin/bash
+            - -c
+            - "[ -f /config/custom_components/hacs ] && wget -O - https://get.hacs.xyz | bash - || true"
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: homeassistant-config
+      localtime:
+        mount:
+          mountPath: /etc/localtime
+          readOnly: true
+        spec:
+          hostPath:
+            path: /etc/localtime
+
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: cluster-issuer-prd
+  ingressClassName: traefik
+  hosts:
+    hass.k8s.axatol.xyz:
+      - path: /
+        portName: console
+        tls: true
+
+pvc:
+  homeassistant-config:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

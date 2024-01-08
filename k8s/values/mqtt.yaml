@@ -1,0 +1,26 @@
+containers:
+  mqtt:
+    image: eclipse-mosquitto:2
+    ports:
+      mqtt:
+        protocol: TCP
+        internalPort: 1883
+        externalPort: 1883
+    readinessProbe:
+      tcpSocket:
+        port: 1883
+      initialDelaySeconds: 3
+      periodSeconds: 10
+    volumes:
+      data:
+        mount:
+          mountPath: /mosquitto
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: data
+
+pvc:
+  data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

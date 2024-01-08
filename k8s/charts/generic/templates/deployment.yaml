@@ -29,6 +29,10 @@ spec:
       {{- end }}
 
       serviceAccountName: {{ default .Release.Name .Values.rbac.serviceAccountName }}
+      
+      {{- if .Values.deployment.nodeSelector }}
+      nodeSelector: {{ .Values.deployment.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
 
       containers:
       {{- range $name, $container := .Values.containers }}
@@ -37,6 +41,7 @@ spec:
       {{- $envFrom := $container.envFrom | default (list) }}
       {{- $volumes := $container.volumes | default (dict) }}
       {{- $args := $container.args | default (list) }}
+      {{- $command := $container.command | default (list) }}
       - name: {{ $name }}
         image: {{ $container.image }}
         imagePullPolicy: {{ default "IfNotPresent" $container.imagePullPolicy }}
@@ -48,8 +53,20 @@ spec:
             cpu: {{ dig "resources" "requests" "cpu" "100m" $container }}
             memory: {{ dig "resources" "requests" "memory" "256Mi" $container }}
 
+        {{- if $container.lifecycle }}
+        lifecycle: {{ $container.lifecycle | toYaml | nindent 10 }}
+        {{- end }}
+
+        {{- if $container.securityContext }}
+        securityContext: {{ $container.securityContext | toYaml | nindent 10 }}
+        {{- end }}
+
         {{- if gt (len $args) 0 }}
         args: {{ $args | toYaml | nindent 10 }}
+        {{- end }}
+
+        {{- if gt (len $command) 0 }}
+        command: {{ $command | toYaml | nindent 10 }}
         {{- end }}
 
         {{- if gt (len $ports) 0 }}
@@ -65,7 +82,7 @@ spec:
         env:
         {{- range $key, $value := $env }}
         - name: {{ $key }}
-          value: {{ $value }}
+          value: {{ quote $value }}
         {{- end }}
         {{- end }}
         

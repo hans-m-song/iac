@@ -4,6 +4,9 @@ rbac:
 
 deployment:
   replicas: 1
+  nodeSelector:
+    {}
+    # kubernetes.io/arch: arm64
   strategy:
     type: RollingUpdate
 
@@ -66,3 +69,8 @@ pvc:
   # data:
   #   storageClassName: ""
   #   capacity: 1Gi
+  #   accessMode: ReadWriteOnce
+
+extra:
+  yaml: {}
+  raw: ""

@@ -3,16 +3,16 @@ octopus:
   image:
     tag: 2023.4
 
+  serverLogVolume:
+    storageClassName: nfs-persistent
   packageRepositoryVolume:
-    size: 1Gi
+    storageClassName: nfs-persistent
   artifactVolume:
-    size: 1Gi
+    storageClassName: nfs-persistent
   taskLogVolume:
-    size: 1Gi
+    storageClassName: nfs-persistent
   ingress:
-    enabled: false
-    # annotations:
-    #   kubernetes.io/ingress.class: traefik
-    # path: /
-    # hosts:
-    #   - octopus.k8s.axatol.xyz
+    enabled: true
+    className: traefik
+    hosts:
+      - octopus.k8s.axatol.xyz

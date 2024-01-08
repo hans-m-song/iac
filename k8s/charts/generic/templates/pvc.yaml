@@ -9,7 +9,7 @@ metadata:
 spec:
   storageClassName: {{ $pvc.storageClassName }}
   accessModes:
-    - ReadWriteOnce
+    - {{ default "ReadWriteOnce" $pvc.accessMode }}
   resources:
     requests:
       storage: {{ $pvc.capacity }}
