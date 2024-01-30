@@ -16,24 +16,24 @@ spec:
     privateKeySecretRef:
       name: {{ $pkSecretName }}
     solvers:
-      {{- range $index, $solverName := $issuer.solvers }}
-      {{- $solver :=  required (printf "solver is not defined: %s" $solverName) (get $.Values.solvers $solverName) }}
-      {{- if eq $solver.kind "dns01_route53" }}
-      - dns01:
-          route53:
-            region: {{ $solver.region }}
-            hostedZoneID: {{ $solver.hostedZoneID }}
-            accessKeyID: {{ $solver.accessKeyID }}
-            secretAccessKeySecretRef:
-              name: {{ $.Release.Name }}-credentials
-              key: {{ $solverName }}_secret_access_key
-        {{- if $solver.dnsZone }}
-        selector:
-          dnsZones:
-            - {{ $solver.dnsZone }}
-        {{- end }}
-      {{- else }}
-      {{- fail "please specify a solver type" }}
+    {{- range $index, $solverName := $issuer.solvers }}
+    {{- $solver :=  required (printf "solver is not defined: %s" $solverName) (get $.Values.solvers $solverName) }}
+    {{- if eq $solver.kind "dns01_route53" }}
+    - dns01:
+        route53:
+          region: {{ $solver.region }}
+          hostedZoneID: {{ $solver.hostedZoneID }}
+          accessKeyID: {{ $solver.accessKeyID }}
+          secretAccessKeySecretRef:
+            name: {{ $.Release.Name }}-credentials
+            key: {{ $solverName }}_secret_access_key
+      {{- if $solver.dnsZone }}
+      selector:
+        dnsZones:
+          - {{ $solver.dnsZone }}
       {{- end }}
-      {{- end }}
+    {{- else }}
+    {{- fail "please specify a solver type" }}
+    {{- end }}
+    {{- end }}
 {{- end -}}

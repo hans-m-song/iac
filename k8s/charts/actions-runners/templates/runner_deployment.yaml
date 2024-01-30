@@ -17,10 +17,10 @@ spec:
     kind: RunnerDeployment
     name: {{ $name }}
   scaleUpTriggers:
-    - amount: 1
-      duration: 5m
-      githubEvent:
-        workflowJob: {}
+  - amount: 1
+    duration: 5m
+    githubEvent:
+      workflowJob: {}
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment
@@ -49,19 +49,19 @@ spec:
       dockerMTU: 1400
       dockerdWithinRunnerContainer: true
       env:
-        {{- range $key, $value := $env }}
-        - name: {{ $key | toString | quote }}
-          value: {{ $value | toString | quote }}
-        {{- end }}
+      {{- range $key, $value := $env }}
+      - name: {{ $key | toString | quote }}
+        value: {{ $value | toString | quote }}
+      {{- end }}
       volumeMounts: 
-        {{- range $key, $value := $volumes }}
-        - name: {{ $key }}
-          mountPath: {{ $value.mountPath }}
-        {{- end }}
+      {{- range $key, $value := $volumes }}
+      - name: {{ $key }}
+        mountPath: {{ $value.mountPath }}
+      {{- end }}
       volumes: 
-        {{- range $key, $value := $volumes }}
-        - name: {{ $key }}{{ toYaml $value.config | nindent 10 }}
-        {{- end }}
+      {{- range $key, $value := $volumes }}
+      - name: {{ $key }}{{ toYaml $value.config | nindent 10 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -82,9 +82,9 @@ roleRef:
   kind: ClusterRole
   name: edit
 subjects:
-  - kind: ServiceAccount
-    name: {{ $name }}
-    namespace: {{ $.Release.Namespace }}
+- kind: ServiceAccount
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
 {{- end }}
 {{- end }}
 {{- end }}

@@ -1,7 +1,5 @@
 octopus:
   acceptEula: "Y"
-  image:
-    tag: 2023.4
 
   serverLogVolume:
     storageClassName: nfs-persistent
@@ -14,5 +12,13 @@ octopus:
   ingress:
     enabled: true
     className: traefik
+    annotations:
+      # cert-manager.io/cluster-issuer: cluster-issuer-prd
+      # external-dns.alpha.kubernetes.io/hostname: octopus.axatol.xyz
+      # exteranl-dns.alpha.kubernetes.io/target: axatol.xyz
+    # tls:
+    #   - hosts:
+    #       - octopus.axatol.local
+    # #     secretName: octopus-k8s-axatol-xyz-tls
     hosts:
-      - octopus.k8s.axatol.xyz
+      - octopus.axatol.local

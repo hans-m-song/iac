@@ -1,0 +1,24 @@
+containers:
+  mongo-express:
+    image: mongo-express:latest
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+    ports:
+      console:
+        protocol: TCP
+        internalPort: 8081
+        externalPort: 8081
+    env:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+    livenessProbe:
+      tcpSocket:
+        port: 8081
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    mongo.axatol.xyz:
+      - path: /
+        portName: console

@@ -11,6 +11,12 @@ helmDefaults:
 repositories:
   - name: actions-runner-controller
     url: https://actions-runner-controller.github.io/actions-runner-controller
+  - name: cloudflare
+    url: https://cloudflare.github.io/helm-charts/
+  - name: external-dns
+    url: https://kubernetes-sigs.github.io/external-dns/
+  - name: flipt
+    url: https://helm.flipt.io
   - name: huisheng
     url: git+https://github.com/hans-m-song/huisheng@charts?ref=master
   - name: jetstack

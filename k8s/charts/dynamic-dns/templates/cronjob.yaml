@@ -18,11 +18,11 @@ spec:
           schedulerName: default-scheduler
           terminationGracePeriodSeconds: 30
           containers:
-            - image: crazymax/ddns-route53
-              imagePullPolicy: Always
-              name: update-dns
-              envFrom:
-                - configMapRef:
-                    name: {{ .Release.Name }}-config
-                - secretRef:
-                    name: {{ .Release.Name }}-credentials
+          - image: crazymax/ddns-route53
+            imagePullPolicy: Always
+            name: update-dns
+            envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-credentials

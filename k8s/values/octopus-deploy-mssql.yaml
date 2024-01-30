@@ -27,10 +27,16 @@ containers:
     volumes:
       data:
         mount:
-          mountPath: /var/opt/mssql
+          mountPath: /var/opt/mssql/data
         spec:
           persistentVolumeClaim:
             claimName: mssql-data
+      log:
+        mount:
+          mountPath: /var/opt/mssql/log
+        spec:
+          persistentVolumeClaim:
+            claimName: mssql-log
       config:
         mount:
           mountPath: /var/opt/config
@@ -40,6 +46,9 @@ containers:
 
 pvc:
   mssql-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+  mssql-log:
     storageClassName: nfs-persistent
     capacity: 1Gi
   mssql-config:

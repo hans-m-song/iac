@@ -1,11 +1,29 @@
-volume:
-  nfs:
-    server: 192.168.1.42
-    path: /mnt/data/nfs/k8s/mongo/data
+containers:
+  mongo:
+    image: mongo:latest
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+    volumes:
+      data:
+        mount:
+          mountPath: /data/db
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: data
+    ports:
+      mongo:
+        protocol: TCP
+        internalPort: 27017
+        externalPort: 27017
+    livenessProbe:
+      tcpSocket:
+        port: 27017
+      initialDelaySeconds: 10
 
-ingress:
-  hosts:
-    - mongo.k8s.axatol.xyz
-
-webEnv:
-  ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+pvc:
+  data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

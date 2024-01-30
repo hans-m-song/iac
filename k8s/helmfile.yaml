@@ -37,6 +37,14 @@ releases:
     namespace: cert-manager
     version: v1.11.0
 
+  - name: cloudflare-tunnel
+    chart: cloudflare/cloudflare-tunnel-remote
+    namespace: kube-system
+    version: 0.1.1
+    values:
+      - ./values/cloudflare-tunnel.yaml
+      - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
+
   - name: cluster-issuer
     chart: ./charts/cluster-issuers
     namespace: cert-manager
@@ -81,11 +89,18 @@ releases:
       - {{- $secrets.minio | toYaml | nindent 8 }}
 
   - name: mongo
-    installed: false
-    chart: ./charts/mongo
+    chart: ./charts/generic
     namespace: mongo
     values:
       - ./values/mongo.yaml
+      - {{- $secrets.mongo | toYaml | nindent 8 }}
+
+  - name: mongo-express
+    chart: ./charts/generic
+    namespace: mongo
+    values:
+      - ./values/mongo-express.yaml
+      - {{- $secrets.mongoExpress | toYaml | nindent 8 }}
 
   - name: mqtt
     chart: ./charts/generic
@@ -114,6 +129,9 @@ releases:
     version: 2023.2.12482
     values:
       - ./values/octopus-deploy.yaml
+      - octopus:
+          image:
+            tag: 2023.4.8279
       - {{- $secrets.octopusDeploy | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql
@@ -124,7 +142,6 @@ releases:
       - {{- $secrets.octopusDeployMssql | toYaml | nindent 8 }}
 
   - name: octopus-deploy-worker
-    installed: false
     chart: ./charts/octopus-deploy-worker
     namespace: octopus
     values:
