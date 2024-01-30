@@ -4,6 +4,24 @@ variable "auth0_domain" {
   sensitive   = false
 }
 
+variable "auth0_terraform_client_id" {
+  description = "/infrastructure/auth0/terraform_client_id"
+  type        = string
+  sensitive   = true
+}
+
+variable "auth0_terraform_client_secret" {
+  description = "/infrastructure/auth0/terraform_client_secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_terraform_api_token" {
+  description = "/infrastructure/cloudflare/terraform_api_token"
+  type        = string
+  sensitive   = true
+}
+
 variable "github_actions_cdk_deploy_role_arn" {
   description = "/infrastructure/github_actions/cdk_deploy_role_arn"
   type        = string
@@ -52,6 +70,12 @@ variable "github_new_relic_license_key" {
   sensitive   = true
 }
 
+variable "github_terraform_token" {
+  description = "/infrastructure/github/terraform_token"
+  type        = string
+  sensitive   = true
+}
+
 variable "new_relic_account_id" {
   description = "/infrastructure/new_relic/account_id"
   type        = string
@@ -64,6 +88,12 @@ variable "new_relic_discord_webhook_url" {
   sensitive   = true
 }
 
+variable "new_relic_terraform_api_key" {
+  description = "/infrastructure/new_relic/terraform_api_key"
+  type        = string
+  sensitive   = true
+}
+
 variable "oci_tenancy_ocid" {
   description = "TODO"
   type        = string
@@ -71,6 +101,24 @@ variable "oci_tenancy_ocid" {
 }
 
 variable "oci_user_ocid" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
+variable "oci_terraform_fingerprint" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
+variable "oci_terraform_api_private_key" {
+  description = "TODO"
+  type        = string
+  sensitive   = true
+}
+
+variable "oci_region" {
   description = "TODO"
   type        = string
   sensitive   = true
@@ -94,50 +142,14 @@ variable "octopus_deploy_github_token" {
   sensitive   = true
 }
 
-variable "terraform_auth0_client_id" {
-  description = "/infrastructure/terraform/auth0_client_id"
+variable "octopus_deploy_terraform_api_key" {
+  description = "/infrastructure/octopus_deploy/terraform_api_key"
   type        = string
   sensitive   = true
 }
 
-variable "terraform_auth0_client_secret" {
-  description = "/infrastructure/terraform/auth0_client_secret"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_github_token" {
-  description = "/infrastructure/terraform/github_token"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_new_relic_api_key" {
-  description = "/infrastructure/terraform/new_relic_api_key"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_oci_api_private_key" {
-  description = "TODO"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_oci_fingerprint" {
-  description = "TODO"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_octopus_deploy_api_key" {
-  description = "/infrastructure/terraform/octopus_deploy_api_key"
-  type        = string
-  sensitive   = true
-}
-
-variable "terraform_zerotier_token" {
-  description = "/infrastructure/terraform/zerotier_token"
+variable "zerotier_terraform_token" {
+  description = "/infrastructure/zerotier/terraform_token"
   type        = string
   sensitive   = true
 }

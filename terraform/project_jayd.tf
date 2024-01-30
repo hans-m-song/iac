@@ -15,12 +15,12 @@ module "jayd_wheatley" {
   reviewing_users = [local.github_user_id_hans_m_song]
 }
 
-resource "octopusdeploy_project" "jayd" {
-  name                              = "JAYD"
-  project_group_id                  = octopusdeploy_project_group.kubernetes.id
-  lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
-  tenanted_deployment_participation = "Tenanted"
-}
+# resource "octopusdeploy_project" "jayd" {
+#   name                              = "JAYD"
+#   project_group_id                  = octopusdeploy_project_group.kubernetes.id
+#   lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
+#   tenanted_deployment_participation = "Tenanted"
+# }
 
 module "auth0_app_jayd_dev" {
   source         = "./modules/auth0_app"

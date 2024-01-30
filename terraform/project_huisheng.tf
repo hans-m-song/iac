@@ -23,9 +23,9 @@ module "huisheng_wheatley" {
   reviewing_users = [local.github_user_id_hans_m_song]
 }
 
-resource "octopusdeploy_project" "huisheng" {
-  name                              = "Huisheng"
-  project_group_id                  = octopusdeploy_project_group.kubernetes.id
-  lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
-  tenanted_deployment_participation = "Tenanted"
-}
+# resource "octopusdeploy_project" "huisheng" {
+#   name                              = "Huisheng"
+#   project_group_id                  = octopusdeploy_project_group.kubernetes.id
+#   lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
+#   tenanted_deployment_participation = "Tenanted"
+# }

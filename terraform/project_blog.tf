@@ -23,9 +23,21 @@ module "blog_public" {
   branches        = ["master"]
 }
 
-resource "octopusdeploy_project" "blog" {
-  name                              = "Blog"
-  project_group_id                  = octopusdeploy_project_group.kubernetes.id
-  lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
-  tenanted_deployment_participation = "Tenanted"
-}
+# resource "octopusdeploy_project" "blog" {
+#   name                              = "Blog"
+#   project_group_id                  = module.octopus_deploy.kubernetes_project_group_id
+#   lifecycle_id                      = module.octopus_deploy.production_only_lifecycle_id
+#   tenanted_deployment_participation = "Tenanted"
+# }
+
+# module "blog_octopus_deploy_project" {
+#   source           = "./modules/octopus_deploy_project"
+#   name             = "blog"
+#   project_group_id = module.octopus_deploy.kubernetes_project_group_id
+#   lifecycle_id     = module.octopus_deploy.production_only_lifecycle_id
+
+#   cdk_deployment = {
+#     package_id = "blog"
+#     feed_id    = module.octopus_deploy.built_in_feed_id
+#   }
+# }
