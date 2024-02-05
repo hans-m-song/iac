@@ -54,13 +54,22 @@ releases:
   - name: custom
     chart: ./charts/custom
 
-  - name: dynamic-dns
-    chart: ./charts/dynamic-dns
-    namespace: ddns
+  - name: external-dns-cloudflare-tunnel
+    chart: external-dns/external-dns
+    namespace: kube-system
+    version: 1.14.1
     values:
-      - ./values/dynamic-dns.yaml
-      - {{- $secrets.dynamicDns | toYaml | nindent 8 }}
+      - ./values/external-dns-cloudflare-tunnel.yaml
+      - {{- $secrets.externalDnsCloudflareTunnel | toYaml | nindent 8 }}
 
+  - name: external-dns-pihole
+    chart: external-dns/external-dns
+    namespace: kube-system
+    version: 1.14.1
+    values:
+      - ./values/external-dns-pihole.yaml
+      - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
+  
   - name: home-assistant
     chart: ./charts/generic
     namespace: home-assistant

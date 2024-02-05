@@ -1,0 +1,54 @@
+logLevel: info
+logFormat: json
+
+policy: sync
+registry: txt
+txtOwnerId: wheatley
+interval: 1h
+triggerLoopOnEvent: true
+
+sources: [service]
+domainFilters: [axatol.xyz]
+
+image:
+  pullPolicy: Always
+
+provider:
+  name: webhook
+  webhook:
+    image:
+      repository: docker.io/axatol/external-dns-cloudflare-tunnel-webhook
+      tag: latest
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 65532
+      runAsNonRoot: true
+      runAsUser: 65532
+    env:
+      - name: LOG_LEVEL
+        value: debug
+      - name: DOMAIN_FILTERS
+        value: axatol.xyz
+      - name: CLOUDFLARE_ACCOUNT_ID
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-cloudflare-tunnel
+            key: CLOUDFLARE_ACCOUNT_ID
+      - name: CLOUDFLARE_TUNNEL_ID
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-cloudflare-tunnel
+            key: CLOUDFLARE_TUNNEL_ID
+      - name: CLOUDFLARE_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-cloudflare-tunnel
+            key: CLOUDFLARE_API_TOKEN
+
+extraArgs:
+  - --annotation-filter=external-dns.alpha.kubernetes.io/hostname
