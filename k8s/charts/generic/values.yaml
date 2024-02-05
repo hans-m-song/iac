@@ -48,6 +48,9 @@ containers:
   #       internalPort: 8080 # exposed by pod
   #       externalPort: 0    # specify to expose by service
 
+service:
+  annotations: {}
+
 secrets:
   {}
   # FOO: bar

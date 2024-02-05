@@ -1,33 +1,25 @@
 runners:
   - organization: axatol
-    max_replicas: 3
-    min_replicas: 0
-    node_selectors:
-      axatol.xyz/supports-nfs: "true"
-    authorized_namespaces:
+    maxReplicas: 3
+    minReplicas: 0
+    authorizedNamespaces:
       - actions-runners
       - home-assistant
       - jayd
 
   - repository: hans-m-song/blog
-    max_replicas: 3
-    min_replicas: 0
-    node_selectors:
-      axatol.xyz/supports-nfs: "true"
+    maxReplicas: 3
+    minReplicas: 0
 
   - repository: hans-m-song/huisheng
-    max_replicas: 3
-    min_replicas: 0
-    node_selectors:
-      axatol.xyz/supports-nfs: "true"
-    authorized_namespaces:
+    maxReplicas: 3
+    minReplicas: 0
+    authorizedNamespaces:
       - huisheng
 
   - repository: hans-m-song/iac
-    max_replicas: 3
-    min_replicas: 0
-    node_selectors:
-      axatol.xyz/supports-nfs: "true"
+    maxReplicas: 3
+    minReplicas: 0
 
 shared:
   env:
@@ -42,9 +34,9 @@ shared:
       mountPath: /opt/hostedtoolcache
       config:
         persistentVolumeClaim:
-          claimName: arc-tool-cache-pvc
+          claimName: tool-cache
     module-cache:
       mountPath: /home/runner/.cache
       config:
         persistentVolumeClaim:
-          claimName: arc-module-cache-pvc
+          claimName: module-cache

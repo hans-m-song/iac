@@ -13,12 +13,6 @@ octopus:
     enabled: true
     className: traefik
     annotations:
-      # cert-manager.io/cluster-issuer: cluster-issuer-prd
-      # external-dns.alpha.kubernetes.io/hostname: octopus.axatol.xyz
-      # exteranl-dns.alpha.kubernetes.io/target: axatol.xyz
-    # tls:
-    #   - hosts:
-    #       - octopus.axatol.local
-    # #     secretName: octopus-k8s-axatol-xyz-tls
+      external-dns.alpha.kubernetes.io/hostname: octopus.axatol.local
     hosts:
       - octopus.axatol.local

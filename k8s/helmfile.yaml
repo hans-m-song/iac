@@ -1,4 +1,4 @@
-{{- $secrets :=  readFile "./secrets.yaml" | fromYaml -}}
+{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
 
 helmfiles:
   - ./helmfile.defaults.yaml
@@ -10,9 +10,9 @@ releases:
   - name: actions-runner-controller
     chart: actions-runner-controller/actions-runner-controller
     namespace: actions-runner-system
-    version: 0.23.5
+    version: 0.23.7
     values:
-      - githubWebhookServer: { enabled: true }
+      - ./values/actions-runner-controller.yaml
       - {{- $secrets.actionsRunnerController | toYaml | nindent 8 }}
 
   - name: arc
@@ -131,7 +131,7 @@ releases:
       - ./values/octopus-deploy.yaml
       - octopus:
           image:
-            tag: 2023.4.8279
+            tag: 2023.4.8290
       - {{- $secrets.octopusDeploy | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql

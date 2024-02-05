@@ -43,9 +43,9 @@ spec:
       {{- end }}
       serviceAccountName: {{ $name }}
       security:
-        fsGroup: 1001
-        runAsGroup: 1001
-        runAsUser: 1001
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsUser: 65534
       dockerMTU: 1400
       dockerdWithinRunnerContainer: true
       env:
@@ -60,7 +60,7 @@ spec:
       {{- end }}
       volumes: 
       {{- range $key, $value := $volumes }}
-      - name: {{ $key }}{{ toYaml $value.config | nindent 10 }}
+      - name: {{ $key }}{{ toYaml $value.config | nindent 8 }}
       {{- end }}
 ---
 apiVersion: v1
@@ -69,8 +69,8 @@ metadata:
   name: {{ $name }}
   namespace: {{ $.Release.Namespace }}
   labels: {{- include "actions-runners.labels" $ | nindent 4 }}
-{{- if .authorized_namespaces }}
-{{- range .authorized_namespaces }}
+{{- if .authorizedNamespaces }}
+{{- range .authorizedNamespaces }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

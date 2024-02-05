@@ -1,6 +1,0 @@
-domains:
-  - name: arc.k8s.axatol.xyz
-  - name: api.minio.k8s.axatol.xyz
-  - name: hass.k8s.axatol.xyz
-  - name: minio.k8s.axatol.xyz
-  - name: octopus.k8s.axatol.xyz

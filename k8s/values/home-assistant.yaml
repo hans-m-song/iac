@@ -44,16 +44,19 @@ containers:
           hostPath:
             path: /etc/localtime
 
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: hass.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://home-assistant.home-assistant.svc.cluster.local:8123
+
 ingress:
   annotations:
-    cert-manager.io/cluster-issuer: cluster-issuer-prd
-    external-dns.alpha.kubernetes.io/hostname: hass.axatol.xyz
+    external-dns.alpha.kubernetes.io/internal-hostname: hass.axatol.local
   ingressClassName: traefik
   hosts:
-    hass.k8s.axatol.xyz:
+    hass.axatol.local:
       - path: /
         portName: console
-        tls: true
 
 pvc:
   homeassistant-config:
