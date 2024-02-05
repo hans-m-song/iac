@@ -1,10 +1,10 @@
 locals {
   cert_check_domains = [
-    "api.minio.k8s.axatol.xyz",
-    "arc.k8s.axatol.xyz",
-    "hass.k8s.axatol.xyz",
-    "minio.k8s.axatol.xyz",
-    "octopus.k8s.axatol.xyz",
+    # "api.minio.k8s.axatol.xyz",
+    # "arc.k8s.axatol.xyz",
+    # "hass.k8s.axatol.xyz",
+    # "minio.k8s.axatol.xyz",
+    # "octopus.k8s.axatol.xyz",
   ]
 
   synthetics_ids = [

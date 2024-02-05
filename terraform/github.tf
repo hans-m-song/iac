@@ -31,6 +31,15 @@ module "actions_job_dispatcher" {
   enable_actions_runner_webhook = true
 }
 
+module "external_dns_cloudflare_tunnel_webhook" {
+  source     = "./modules/project"
+  providers  = { github = github.axatol }
+  parameters = local.github_project_parameters
+
+  github_repository_name        = "external-dns-cloudflare-tunnel-webhook"
+  enable_actions_runner_webhook = true
+}
+
 module "go_utils" {
   source     = "./modules/project"
   providers  = { github = github.axatol }

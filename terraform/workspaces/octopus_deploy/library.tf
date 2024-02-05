@@ -24,12 +24,12 @@ resource "octopusdeploy_helm_feed" "huisheng" {
 
 resource "octopusdeploy_environment" "development" {
   name       = "Development"
-  sort_order = 0
+  sort_order = 1
 }
 
 resource "octopusdeploy_environment" "production" {
   name       = "Production"
-  sort_order = 1
+  sort_order = 2
 }
 
 resource "octopusdeploy_lifecycle" "standard" {

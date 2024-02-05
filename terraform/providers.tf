@@ -99,7 +99,7 @@ provider "oci" {
 }
 
 provider "octopusdeploy" {
-  address = "http://octopus.axatol.xyz"
+  address = "http://octopus.axatol.local"
   api_key = var.octopus_deploy_terraform_api_key
 }
 
