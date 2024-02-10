@@ -2,6 +2,7 @@ logLevel: info
 logFormat: json
 
 policy: sync
+registry: noop
 interval: 1h
 triggerLoopOnEvent: true
 

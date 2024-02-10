@@ -32,6 +32,13 @@ spec:
         dnsZones:
           - {{ $solver.dnsZone }}
       {{- end }}
+    {{- else if eq $solver.kind "dns01_cloudflare" }}
+    - dns01:
+        cloudflare:
+          email: {{ $solver.email }}
+          apiKeySecretRef:
+            name: {{ $.Release.Name }}-credentials
+            key: {{ $solverName }}_api_key
     {{- else }}
     {{- fail "please specify a solver type" }}
     {{- end }}

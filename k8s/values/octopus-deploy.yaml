@@ -1,6 +1,5 @@
 octopus:
   acceptEula: "Y"
-
   serverLogVolume:
     storageClassName: nfs-persistent
   packageRepositoryVolume:

@@ -12,7 +12,8 @@ releases:
     namespace: actions-runner-system
     version: 0.23.7
     values:
-      - ./values/actions-runner-controller.yaml
+      - githubWebhookServer: 
+          enabled: true
       - {{- $secrets.actionsRunnerController | toYaml | nindent 8 }}
 
   - name: arc
@@ -42,7 +43,9 @@ releases:
     namespace: kube-system
     version: 0.1.1
     values:
-      - ./values/cloudflare-tunnel.yaml
+      - replicaCount: 2
+        image:
+          tag: 2024.2.0
       - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
 
   - name: cluster-issuer
@@ -168,7 +171,7 @@ releases:
 
   - name: redis-insight
     installed: false
-    chart: ./charts/redis-insight
+    chart: ./charts/generic
     namespace: redis
     values:
       - ./values/redis-insight.yaml

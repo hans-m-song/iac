@@ -2,8 +2,7 @@ logLevel: info
 logFormat: json
 
 policy: sync
-registry: txt
-txtOwnerId: wheatley
+registry: noop
 interval: 1h
 triggerLoopOnEvent: true
 
