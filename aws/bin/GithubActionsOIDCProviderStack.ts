@@ -42,7 +42,6 @@ export class GithubActionsOIDCProviderStack extends Stack {
       [
         { repo: "hans-m-song/iac", context: { pr: true, ref: "*" } },
         { repo: "hans-m-song/blog", context: { ref: "*", env: "public" } },
-        { repo: "axatol/where-gate", context: { ref: "master" } },
       ],
       SSM.GithubActionsCDKDiffRoleARN,
     );
@@ -64,11 +63,6 @@ export class GithubActionsOIDCProviderStack extends Stack {
         {
           repo: "hans-m-song/blog",
           context: { env: "public" },
-          actor: "hans-m-song",
-        },
-        {
-          repo: "axatol/where-gate",
-          context: { ref: "master" },
           actor: "hans-m-song",
         },
       ],
@@ -126,19 +120,23 @@ export class GithubActionsOIDCProviderStack extends Stack {
       SSM.GithubActionsCloudFrontInvalidatorRoleARN,
     );
 
-    cloudFrontInvalidatorRole.addPolicies({
-      effect: iam.Effect.ALLOW,
-      actions: ["cloudfront:CreateInvalidation", "cloudfront:GetInvalidation"],
-      resources: [arn().cf.distribution("*")],
-    });
-
-    cloudFrontInvalidatorRole.addPolicies({
-      effect: iam.Effect.ALLOW,
-      actions: ["ssm:GetParameter"],
-      resources: [
-        arn(Region.NVirginia).ssm.parameter("/infrastructure/cloudfront/*"),
-      ],
-    });
+    cloudFrontInvalidatorRole.addPolicies(
+      {
+        effect: iam.Effect.ALLOW,
+        actions: [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation",
+        ],
+        resources: [arn().cf.distribution("*")],
+      },
+      {
+        effect: iam.Effect.ALLOW,
+        actions: ["ssm:GetParameter"],
+        resources: [
+          arn(Region.NVirginia).ssm.parameter("/infrastructure/cloudfront/*"),
+        ],
+      },
+    );
 
     const terraformLockTable = ddb.Table.fromTableName(
       this,

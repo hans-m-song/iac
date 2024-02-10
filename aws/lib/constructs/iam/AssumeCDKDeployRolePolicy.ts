@@ -22,7 +22,6 @@ export class AssumeCDKDeployRolePolicy extends ManagedPolicy {
           ctx.bootstrapRoleARN("deploy-role"),
           ctx.bootstrapRoleARN("image-publishing-role"),
           ctx.bootstrapRoleARN("file-publishing-role"),
-          ctx.bootstrapRoleARN("cfn-exec-role"),
         ],
       }),
     );

@@ -63,14 +63,10 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
       contexts.push(`environment:${env}`);
     }
 
-    return contexts.map((context) =>
-      [
-        `repo:${claims.repo}`,
-        context,
-        `job_workflow_ref:${claims.workflowRef ?? "*"}`,
-        `actor:${claims.actor ?? "*"}`,
-      ].join(":"),
-    );
+    const repo = `repo:${claims.repo}`;
+    const actor = `actor:${claims.actor ?? "*"}`;
+
+    return contexts.map((context) => [repo, context, actor].join(":"));
   }
 }
 

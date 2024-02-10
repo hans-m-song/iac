@@ -33,6 +33,7 @@ export enum SSM {
   IAMECRImagePublisherManagedPolicyARN = "/infrastructure/iam/ecr_image_publisher_managed_policy_arn",
   IAMExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
   IAMLambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
+  IAMTerraformBackendPolicyARN = "/infrastructure/iam/terraform_state_policy_arn",
   IAMUserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
   NewRelicAccountID = "/infrastructure/new_relic/account_id",
   TerraformLockTableName = "/infrastructure/terraform/lock_table_name",
@@ -41,6 +42,7 @@ export enum SSM {
 
 export enum ECR {
   ActionsJobDispatcher = "actions-job-dispatcher",
+  ExternalDNSCloudflareTunnelWebhook = "external-dns-cloudflare-tunnel-webhook",
   GithubActionsRunner = "github-actions-runner",
   HomeAssistantIntegrations = "home-assistant-integrations",
   Huisheng = "huisheng",
@@ -57,4 +59,8 @@ export const hostedZones = {
     zoneName: "axatol.xyz",
     hostedZoneId: "Z067173715955IHMKKU3W",
   },
+  // cloud_axatol_xyz: {
+  //   zoneName: "cloud.axatol.xyz",
+  //   hostedZoneId: "Z067173715955IHMKKU3W",
+  // },
 };

@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as ddb from "aws-cdk-lib/aws-dynamodb";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
@@ -36,6 +37,17 @@ export class TerraformBackendStack extends Stack {
     new ssm.StringParameter(this, "LockTableNameParameter", {
       parameterName: SSM.TerraformLockTableName,
       stringValue: lockTable.tableName,
+    });
+
+    const policy = new iam.ManagedPolicy(this, "TerraformBackendPolicy");
+    stateBucket.grantReadWrite(policy);
+    lockTable.grantReadWriteData(policy);
+
+    this.output("PolicyArn", policy.managedPolicyArn);
+
+    new ssm.StringParameter(this, "TerraformBackendPolicyParameter", {
+      parameterName: SSM.IAMTerraformBackendPolicyARN,
+      stringValue: policy.managedPolicyArn,
     });
   }
 }
