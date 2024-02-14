@@ -44,7 +44,7 @@ new CloudflareDNSStack(app, "CloudflareDNS", {
     },
     {
       site: "axatol.xyz",
-      name: "test4.axatol.xyz",
+      name: "test.axatol.xyz",
       type: "TXT",
       value: "bleh",
     },

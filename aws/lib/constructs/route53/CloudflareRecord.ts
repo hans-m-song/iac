@@ -30,7 +30,7 @@ export class CloudflareRecord extends Construct {
     const apiTokenParam = `${SSM.CloudflareSitePrefix}/${props.site}/dns_api_token`;
     const zoneIdParam = `${SSM.CloudflareSitePrefix}/${props.site}/zone_id`;
 
-    const onEventFn = NodejsFunction.asSingleton(
+    const onEventFn = SingletonConstruct.of(NodejsFunction).get(
       this,
       CloudflareRecord.ON_EVENT_HANDLER_ID,
       {
@@ -50,7 +50,7 @@ export class CloudflareRecord extends Construct {
       }),
     );
 
-    const provider = new SingletonConstruct(cr.Provider).get(
+    const provider = SingletonConstruct.of(cr.Provider).get(
       this,
       CloudflareRecord.PROVIDER_ID,
       {

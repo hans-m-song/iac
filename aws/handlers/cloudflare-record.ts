@@ -1,8 +1,7 @@
 import type { CdkCustomResourceHandler } from "aws-lambda";
 
-// import Cloudflare from "cloudflare";
 import { getParameter } from "~/lib/aws/ssm";
-import { Cloudflare } from "~/lib/cloudflare";
+import Cloudflare from "cloudflare";
 
 const requireAttr = (props: any, key: string): string => {
   if (!props[key]) {
@@ -36,49 +35,63 @@ export const onEvent: CdkCustomResourceHandler = async (event) => {
 
   const cf = new Cloudflare({ token: apiToken });
 
+  const record = {
+    type: props.type as any,
+    name: props.name,
+    content: props.value,
+    ttl: props.ttl,
+    proxied: props.proxied,
+  };
+
   try {
     switch (event.RequestType) {
       case "Create": {
-        console.log("creating record", props);
-        const response = await cf.upsertDNSRecord(zoneId, {
+        console.log("creating record", { props, record });
+        const existing = await cf.dnsRecords.browse(zoneId, {
+          name: props.name,
+          type: props.type as any,
+        });
+
+        if (existing.success && existing.result && existing.result.length > 0) {
+          const response = (await cf.dnsRecords.edit(
+            zoneId,
+            existing.result[0].id,
+            record,
+          )) as any;
+          console.log(response);
+          return { PhysicalResourceId: response.result.id };
+        }
+
+        const response = (await cf.dnsRecords.add(zoneId, {
           type: props.type as any,
           name: props.name,
           content: props.value,
           ttl: props.ttl,
           proxied: props.proxied,
-        });
+        })) as any;
         console.log(response);
-
         return { PhysicalResourceId: response.result.id };
       }
 
       case "Update": {
         const oldProps = getProps(event.OldResourceProperties);
         console.log("updating record", { new: props, old: oldProps });
-        const response = await cf.editDNSRecord(
+        const response = (await cf.dnsRecords.edit(
           zoneId,
           event.PhysicalResourceId,
-          {
-            type: props.type as any,
-            name: props.name,
-            content: props.value,
-            ttl: props.ttl,
-            proxied: props.proxied,
-          },
-        );
+          record,
+        )) as any;
         console.log(response);
-
         return { PhysicalResourceId: response.result.id };
       }
 
       case "Delete": {
         console.log("deleting record", props);
-        const response = await cf.delDNSRecord(
+        const response = await cf.dnsRecords.del(
           zoneId,
           event.PhysicalResourceId,
         );
         console.log(response);
-
         return { PhysicalResourceId: event.PhysicalResourceId };
       }
     }

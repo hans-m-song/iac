@@ -8,8 +8,12 @@ export interface Constructable<C extends IConstruct, Props> {
 export class SingletonConstruct<C extends IConstruct, Props> {
   private readonly ctor: Constructable<C, Props>;
 
-  constructor(ctor: Constructable<C, Props>) {
+  private constructor(ctor: Constructable<C, Props>) {
     this.ctor = ctor;
+  }
+
+  static of<C extends IConstruct, Props>(ctor: Constructable<C, Props>) {
+    return new SingletonConstruct(ctor);
   }
 
   get(scope: Construct, id: string, props: Props): C {

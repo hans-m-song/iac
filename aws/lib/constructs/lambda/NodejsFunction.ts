@@ -3,18 +3,14 @@ import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import path from "path";
 
-import { SingletonConstruct } from "~/lib/cdk/SingletonConstruct";
-
 export interface NodejsFunctionProps
   extends Omit<nodejs.NodejsFunctionProps, "runtime" | "entry"> {
   entry: string;
 }
 
 export class NodejsFunction extends nodejs.NodejsFunction {
-  static singleton = new SingletonConstruct(NodejsFunction);
-
   constructor(scope: Construct, id: string, props: NodejsFunctionProps) {
-    const overriddenProps: nodejs.NodejsFunctionProps = {
+    super(scope, id, {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: "index.handler",
       ...props,
@@ -27,12 +23,6 @@ export class NodejsFunction extends nodejs.NodejsFunction {
         sourceMap: true,
         ...props.bundling,
       },
-    };
-
-    super(scope, id, overriddenProps);
-  }
-
-  static asSingleton(scope: Construct, id: string, props: NodejsFunctionProps) {
-    return new SingletonConstruct(NodejsFunction).get(scope, id, props);
+    });
   }
 }
