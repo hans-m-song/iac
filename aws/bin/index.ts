@@ -5,50 +5,56 @@ import * as cdk from "aws-cdk-lib";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { ECR, Region, hostedZones } from "~/lib/constants";
-
-import { AWSServiceRoleStack } from "./AWSServiceRoleStack";
-import { BoundaryPolicyStack } from "./BoundaryPolicyStack";
-import { CertificateStack } from "./CertificateStack";
-import { DNSStack } from "./DNSStack";
-import { GithubActionsOIDCProviderStack } from "./GithubActionsOIDCProviderStack";
-import { HostedZoneUpdateStack } from "./HostedZoneUpdateStack";
-import { ManagedECRPublicStack } from "./ManagedECRPublicStack";
-import { ManagedPolicyStack } from "./ManagedPolicyStack";
-import { NewRelicIntegrationStack } from "./NewRelicIntegrationStack";
-import { TerraformBackendStack } from "./TerraformBackendStack";
+import { AWSServiceRoleStack } from "~/lib/constructs/cloudformation/AWSServiceRoleStack";
+import { CertificateStack } from "~/lib/constructs/cloudformation/CertificateStack";
+import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDNSStack";
+import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
+import { GithubActionsOIDCProviderStack } from "~/lib/constructs/cloudformation/GithubActionsOIDCProviderStack";
+import { HostedZoneUpdateStack } from "~/lib/constructs/cloudformation/HostedZoneUpdateStack";
+import { ManagedECRPublicStack } from "~/lib/constructs/cloudformation/ManagedECRPublicStack";
+import { ManagedPolicyStack } from "~/lib/constructs/cloudformation/ManagedPolicyStack";
+import { NewRelicIntegrationStack } from "~/lib/constructs/cloudformation/NewRelicIntegrationStack";
+import { TerraformBackendStack } from "~/lib/constructs/cloudformation/TerraformBackendStack";
 
 const app = new cdk.App();
 
-new AWSServiceRoleStack(app, "AWSServiceRoleStack", {
+new AWSServiceRoleStack(app, "AWSServiceRole", {
   env: { region: Region.Sydney },
 });
 
-new ManagedPolicyStack(app, "ManagedPolicyStack", {
-  env: { region: Region.Sydney },
-});
-
-new BoundaryPolicyStack(app, "BoundaryPolicyStack", {
-  env: { region: Region.Sydney },
-});
-
-new CertificateStack(app, "CertificateStack", {
+new CertificateStack(app, "Certificate", {
   env: { region: Region.NVirginia },
   requests: [
     { domainName: "hsong.me" },
+    // {
+    //   domainName: "cloud.axatol.xyz",
+    //   alternateNames: ["*.cloud.axatol.xyz", "*.oidc.axatol.xyz"],
+    // },
+  ],
+});
+
+new CloudflareDNSStack(app, "CloudflareDNS", {
+  env: { region: Region.Sydney },
+  records: [
     {
-      domainName: "axatol.xyz",
-      alternateNames: ["*.axatol.xyz", "*.oidc.axatol.xyz"],
+      site: "axatol.xyz",
+      name: "huisheng.charts.axatol.xyz",
+      type: "CNAME",
+      value: "hans-m-song.github.io",
+    },
+    {
+      site: "axatol.xyz",
+      name: "test4.axatol.xyz",
+      type: "TXT",
+      value: "bleh",
     },
   ],
 });
 
-new DNSStack(app, "DNSStack", {
+new DNSStack(app, "DNS", {
   env: { region: Region.Sydney },
   hostedZones,
   records: {
-    "huisheng.charts.axatol.xyz.": {
-      cname: "hans-m-song.github.io",
-    },
     "hsong.me.": {
       a: [
         "185.199.108.153",
@@ -66,7 +72,7 @@ new DNSStack(app, "DNSStack", {
   },
 });
 
-new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProviderStack", {
+new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProvider", {
   env: { region: Region.Sydney },
 });
 
@@ -80,11 +86,15 @@ new ManagedECRPublicStack(app, "ManagedECRPublicStack", {
   repositories: Object.values(ECR),
 });
 
-new TerraformBackendStack(app, "TerraformBackendStack", {
+new ManagedPolicyStack(app, "ManagedPolicy", {
   env: { region: Region.Sydney },
 });
 
-new NewRelicIntegrationStack(app, "NewRelicIntegrationStack", {
+new NewRelicIntegrationStack(app, "NewRelicIntegration", {
+  env: { region: Region.Sydney },
+});
+
+new TerraformBackendStack(app, "TerraformBackend", {
   env: { region: Region.Sydney },
 });
 

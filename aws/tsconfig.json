@@ -10,5 +10,5 @@
       "~/*": ["./*"]
     }
   },
-  "include": ["bin", "lib"]
+  "include": ["bin", "lib", "handlers"]
 }

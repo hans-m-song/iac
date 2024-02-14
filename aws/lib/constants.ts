@@ -23,6 +23,7 @@ export enum SSM {
   Auth0OIDCProviderARN = "/infrastructure/auth0/oidc_provider_arn",
   CDKBootstrapVersion = "/cdk-bootstrap/toolkit/version",
   CertificateParameterPrefix = "/infrastructure/acm",
+  CloudflareSitePrefix = "/infrastructure/cloudflare/site",
   GithubActionsCDKDeployRoleARN = "/infrastructure/github_actions/cdk_deploy_role_arn",
   GithubActionsCDKDiffRoleARN = "/infrastructure/github_actions/cdk_diff_role_arn",
   GithubActionsCloudFrontInvalidatorRoleARN = "/infrastructure/github_actions/cloudfront_invalidator_role_arn",

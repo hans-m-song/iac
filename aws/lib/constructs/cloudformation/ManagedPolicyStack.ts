@@ -4,16 +4,43 @@ import { Construct } from "constructs";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { SSM } from "~/lib/constants";
+import { AssumeCDKDeployRolePolicy } from "~/lib/constructs/iam/AssumeCDKDeployRolePolicy";
+import { AssumeCDKLookupRolePolicy } from "~/lib/constructs/iam/AssumeCDKLookupRolePolicy";
 import { LambdaBoundaryPolicy } from "~/lib/constructs/iam/LambdaBoundaryPolicy";
 import { UserBoundaryPolicy } from "~/lib/constructs/iam/UserBoundaryPolicy";
 
-export class BoundaryPolicyStack extends Stack {
+export class ManagedPolicyStack extends Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const assumeCDKLookupRolePolicy = new AssumeCDKLookupRolePolicy(
+      this,
+      "AssumeCDKLookupRolePolicy",
+    );
+
+    this.output(
+      "AssumeCDKLookupRolePolicyARN",
+      assumeCDKLookupRolePolicy.managedPolicyArn,
+    );
+
+    const assumeCDKDeployRolePolicy = new AssumeCDKDeployRolePolicy(
+      this,
+      "AssumeCDKDeployRolePolicy",
+    );
+
+    this.output(
+      "AssumeCDKDeployRolePolicyARN",
+      assumeCDKDeployRolePolicy.managedPolicyArn,
+    );
 
     const lambdaBoundaryPolicy = new LambdaBoundaryPolicy(
       this,
       "LambdaBoundaryPolicy",
+    );
+
+    this.output(
+      "LambdaBoundaryPolicyARN",
+      lambdaBoundaryPolicy.managedPolicyArn,
     );
 
     new ssm.StringParameter(this, "LambdaBoundaryPolicyARNParameter", {
@@ -25,6 +52,8 @@ export class BoundaryPolicyStack extends Stack {
       this,
       "UserBoundaryPolicy",
     );
+
+    this.output("UserBoundaryPolicyARN", userBoundaryPolicy.managedPolicyArn);
 
     new ssm.StringParameter(this, "UserBoundaryPolicyARNParameter", {
       parameterName: SSM.IAMUserBoundaryPolicyARN,

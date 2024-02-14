@@ -1,0 +1,12 @@
+{
+  "name": "handlers",
+  "dependencies": {
+    "@aws-sdk/client-ssm": "^3.511.0",
+    "axios": "^1.6.7",
+    "cloudflare": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.133",
+    "@types/cloudflare": "^2.7.14"
+  }
+}

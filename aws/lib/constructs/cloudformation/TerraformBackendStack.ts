@@ -17,6 +17,7 @@ export class TerraformBackendStack extends Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       objectLockEnabled: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     this.output("StateBucketName", stateBucket.bucketName);
@@ -30,6 +31,7 @@ export class TerraformBackendStack extends Stack {
       tableName: "terraform-state-lock",
       partitionKey: { name: "LockID", type: ddb.AttributeType.STRING },
       billingMode: ddb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     this.output("LockTableName", lockTable.tableName);

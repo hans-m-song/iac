@@ -27,9 +27,7 @@ export class ManagedECRPublicStack extends Stack {
     this.repositories = repositories.map((repo) => {
       const id = kebabToPascalCase(repo.replace(/\//g, "-"));
 
-      return new ecr.CfnPublicRepository(this, `${id}PublicRepository`, {
-        repositoryName: repo,
-      });
+      return new ecr.CfnPublicRepository(this, `${id}PublicRepository`, {});
     });
 
     this.managedPolicy = new ECRPublicPublisherPolicy(this, "ManagedPolicy", {

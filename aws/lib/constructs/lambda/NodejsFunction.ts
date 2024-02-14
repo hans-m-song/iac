@@ -1,18 +1,21 @@
-import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import { aws_lambda, aws_lambda_nodejs, aws_logs } from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import path from "path";
 
+import { SingletonConstruct } from "~/lib/cdk/SingletonConstruct";
+
 export interface NodejsFunctionProps
-  extends Omit<aws_lambda_nodejs.NodejsFunctionProps, "runtime" | "entry"> {
+  extends Omit<nodejs.NodejsFunctionProps, "runtime" | "entry"> {
   entry: string;
 }
 
-export class NodejsFunction extends aws_lambda_nodejs.NodejsFunction {
+export class NodejsFunction extends nodejs.NodejsFunction {
+  static singleton = new SingletonConstruct(NodejsFunction);
+
   constructor(scope: Construct, id: string, props: NodejsFunctionProps) {
-    const overriddenProps: aws_lambda_nodejs.NodejsFunctionProps = {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
-      logRetention: aws_logs.RetentionDays.ONE_YEAR,
+    const overriddenProps: nodejs.NodejsFunctionProps = {
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: "index.handler",
       ...props,
       entry: path.resolve(process.cwd(), "handlers", props.entry),
@@ -21,6 +24,7 @@ export class NodejsFunction extends aws_lambda_nodejs.NodejsFunction {
         keepNames: true,
         minify: true,
         sourcesContent: false,
+        sourceMap: true,
         ...props.bundling,
       },
     };
@@ -28,7 +32,7 @@ export class NodejsFunction extends aws_lambda_nodejs.NodejsFunction {
     super(scope, id, overriddenProps);
   }
 
-  httpIntegration(id?: string) {
-    return new HttpLambdaIntegration(id ?? `${this.node.id}Integration`, this);
+  static asSingleton(scope: Construct, id: string, props: NodejsFunctionProps) {
+    return new SingletonConstruct(NodejsFunction).get(scope, id, props);
   }
 }
