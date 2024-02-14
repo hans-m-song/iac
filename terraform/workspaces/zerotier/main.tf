@@ -48,6 +48,16 @@ resource "zerotier_network" "apeture" {
   EOT
 }
 
+resource "zerotier_member" "gman" {
+  name                    = "gman"
+  description             = "Managed by Terraform - Dell Wyse 5070"
+  member_id               = "d8f15af653"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.41"]
+}
+
 resource "zerotier_member" "wheatley" {
   name                    = "wheatley"
   description             = "Managed by Terraform - Dell Optiplex 9020 USFF"
