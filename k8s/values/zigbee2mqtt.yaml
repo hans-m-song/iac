@@ -51,7 +51,7 @@ containers:
 ingress:
   ingressClassName: traefik
   hosts:
-    zigbee2mqtt.k8s.axatol.xyz:
+    zigbee2mqtt.axatol.local:
       - path: /
         portName: console
 

@@ -50,8 +50,6 @@ service:
     external-dns.alpha.kubernetes.io/target: http://home-assistant.home-assistant.svc.cluster.local:8123
 
 ingress:
-  annotations:
-    external-dns.alpha.kubernetes.io/internal-hostname: hass.axatol.local
   ingressClassName: traefik
   hosts:
     hass.axatol.local:
