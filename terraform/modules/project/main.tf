@@ -19,8 +19,8 @@ resource "github_actions_secret" "this" {
 resource "github_actions_variable" "this" {
   for_each      = var.github_repository_actions_variables
   repository    = var.github_repository_name
-  variable_name = "value"
-  value         = "value"
+  variable_name = each.key
+  value         = each.value
 }
 
 resource "github_actions_repository_oidc_subject_claim_customization_template" "this" {

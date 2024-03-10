@@ -35,6 +35,7 @@ module "guosheng_octopus_deploy_project" {
   name             = "guosheng"
   project_group_id = module.octopus_deploy.kubernetes_project_group_id
   lifecycle_id     = module.octopus_deploy.production_only_lifecycle_id
+  server_url       = var.octopus_deploy_server_url
 
   helm_deployment = {
     chart_name   = "guosheng"

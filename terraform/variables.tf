@@ -142,6 +142,12 @@ variable "octopus_deploy_github_token" {
   sensitive   = true
 }
 
+variable "octopus_deploy_server_url" {
+  description = "/infrastructure/octopus_deploy/server_url"
+  type        = string
+  sensitive   = true
+}
+
 variable "octopus_deploy_terraform_api_key" {
   description = "/infrastructure/octopus_deploy/terraform_api_key"
   type        = string

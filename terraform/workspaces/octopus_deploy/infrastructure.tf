@@ -1,5 +1,6 @@
 resource "octopusdeploy_static_worker_pool" "octopi" {
-  name = "Octopi"
+  name       = "Octopi"
+  is_default = true
 }
 
 resource "octopusdeploy_cloud_region_deployment_target" "apse2" {
