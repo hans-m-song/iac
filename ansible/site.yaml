@@ -1,0 +1,7 @@
+---
+- name: Base
+  import_playbook: playbooks/base/main.yaml
+- name: Bootstrap gman
+  import_playbook: playbooks/bootstrap-gman/main.yaml
+- name: Bootstrap wheatley
+  import_playbook: playbooks/bootstrap-wheatley/main.yaml

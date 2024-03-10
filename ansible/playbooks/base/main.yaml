@@ -1,0 +1,20 @@
+---
+- name: Base
+  hosts: all
+  become: true
+  tasks:
+    - name: Install base packages
+      become: true
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - apt-transport-https
+        - build-essential
+        - ca-certificates
+        - curl
+        - git
+        - jq
+        - nfs-common
+        - software-properties-common
+        - vim

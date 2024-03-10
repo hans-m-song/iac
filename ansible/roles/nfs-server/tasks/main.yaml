@@ -1,0 +1,21 @@
+---
+- name: Install NFS server dependencies
+  ansible.builtin.package:
+    name: nfs-kernel-server
+    state: present
+
+- name: Create exports file
+  ansible.builtin.template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart NFS server
+
+- name: Ensure NFS server status
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true
+  when: nfs_exports | length

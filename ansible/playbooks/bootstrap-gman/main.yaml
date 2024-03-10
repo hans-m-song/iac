@@ -1,0 +1,10 @@
+---
+- name: Bootstrap gman
+  hosts: gman.local
+  become: true
+  roles:
+    - docker
+  tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.hostname }} {{ ansible_facts.distribution }} - {{ ansible_facts.distribution_release }}"

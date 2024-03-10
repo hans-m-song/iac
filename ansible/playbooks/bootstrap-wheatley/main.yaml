@@ -1,0 +1,20 @@
+---
+- name: Bootstrap wheatley
+  hosts: wheatley.local
+  become: true
+  roles:
+    - role: nfs-server
+      vars:
+        nfs_exports:
+          /mnt/data/nfs/k8s:
+            clients:
+              - "192.168.1.0/24"
+            options:
+              - rw
+              - sync
+              - no_root_squash
+              - no_subtree_check
+  tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.hostname }} {{ ansible_facts.distribution }} - {{ ansible_facts.distribution_release }}"
