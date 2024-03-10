@@ -1,7 +1,8 @@
 import type { CdkCustomResourceHandler } from "aws-lambda";
+import Cloudflare from "cloudflare";
+import dns from "dns/promises";
 
 import { getParameter } from "~/lib/aws/ssm";
-import Cloudflare from "cloudflare";
 
 const requireAttr = (props: any, key: string): string => {
   if (!props[key]) {
@@ -87,6 +88,11 @@ export const onEvent: CdkCustomResourceHandler = async (event) => {
 
       case "Delete": {
         console.log("deleting record", props);
+        if (!(await lookupRecord(props.name, props.type))) {
+          console.log("record does not exist, skipping delete");
+          return { PhysicalResourceId: event.PhysicalResourceId };
+        }
+
         const response = await cf.dnsRecords.del(
           zoneId,
           event.PhysicalResourceId,
@@ -101,5 +107,14 @@ export const onEvent: CdkCustomResourceHandler = async (event) => {
       event.ResponseURL,
     );
     throw error;
+  }
+};
+
+const lookupRecord = async (hostname: string, type: string) => {
+  try {
+    await dns.resolve(hostname, type);
+    return true;
+  } catch (error) {
+    return false;
   }
 };

@@ -72,7 +72,7 @@ export class CertificateStack extends Stack {
       this,
       `${urlToPascalCase(domainName)}Parameter`,
       {
-        regions: [Region.Sydney, Region.NVirginia],
+        regions: Object.values(Region),
         parameterName: `${SSM.CertificateParameterPrefix}/${domainName}/certificate_arn`,
         stringValue: this.certificates[domainName].certificateArn,
       },

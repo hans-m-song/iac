@@ -56,12 +56,8 @@ export const hostedZones = {
     zoneName: "hsong.me",
     hostedZoneId: "Z09233301OJXCBONJC133",
   },
-  axatol_xyz: {
-    zoneName: "axatol.xyz",
-    hostedZoneId: "Z067173715955IHMKKU3W",
+  cloud_axatol_xyz: {
+    zoneName: "cloud.axatol.xyz",
+    hostedZoneId: "Z06906322LG6UMVSAT4VH",
   },
-  // cloud_axatol_xyz: {
-  //   zoneName: "cloud.axatol.xyz",
-  //   hostedZoneId: "Z067173715955IHMKKU3W",
-  // },
 };
