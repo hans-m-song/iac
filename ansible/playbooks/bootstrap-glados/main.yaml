@@ -1,0 +1,5 @@
+---
+- name: Bootstrap glados
+  hosts: glados.local
+  become: true
+  tasks: []

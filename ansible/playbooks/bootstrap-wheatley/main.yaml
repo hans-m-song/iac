@@ -14,7 +14,4 @@
               - sync
               - no_root_squash
               - no_subtree_check
-  tasks:
-    - name: Debug
-      ansible.builtin.debug:
-        msg: "{{ ansible_facts.hostname }} {{ ansible_facts.distribution }} - {{ ansible_facts.distribution_release }}"
+  tasks: []

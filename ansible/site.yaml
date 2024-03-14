@@ -5,3 +5,5 @@
   import_playbook: playbooks/bootstrap-gman/main.yaml
 - name: Bootstrap wheatley
   import_playbook: playbooks/bootstrap-wheatley/main.yaml
+- name: Bootstrap glados
+  import_playbook: playbooks/bootstrap-glados/main.yaml

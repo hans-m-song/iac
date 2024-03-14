@@ -1,6 +1,13 @@
 dmz:
   hosts:
     gman.local:
+      adblock_network_name: adblock-net
+      adblock_network_cidr: "172.18.0.0/24"
+      adblock_network_gateway: "172.18.0.1"
+      adblock_doh_address: "172.18.0.2"
+      adblock_doh_upstream_address: https://cloudflare-dns.com/dns-query
+      adblock_pihole_address: "172.18.0.3"
+      # adblock_pihole_webpassword: ""
 
 kube_control_plane:
   hosts:

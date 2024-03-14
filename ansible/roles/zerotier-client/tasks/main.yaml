@@ -1,0 +1,41 @@
+---
+- name: Add ZeroTier GPG apt key
+  ansible.builtin.apt_key:
+    url: https://download.zerotier.com/contact@zerotier.com.gpg
+    state: present
+
+- name: Add ZeroTier repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb
+      http://download.zerotier.com/debian/{{ ansible_facts.distribution_release }}
+      {{ ansible_facts.distribution_release }}
+      main
+    state: present
+    update_cache: true
+
+- name: Install zerotier-one
+  ansible.builtin.apt:
+    name: zerotier-one
+    state: present
+
+- name: Start zerotier-one
+  ansible.builtin.systemd:
+    name: zerotier-one
+    state: started
+    enabled: true
+
+- name: Join ZeroTier network
+  ansible.builtin.command:
+    cmd: "zerotier-cli join {{ network_id }}"
+    creates: "/var/lib/zerotier-one/networks.d/{{ network_id }}.conf"
+  when: network_id is defined and network_id != ""
+
+- name: Read ZeroTier client identity
+  ansible.builtin.slurp:
+    path: /var/lib/zerotier-one/identity.public
+  register: zerotier_identity
+
+- name: Output ZeroTier client identity
+  ansible.builtin.debug:
+    msg: "{%- set raw = zerotier_identity.content | b64decode %}{{- raw.split(':')[0] | trim }}"

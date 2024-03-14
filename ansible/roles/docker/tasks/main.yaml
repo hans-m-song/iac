@@ -1,16 +1,39 @@
 ---
-- name: Add Docker GPG apt Key
+- name: Remove conflicting packages
+  ansible.builtin.apt:
+    pkg:
+      - docker.io
+      - docker-compose
+      - docker-doc
+      - podman-docker
+    state: absent
+
+- name: Add Docker GPG apt key
   ansible.builtin.apt_key:
     url: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}/gpg"
     state: present
 
-- name: Add Docker Repository
+- name: Add Docker repository
   ansible.builtin.apt_repository:
     repo: "deb https://download.docker.com/linux/{{ ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} stable"
     state: present
     update_cache: true
 
-- name: Install docker-ce
+- name: Install docker
   ansible.builtin.apt:
-    name: docker-ce
+    pkg:
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose-plugin
+      - docker-buildx-plugin
+      - libcap2-bin
     state: present
+  notify: Restart docker daemon
+
+- name: Docker service started/enabled
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
