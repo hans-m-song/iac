@@ -35,7 +35,7 @@ spec:
     {{- else if eq $solver.kind "dns01_cloudflare" }}
     - dns01:
         cloudflare:
-          email: {{ $solver.email }}
+          email: {{ $email }}
           apiKeySecretRef:
             name: {{ $.Release.Name }}-credentials
             key: {{ $solverName }}_api_key

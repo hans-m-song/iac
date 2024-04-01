@@ -19,6 +19,6 @@ containers:
 ingress:
   ingressClassName: traefik
   hosts:
-    mongo.axatol.xyz:
+    mongo.axatol.local:
       - path: /
         portName: console

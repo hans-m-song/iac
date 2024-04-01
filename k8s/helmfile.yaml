@@ -12,8 +12,7 @@ releases:
     namespace: actions-runner-system
     version: 0.23.7
     values:
-      - githubWebhookServer: 
-          enabled: true
+      - ./values/actions-runner-controller.yaml
       - {{- $secrets.actionsRunnerController | toYaml | nindent 8 }}
 
   - name: arc
@@ -143,7 +142,7 @@ releases:
       - ./values/octopus-deploy.yaml
       - octopus:
           image:
-            tag: 2024.1.11865
+            tag: 2024.1.12210
       - {{- $secrets.octopusDeploy | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql

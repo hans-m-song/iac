@@ -26,17 +26,20 @@ containers:
 
 ingress:
   ingressClassName: traefik
-  annotations:
-    cert-manager.io/cluster-issuer: cluster-issuer-prd
   hosts:
-    minio.k8s.axatol.xyz:
+    minio.axatol.local:
       - path: /
         portName: console
-        tls: true
-    api.minio.k8s.axatol.xyz:
+    api.minio.axatol.local:
       - path: /
         portName: api
-        tls: true
+
+# service:
+#   annotations:
+#     external-dns.alpha.kubernetes.io/hostname: api.minio.axatol.xyz
+#     external-dns.alpha.kubernetes.io/target: http://minio.minio.svc.cluster.local:9000
+#     external-dns.alpha.kubernetes.io/hostname: minio.axatol.xyz
+#     external-dns.alpha.kubernetes.io/target: http://minio.minio.svc.cluster.local:9001
 
 pvc:
   data:
