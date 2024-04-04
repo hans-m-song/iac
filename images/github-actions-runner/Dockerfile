@@ -20,38 +20,49 @@ RUN sudo apt-get update \
   unzip \
   wget \
   xz-utils \
-  && sudo ln -sf /usr/bin/python3 /usr/bin/python \
-  && sudo ln -sf /usr/bin/pip3 /usr/bin/pip \
   && sudo apt-get clean \
   && sudo rm -rf /var/lib/apt/lists/*
 
+RUN sudo ln -sf /usr/bin/python3 /usr/bin/python \
+  && sudo ln -sf /usr/bin/pip3 /usr/bin/pip \
+  && pip install yq
+
 # aws cli
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip" \
+RUN curl -fsSLo ./awscli.zip \
+  https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
   && unzip -q awscli.zip \
   && sudo ./aws/install \
   && rm -rf aws awscli.zip \
   && export AWS_PAGER=""
 
-# docker buildx
-ARG DOCKER_BUILDX_VERSION="v0.10.1"
+# buildx
+# https://github.com/docker/buildx/releases/latest
+ARG DOCKER_BUILDX_VERSION=0.13.1
 RUN mkdir -p $HOME/.docker/cli-plugins \
-  && curl -Lo $HOME/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-amd64 \
+  && curl -fsSLo $HOME/.docker/cli-plugins/docker-buildx \
+  https://github.com/docker/buildx/releases/download/v${DOCKER_BUILDX_VERSION}/buildx-v${DOCKER_BUILDX_VERSION}.linux-amd64 \
   && chmod +x $HOME/.docker/cli-plugins/docker-buildx \
   && chown -R runner:docker $HOME/.docker
 
 # helm
-RUN sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 \
-  && sudo chmod +x get_helm.sh \
-  && ./get_helm.sh \
-  && sudo rm ./get_helm.sh
+# https://github.com/helm/helm/releases/latest
+ARG HELM_VERSION=3.14.3
+RUN sudo curl -fsSL \
+  https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+  | sudo tar --directory /usr/local/bin --strip-components 1 -xz linux-amd64/helm \
+  && sudo chmod 555 /usr/local/bin/helm
 
 # helmfile
-ARG HELMFILE_VERSION="0.153.1"
-RUN sudo curl -fsSL https://github.com/helmfile/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_${HELMFILE_VERSION}_linux_amd64.tar.gz \
-  | tar -xz helmfile \
-  && sudo mv ./helmfile /usr/local/bin/helmfile
+# https://github.com/helmfile/helmfile/releases/latest
+ARG HELMFILE_VERSION=0.163.1
+RUN sudo curl -fsSL \
+  https://github.com/helmfile/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_${HELMFILE_VERSION}_linux_amd64.tar.gz \
+  | sudo tar --directory /usr/local/bin -xz helmfile \
+  && sudo chmod 555 /usr/local/bin/helmfile
 
 # kubectl
-ARG KUBECTL_VERSION="v1.26.1"
-RUN sudo curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
-  && sudo chmod +x /usr/local/bin/kubectl
+# https://cdn.dl.k8s.io/release/stable.txt
+ARG KUBECTL_VERSION=1.29.3
+RUN sudo curl -fsSLo /usr/local/bin/kubectl \
+  "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+  && sudo chmod 555 /usr/local/bin/kubectl
