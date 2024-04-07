@@ -135,6 +135,7 @@ releases:
       - {{ $secrets.newrelic | toYaml | nindent 8 }}
 
   - name: octopus-deploy
+    installed: false
     chart: oci://registry-1.docker.io/octopusdeploy/octopusdeploy-helm
     namespace: octopus
     version: 2023.2.12482
@@ -146,6 +147,7 @@ releases:
       - {{- $secrets.octopusDeploy | toYaml | nindent 8 }}
 
   - name: octopus-deploy-mssql
+    installed: false
     chart: ./charts/generic
     namespace: octopus
     values:
@@ -153,6 +155,7 @@ releases:
       - {{- $secrets.octopusDeployMssql | toYaml | nindent 8 }}
 
   - name: octopus-deploy-worker
+    installed: false
     chart: ./charts/octopus-deploy-worker
     namespace: octopus
     values:
