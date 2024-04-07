@@ -1,26 +1,19 @@
-module "jayd" {
-  source                        = "./modules/project"
-  providers                     = { github = github.axatol }
-  github_repository_name        = "jayd"
-  enable_actions_runner_webhook = true
-  parameters                    = local.github_project_parameters
-}
-
-module "jayd_wheatley" {
-  source          = "./modules/github_environment"
+module "jayd_github_repository" {
+  source          = "./modules/github_repository"
   providers       = { github = github.axatol }
-  repository_name = module.jayd.github_repository_name
-  name            = "wheatley"
-  branches        = ["master"]
-  reviewing_users = [local.github_user_id_hans_m_song]
-}
+  repository_name = "jayd"
 
-# resource "octopusdeploy_project" "jayd" {
-#   name                              = "JAYD"
-#   project_group_id                  = octopusdeploy_project_group.kubernetes.id
-#   lifecycle_id                      = octopusdeploy_lifecycle.production_only.id
-#   tenanted_deployment_participation = "Tenanted"
-# }
+  github_actions_webhook = var.github_actions_runner_webhook_url
+  new_relic_license_key  = var.github_new_relic_license_key
+  actions_secrets        = local.project_secrets
+
+  environments = {
+    "production" = {
+      branches        = ["master"]
+      reviewing_users = [data.github_user.hans_m_song.id]
+    }
+  }
+}
 
 module "auth0_app_jayd_dev" {
   source         = "./modules/auth0_app"

@@ -22,38 +22,8 @@ variable "cloudflare_terraform_api_token" {
   sensitive   = true
 }
 
-variable "github_actions_cdk_deploy_role_arn" {
-  description = "/infrastructure/github_actions/cdk_deploy_role_arn"
-  type        = string
-  sensitive   = false
-}
-
-variable "github_actions_cdk_diff_role_arn" {
-  description = "/infrastructure/github_actions/cdk_diff_role_arn"
-  type        = string
-  sensitive   = false
-}
-
-variable "github_actions_cloudfront_invalidator_role_arn" {
-  description = "/infrastructure/github_actions/cloudfront_invalidator_role_arn"
-  type        = string
-  sensitive   = false
-}
-
 variable "github_actions_discord_webhook_url" {
   description = "/infrastructure/github_actions/discord_webhook_url"
-  type        = string
-  sensitive   = true
-}
-
-variable "github_actions_ecr_image_publisher_role_arn" {
-  description = "/infrastructure/github_actions/ecr_image_publisher_role_arn"
-  type        = string
-  sensitive   = false
-}
-
-variable "github_actions_new_relic_api_key" {
-  description = "/infrastructure/github_actions/new_relic_api_key"
   type        = string
   sensitive   = true
 }
@@ -62,6 +32,12 @@ variable "github_actions_runner_webhook_url" {
   description = "/infrastructure/github_actions/runner_webhook_url"
   type        = string
   sensitive   = false
+}
+
+variable "github_actions_slack_webhook_url" {
+  description = "/infrastructure/github_actions/slack_webhook_url"
+  type        = string
+  sensitive   = true
 }
 
 variable "github_new_relic_license_key" {
@@ -124,32 +100,8 @@ variable "oci_region" {
   sensitive   = true
 }
 
-variable "octopus_deploy_dockerhub_access_token" {
-  description = "/infrastructure/octopus_deploy/dockerhub_access_token"
-  type        = string
-  sensitive   = true
-}
-
-variable "octopus_deploy_dockerhub_username" {
-  description = "/infrastructure/octopus_deploy/dockerhub_username"
-  type        = string
-  sensitive   = true
-}
-
-variable "octopus_deploy_github_token" {
-  description = "/infrastructure/octopus_deploy/github_token"
-  type        = string
-  sensitive   = true
-}
-
-variable "octopus_deploy_server_url" {
-  description = "/infrastructure/octopus_deploy/server_url"
-  type        = string
-  sensitive   = true
-}
-
-variable "octopus_deploy_terraform_api_key" {
-  description = "/infrastructure/octopus_deploy/terraform_api_key"
+variable "terraform_deploy_role" {
+  description = "/infrastructure/terraform/deploy_role_arn"
   type        = string
   sensitive   = true
 }

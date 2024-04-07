@@ -1,8 +1,5 @@
 terraform {
   backend "s3" {
-    region         = "ap-southeast-2"
-    key            = "terraform.tfstate"
-    dynamodb_table = "terraform-state-lock"
   }
 
   required_providers {
@@ -13,17 +10,17 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "5.39.0"
+      version = "5.40.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.25.0"
+      version = "4.26.0"
     }
 
     github = {
       source  = "integrations/github"
-      version = "6.0.0"
+      version = "6.1.0"
     }
 
     http = {
@@ -41,16 +38,6 @@ terraform {
       version = "5.15.0"
     }
 
-    octopusdeploy = {
-      source  = "OctopusDeployLabs/octopusdeploy"
-      version = "0.14.9"
-    }
-
-    octopusdeploycontrib = {
-      source  = "axatol/octopusdeploycontrib"
-      version = "0.0.6"
-    }
-
     zerotier = {
       source  = "zerotier/zerotier"
       version = "1.4.2"
@@ -65,13 +52,29 @@ provider "auth0" {
 }
 
 provider "aws" {
-  alias  = "ap_southeast_2"
+  alias  = "apse2"
   region = "ap-southeast-2"
+
+  assume_role {
+    role_arn = var.terraform_deploy_role
+  }
+
+  default_tags {
+    tags = { "managed-by-terraform" = "true" }
+  }
 }
 
 provider "aws" {
-  alias  = "us_east_1"
+  alias  = "use1"
   region = "us-east-1"
+
+  assume_role {
+    role_arn = var.terraform_deploy_role
+  }
+
+  default_tags {
+    tags = { "managed-by-terraform" = "true" }
+  }
 }
 
 provider "cloudflare" {
@@ -104,17 +107,6 @@ provider "oci" {
   fingerprint  = var.oci_terraform_fingerprint
   private_key  = var.oci_terraform_api_private_key
   region       = var.oci_region
-}
-
-provider "octopusdeploy" {
-  address = var.octopus_deploy_server_url
-  api_key = var.octopus_deploy_terraform_api_key
-}
-
-provider "octopusdeploycontrib" {
-  space_id   = "Spaces-1"
-  server_url = var.octopus_deploy_server_url
-  api_key    = var.octopus_deploy_terraform_api_key
 }
 
 provider "zerotier" {
