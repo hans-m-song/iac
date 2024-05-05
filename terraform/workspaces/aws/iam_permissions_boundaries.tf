@@ -143,6 +143,8 @@ data "aws_iam_policy_document" "lambda_permissions_boundary" {
     not_resources = [
       "arn:aws:s3:::aws-cloudtrail-logs-${local.account_id}-*",
       "arn:aws:s3:::aws-cloudtrail-logs-${local.account_id}-*/*",
+      "arn:aws:s3:::backup-${local.account_id}",
+      "arn:aws:s3:::backup-${local.account_id}/*",
       "arn:aws:s3:::cdk-*-assets-${local.account_id}-*",
       "arn:aws:s3:::cdk-*-assets-${local.account_id}-*/*",
       "arn:aws:s3:::cf-templates-*",

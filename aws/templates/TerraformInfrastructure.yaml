@@ -139,9 +139,10 @@ Resources:
               - Fn::GetAtt: StateLockTable.Arn
           - Effect: Allow
             Action:
-              - '*'
+              - "*"
             Resource:
               - Fn::Sub: arn:${AWS::Partition}:acm:*:${AWS::AccountId}:certificate/*
+              - Fn::Sub: arn:${AWS::Partition}:apigateway:*::/account
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
@@ -150,6 +151,11 @@ Resources:
             Action:
               - acm:ListCertificates
               - acm:RequestCertificate
+                "cloudtrail:AddTags",
+                "cloudtrail:Describe*",
+                "cloudtrail:Get*",
+                "cloudtrail:List*",
+                "cloudtrail:RemoveTags",
               - route53:ChangeResourceRecordSets
               - route53:ChangeTagsForResource
               - route53:GetHostedZone
@@ -159,4 +165,4 @@ Resources:
               - route53:ListTagsForResources
               - ssm:DescribeParameters
             Resource:
-              - '*'
+              - "*"
