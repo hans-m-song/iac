@@ -20,7 +20,6 @@ export interface GithubActionsSubjectClaims {
     ref?: string;
     pr?: boolean;
   };
-  workflowRef?: string;
   actor?: string;
 }
 
@@ -49,24 +48,22 @@ export class GithubActionsFederatedPrincipal extends FederatedPrincipal {
 
   private static formatClaims(claims: GithubActionsSubjectClaims): string[] {
     const contexts = [];
-    const { env, ref, pr } = claims.context;
-
-    if (pr) {
-      contexts.push("pull_request");
-    }
-
-    if (ref) {
-      contexts.push(`ref:refs/heads/${ref}`);
-    }
-
-    if (env) {
-      contexts.push(`environment:${env}`);
-    }
-
     const repo = `repo:${claims.repo}`;
     const actor = `actor:${claims.actor ?? "*"}`;
 
-    return contexts.map((context) => [repo, context, actor].join(":"));
+    if (claims.context.pr) {
+      contexts.push(`${repo}:pull_request:${actor}`);
+    }
+
+    if (claims.context.ref) {
+      contexts.push(`${repo}:ref:refs/heads/${claims.context.ref}:${actor}`);
+    }
+
+    if (claims.context.env) {
+      contexts.push(`${repo}:environment:${claims.context.env}:${actor}`);
+    }
+
+    return contexts;
   }
 }
 

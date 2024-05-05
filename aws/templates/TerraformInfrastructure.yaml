@@ -98,6 +98,7 @@ Resources:
   DeployPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
+      ManagedPolicyName: terraform-deploy-policy
       Description: Permissions to access Terraform state resources
       Path: /
       Roles:
@@ -138,7 +139,7 @@ Resources:
               - Fn::GetAtt: StateLockTable.Arn
           - Effect: Allow
             Action:
-              - "*"
+              - '*'
             Resource:
               - Fn::Sub: arn:${AWS::Partition}:acm:*:${AWS::AccountId}:certificate/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
@@ -158,4 +159,4 @@ Resources:
               - route53:ListTagsForResources
               - ssm:DescribeParameters
             Resource:
-              - "*"
+              - '*'

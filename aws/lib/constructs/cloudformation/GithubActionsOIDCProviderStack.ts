@@ -174,9 +174,10 @@ export class GithubActionsOIDCProviderStack extends Stack {
   role(
     id: string,
     claims: GithubActionsSubjectClaims[],
-    parameterName?: string,
+    opts?: { parameterName?: string; roleName?: string },
   ) {
-    const role = new GithubActionsRole(this, id, { claims });
+    const { parameterName, roleName } = opts ?? {};
+    const role = new GithubActionsRole(this, id, { roleName, claims });
 
     this.output(`${id}ARN`, role.roleArn);
 

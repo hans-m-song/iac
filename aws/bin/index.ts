@@ -77,24 +77,12 @@ new ECRPublicStack(app, "ECRPublic", {
   repositories: Object.values(ECR),
 });
 
-new GithubActionsOIDCProviderStack(app, "GithubActionsOIDCProvider", {
-  env: { region: Region.Sydney },
-});
-
 new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
   env: { region: Region.Sydney },
   hostedZones: Object.values(hostedZones),
 });
 
-new ManagedPolicyStack(app, "ManagedPolicy", {
-  env: { region: Region.Sydney },
-});
-
 new NewRelicIntegrationStack(app, "NewRelicIntegration", {
-  env: { region: Region.Sydney },
-});
-
-new TerraformBackendStack(app, "TerraformBackend", {
   env: { region: Region.Sydney },
 });
 
