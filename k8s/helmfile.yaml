@@ -72,6 +72,13 @@ releases:
       - ./values/external-dns-pihole.yaml
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
   
+  - name: flipt
+    chart: flipt/flipt
+    namespace: flipt
+    version: 0.52.0
+    values:
+      - ./values/flipt.yaml
+
   - name: home-assistant
     chart: ./charts/generic
     namespace: home-assistant

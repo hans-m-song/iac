@@ -20,5 +20,5 @@ env:
 extraArgs:
   # - --dry-run
   # - --annotation-filter=external-dns.alpha.kubernetes.io/hostname
-  - --pihole-server=http://192.168.1.40
+  - --pihole-server=http://192.168.1.41
   - --default-targets=192.168.1.42

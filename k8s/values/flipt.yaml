@@ -1,0 +1,48 @@
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: flipt.axatol.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+persistence:
+  enabled: true
+  storageClass: nfs-persistent
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: flipt.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://flipt.flipt.svc.cluster.local:8080
+
+flipt:
+  config:
+    log:
+      encoding: json
+    authentication:
+      required: false
+      # methods:
+      #   token:
+      #     enabled: true
+      #   oidc:
+      #     enabled: true
+      #     providers:
+      #       auth0:
+      #         issuer_url: ""
+      #         client_id: ""
+      #         client_secret: ""
+      #         redirect_address: https://flipt.axatol.xyz
+      #         scopes: [email, profile, openid]
+      #         use_pkce: true
+      #   # github:
+      #   #   enabled: true
+      #   #   scopes:
+      #   #     - read:org
+      #   #   allowed_organizations:
+      #   #     - axatol
+      #   kubernetes:
+      #     enabled: true
+      #     discovery_url: https://kubernetes.default.svc.cluster.local
+      #     ca_path: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      #     service_account_token_path: /var/run/secrets/kubernetes.io/serviceaccount/token
