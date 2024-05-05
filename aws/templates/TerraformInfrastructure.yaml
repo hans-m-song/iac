@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Provides the infrastructure and role to enable Terraform deployments
+
+Resources:
+  StateBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      BucketName:
+        Fn::Sub: terraform-state-${AWS::AccountId}
+      ObjectLockEnabled: true
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  StateBucketArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/state_bucket_arn
+      Value:
+        Fn::GetAtt: StateBucket.Arn
+
+  StateBucketNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/state_bucket_name
+      Value:
+        Ref: StateBucket
+
+  StateLockTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      TableName: terraform-state-lock
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  StateLockTableArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/state_lock_table_arn
+      Value:
+        Fn::GetAtt: StateLockTable.Arn
+
+  StateLockTableNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/state_lock_table_name
+      Value:
+        Ref: StateLockTable
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: terraform-deploy-role
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+
+  DeployRoleArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/deploy_role_arn
+      Value:
+        Ref: DeployRole
+
+  DeployRoleNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /infrastructure/terraform/deploy_role_name
+      Value:
+        Ref: DeployRole
+
+  DeployPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Permissions to access Terraform state resources
+      Path: /
+      Roles:
+        - Ref: DeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Resource:
+              - Fn::GetAtt: StateBucket.Arn
+              - Fn::Sub: ${StateBucket.Arn}/*
+          - Effect: Allow
+            Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+              - dynamodb:DescribeTable
+            Resource:
+              - Fn::GetAtt: StateLockTable.Arn
+          - Effect: Allow
+            Action:
+              - "*"
+            Resource:
+              - Fn::Sub: arn:${AWS::Partition}:acm:*:${AWS::AccountId}:certificate/*
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/*
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
+              - Fn::Sub: arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
+          - Effect: Allow
+            Action:
+              - acm:ListCertificates
+              - acm:RequestCertificate
+              - route53:ChangeResourceRecordSets
+              - route53:ChangeTagsForResource
+              - route53:GetHostedZone
+              - route53:ListHostedZones
+              - route53:ListHostedZonesByName
+              - route53:ListTagsForResource
+              - route53:ListTagsForResources
+              - ssm:DescribeParameters
+            Resource:
+              - "*"
