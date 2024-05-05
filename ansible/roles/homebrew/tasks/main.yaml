@@ -1,0 +1,45 @@
+---
+- name: Set linux brew path
+  ansible.builtin.set_fact:
+    brew_path: /home/linuxbrew/.linuxbrew/bin/brew
+  when: ansible_distribution in ("Ubuntu", "Debian")
+
+- name: Set mac brew path
+  ansible.builtin.set_fact:
+    brew_path: /usr/local/bin/brew
+  when: ansible_distribution == "MacOSX"
+
+- name: Check brew path is supported
+  ansible.builtin.fail:
+    msg: brew_path not set - possibly unsupported os distribution
+  when: brew_path is not defined
+
+- name: Check install path
+  ansible.builtin.stat:
+    path: "{{ brew_path }}"
+  register: brew_linux
+
+- name: Install brew
+  block:
+    - name: Fetch brew install script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+        dest: /tmp/install.sh
+        mode: "u+x"
+
+    - name: Run install script
+      ansible.builtin.command:
+        cmd: /tmp/install.sh
+      changed_when: true
+
+- name: Tap repositories
+  community.general.homebrew_tap:
+    tap: "{{ taps }}"
+    state: present
+
+- name: Install packages
+  community.general.homebrew:
+    pkg: "{{ packages }}"
+    state: present
+    update_homebrew: true
+    upgrade_all: true

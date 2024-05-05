@@ -2,4 +2,8 @@
 - name: Bootstrap glados
   hosts: glados.local
   become: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
   tasks: []

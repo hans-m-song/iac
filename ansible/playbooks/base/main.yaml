@@ -2,8 +2,17 @@
 - name: Base
   hosts: all
   become: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
   tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.hostname }} - {{ ansible_facts.os_family }}"
+
     - name: Install base packages
+      when: ansible_facts.os_family == 'Debian'
       become: true
       ansible.builtin.package:
         name: "{{ item }}"
@@ -14,7 +23,14 @@
         - ca-certificates
         - curl
         - git
+        - gnupg
         - jq
+        - neovim
         - nfs-common
         - software-properties-common
-        - vim
+
+    - name: Install and configure ZeroTier
+      ansible.builtin.import_role:
+        name: zerotier-client
+      vars:
+        network_id: "{{ zerotier.network_id }}"

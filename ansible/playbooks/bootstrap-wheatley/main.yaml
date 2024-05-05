@@ -2,6 +2,10 @@
 - name: Bootstrap wheatley
   hosts: wheatley.local
   become: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
   roles:
     - role: nfs-server
       vars:
