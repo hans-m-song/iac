@@ -28,6 +28,12 @@ variable "github_actions_discord_webhook_url" {
   sensitive   = true
 }
 
+variable "github_actions_new_relic_api_key" {
+  description = "/infrastructure/github_actions/new_relic_api_key"
+  type        = string
+  sensitive   = true
+}
+
 variable "github_actions_runner_webhook_url" {
   description = "/infrastructure/github_actions/runner_webhook_url"
   type        = string

@@ -84,25 +84,6 @@ module "home_assistant_integrations_github_repository" {
   }
 }
 
-module "huisheng_github_repository" {
-  source          = "./modules/github_repository"
-  providers       = { github = github.hans_m_song }
-  repository_name = "huisheng"
-
-  github_actions_webhook = var.github_actions_runner_webhook_url
-  actions_secrets        = local.project_secrets
-
-  environments = {
-    "github-pages" = {
-      branches = ["gh-pages"]
-    }
-    "production" = {
-      branches        = ["master"]
-      reviewing_users = [data.github_user.hans_m_song.id]
-    }
-  }
-}
-
 module "iac_github_repository" {
   source          = "./modules/github_repository"
   providers       = { github = github.hans_m_song }

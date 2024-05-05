@@ -1,0 +1,38 @@
+{
+	"content": "**[{{state}}] {{priorityText}} severity incident**",
+  "embeds": [
+    {
+      "title": "{{issueTitle}}",
+      "url": "{{issuePageUrl}}",
+      "image": {
+        "url": "{{violationChartUrl}}"
+      },
+      {{#if (eq priority "CRITICAL")}}
+      "color": 16711680,
+      {{/if}}
+      {{#if (eq priority "HIGH")}}
+      "color": 16776960,
+      {{/if}}
+      "fields": [
+        {
+          "name": "Open duration",
+          "value": "{{issueDurationText}}",
+          "inline": false
+        },
+        {
+          "name": "Links",
+          "value": "[**:mailbox_with_mail: Acknowledge**]({{issueAckUrl}}) :heavy_minus_sign: [**:mailbox_with_no_mail: Close**]({{issueCloseUrl}}) :heavy_minus_sign: [**:link: Policy**]({{policyUrl}}) :heavy_minus_sign: [**:link: Workflow**]({{workflowUrl}})",
+          "inline": false
+        },
+        {
+          "name": "{{impactedEntitiesCount}} impacted entities",
+          "value": "{{#each entitiesData.names}}- {{this}}{{#unless @last}}\n{{/unless}}{{/each}}",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "Opened at {{issueCreatedAt}}\nAcknowledged at {{issueUpdatedAt}}\nClosed at {{issueClosedAt}}"
+      }
+    }
+  ]
+}

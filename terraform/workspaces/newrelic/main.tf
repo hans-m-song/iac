@@ -1,3 +1,8 @@
+locals {
+  slack_destination_id    = "dd9b27ba-9f78-4bc5-a0ae-5b63a5896c27"
+  alerts_slack_channel_id = "C05QK1T67JA"
+}
+
 resource "newrelic_nrql_drop_rule" "kubernetes_logs" {
   action = "drop_data"
   nrql = replace(

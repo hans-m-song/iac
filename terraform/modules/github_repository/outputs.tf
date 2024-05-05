@@ -1,3 +1,3 @@
-output "github_repository_name" {
+output "repository_name" {
   value = var.repository_name
 }

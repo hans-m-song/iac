@@ -58,7 +58,7 @@ module "ecr_publisher_github_actions_role" {
 
   subject_claims = [
     { repo = "axatol/*", branch = "master", actor = "hans-m-song" },
-    { repo = "hans-m-song/huisheng", branch = "master", actor = "hans-m-song" },
+    { repo = "hans-m-song/huisheng", branch = "master", environment = "production", actor = "hans-m-song" },
     { repo = "hans-m-song/iac", branch = "master", actor = "hans-m-song", },
   ]
 

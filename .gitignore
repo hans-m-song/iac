@@ -1,17 +1,21 @@
-# npm
-node_modules
-
-# misc
-.dccache
-.iac-data
-.env
-.DS_Store
-k8s/secrets.yaml
+# ansible
+*.vault
 
 # cdk
 cdk.out*
+
+# misc
+.dccache
+.DS_Store
+.env
+.iac-data
+k8s/secrets.yaml
+
+# npm
+node_modules
 
 # terraform
 .terraform
 .terraform.lock.hcl
 local*.tfvars
+*.tfbackend

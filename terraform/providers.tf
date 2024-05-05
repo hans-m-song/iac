@@ -10,17 +10,17 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "5.40.0"
+      version = "5.45.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.26.0"
+      version = "4.29.0"
     }
 
     github = {
       source  = "integrations/github"
-      version = "6.1.0"
+      version = "6.2.1"
     }
 
     http = {
@@ -30,12 +30,12 @@ terraform {
 
     newrelic = {
       source  = "newrelic/newrelic"
-      version = "3.32.0"
+      version = "3.34.1"
     }
 
     oci = {
       source  = "oracle/oci"
-      version = "5.15.0"
+      version = "5.36.0"
     }
 
     zerotier = {

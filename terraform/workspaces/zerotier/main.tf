@@ -98,16 +98,6 @@ resource "zerotier_member" "freeman" {
   ip_assignments          = ["10.0.0.20"]
 }
 
-resource "zerotier_member" "vance" {
-  name                    = "vance"
-  description             = "Managed by Terraform - OCI AMD Compute Instance"
-  member_id               = "f6f03fbd26"
-  network_id              = zerotier_network.apeture.id
-  authorized              = true
-  allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.100"]
-}
-
 # resource "zerotier_member" "barney" {
 #   name                    = "barney"
 #   description             = "Managed by Terraform - Lenovo X1 Carbon G6"
@@ -116,4 +106,24 @@ resource "zerotier_member" "vance" {
 #   authorized              = true
 #   allow_ethernet_bridging = false
 #   ip_assignments          = ["10.0.0.30"]
+# }
+
+resource "zerotier_member" "alyx" {
+  name                    = "alyx"
+  description             = "Managed by Terraform - Apple MacBook Pro 2023"
+  member_id               = "7e729cf670"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.40"]
+}
+
+# resource "zerotier_member" "vance" {
+#   name                    = "vance"
+#   description             = "Managed by Terraform - OCI AMD Compute Instance"
+#   member_id               = "f6f03fbd26"
+#   network_id              = zerotier_network.apeture.id
+#   authorized              = true
+#   allow_ethernet_bridging = false
+#   ip_assignments          = ["10.0.0.100"]
 # }

@@ -1,0 +1,56 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "[{{state}}] {{priorityText}}: {{issueTitle}}"
+			}
+		},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"url": "{{ issueAckUrl }}",
+					"style": "primary",
+					"text": {
+						"type": "plain_text",
+						"text": ":mailbox_with_mail: Acknowledge",
+						"emoji": true
+					}
+				},
+				{
+					"type": "button",
+					"url": "{{ issueCloseUrl }}",
+					"text": {
+						"type": "plain_text",
+						"text": ":mailbox_with_no_mail: Close",
+						"emoji": true
+					}
+				},
+				{
+					"type": "button",
+					"url": "{{ issuePageUrl }}",
+					"text": {
+						"type": "plain_text",
+						"text": ":mag: View",
+						"emoji": true
+					}
+				}
+			]
+		},
+		{
+			"type": "image",
+			"image_url": "{{ violationChartUrl }}",
+			"alt_text": "incident_chart"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "{{impactedEntitiesCount}} impacted entities\n{{#each entitiesData.names}}- {{this}}{{#unless @last}}\n{{/unless}}{{/each}}"
+			}
+		}
+	]
+}

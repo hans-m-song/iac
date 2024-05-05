@@ -1,5 +1,5 @@
 resource "newrelic_notification_destination" "discord_webhook" {
-  name = "Discord - Fite Club - #bot-spam"
+  name = "Discord"
   type = "WEBHOOK"
 
   property {
@@ -16,14 +16,14 @@ resource "newrelic_notification_channel" "discord_webhook" {
 
   property {
     key   = "payload"
-    value = file("${path.module}/discord_webhook.tftpl")
+    value = "" # file("${path.module}/discord_webhook.tftpl")
   }
 }
 
 resource "newrelic_workflow" "discord_webhook" {
   name                  = newrelic_notification_channel.discord_webhook.name
   muting_rules_handling = "DONT_NOTIFY_FULLY_MUTED_ISSUES"
-  enabled               = false
+  enabled               = true
 
   destination {
     channel_id = newrelic_notification_channel.discord_webhook.id
@@ -45,7 +45,7 @@ resource "newrelic_workflow" "discord_webhook" {
 }
 
 data "newrelic_notification_destination" "slack" {
-  id = "dd9b27ba-9f78-4bc5-a0ae-5b63a5896c27"
+  id = local.slack_destination_id
 }
 
 resource "newrelic_notification_channel" "slack" {
@@ -56,7 +56,7 @@ resource "newrelic_notification_channel" "slack" {
 
   property {
     key   = "channelId"
-    value = "C05QK1T67JA"
+    value = local.alerts_slack_channel_id
   }
 }
 

@@ -17,7 +17,10 @@ locals {
     AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN = module.aws.ecr_publisher_github_actions_role_arn
     DISCORD_WEBHOOK_URL              = var.github_actions_discord_webhook_url
     SLACK_WEBHOOK_URL                = var.github_actions_slack_webhook_url
+    NEW_RELIC_API_KEY                = var.github_actions_new_relic_api_key
   }
+
+  slack_alerts_channel_id = "C05QK1T67JA"
 }
 
 module "auth0" {
@@ -32,8 +35,8 @@ module "aws" {
   source = "./workspaces/aws"
 }
 
-module "new_relic" {
-  source              = "./workspaces/new_relic"
+module "newrelic" {
+  source              = "./workspaces/newrelic"
   discord_webhook_url = var.new_relic_discord_webhook_url
 }
 

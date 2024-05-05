@@ -2,12 +2,16 @@ output "account_id" {
   value = local.account_id
 }
 
-output "lambda_permissions_boundary_arn" {
-  value = aws_iam_policy.lambda_permissions_boundary.arn
-}
-
 output "custom_resource_permissions_boundary_arn" {
   value = aws_iam_policy.custom_resource_permissions_boundary.arn
+}
+
+output "deployment_permissions_boundary_arn" {
+  value = aws_iam_policy.deployment_permissions_boundary.arn
+}
+
+output "lambda_permissions_boundary_arn" {
+  value = aws_iam_policy.lambda_permissions_boundary.arn
 }
 
 output "github_actions_oidc_provider_arn" {
