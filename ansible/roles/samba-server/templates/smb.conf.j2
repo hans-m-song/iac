@@ -1,0 +1,23 @@
+[global]
+    server role         = standalone server
+    workgroup           = WORKGROUP
+    map to guest        = bad user
+    inherit permissions = yes
+    security            = user
+
+{% for path, config in samba_shares.items() %}
+{% set name = config.name | default(path | basename) %}
+{% set comment = 'Samba share for ' + name %}
+{% set users = config.users | default([]) %}
+{% set groups = config.groups | default(['samba']) | map('regex_replace', '^', '@') %}
+{% set valid_users = [users, groups] | flatten | unique | select | join(', ') %}
+[{{ name }}]
+    comment        = {{ comment }}
+    path           = {{ path }}
+    valid users    = {{ valid_users }}
+    read only      = no
+    browsable      = yes
+    directory mask = 0750
+    create mask    = 0640
+{{- '' if loop.last else '\n' }}
+{% endfor %}

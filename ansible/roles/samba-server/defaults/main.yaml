@@ -1,0 +1,7 @@
+samba_shares:
+  {}
+  # /mnt/data/samba/share:
+  #   name: foo # defaults to basename
+  #   comment: general purpose share
+  #   users: [gary]
+  #   groups: [samba]

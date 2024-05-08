@@ -27,6 +27,7 @@
         - jq
         - neovim
         - nfs-common
+        - samba
         - software-properties-common
 
     - name: Install and configure ZeroTier

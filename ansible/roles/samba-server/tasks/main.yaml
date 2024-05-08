@@ -1,0 +1,36 @@
+---
+- name: Install Samba
+  ansible.builtin.package:
+    name: samba
+    state: present
+
+- name: Create Samba config file
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Samba server
+
+- name: Create access groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ samba_shares.values() | map(attribute='group', default='samba') | unique }}"
+
+- name: Create share directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  loop: "{{ samba_shares.keys() }}"
+
+- name: Ensure Samba status
+  ansible.builtin.service:
+    name: smbd
+    state: started
+    enabled: true
+  when: samba_shares | length

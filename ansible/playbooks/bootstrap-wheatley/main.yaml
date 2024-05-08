@@ -6,8 +6,10 @@
     - name: ansible_sudo_pass
       prompt: Sudo password
       private: true
-  roles:
-    - role: nfs-server
+  tasks:
+    - name: Setup NFS server
+      ansible.builtin.import_role:
+        name: nfs-server
       vars:
         nfs_exports:
           /mnt/data/nfs/k8s:
@@ -18,4 +20,11 @@
               - sync
               - no_root_squash
               - no_subtree_check
-  tasks: []
+
+    - name: Setup Samba server
+      ansible.builtin.import_role:
+        name: samba-server
+      vars:
+        samba_shares:
+          /mnt/data/samba/share:
+            groups: [samba]

@@ -6,9 +6,11 @@
     - name: ansible_sudo_pass
       prompt: Sudo password
       private: true
-  roles:
-    - docker
   tasks:
+    - name: Install docker
+      ansible.builtin.import_role:
+        name: docker
+
     - name: IP Forwarding enable/persist
       ansible.posix.sysctl:
         name: net.ipv4.ip_forward
