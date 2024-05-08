@@ -31,7 +31,9 @@ resource "zerotier_network" "apeture" {
 
     # Allow only specific ports
     accept ipprotocol tcp and dport 22;   # ssh
+    accept ipprotocol tcp and dport 139;  # samba
     accept ipprotocol tcp and dport 443;  # http
+    accept ipprotocol tcp and dport 445;  # samba
     accept ipprotocol tcp and dport 6443; # kubeapi
     accept ipprotocol tcp and dport 2049; # nfs
 
