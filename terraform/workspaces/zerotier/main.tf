@@ -32,7 +32,7 @@ resource "zerotier_network" "apeture" {
     # Allow only specific ports
     accept ipprotocol tcp and dport 22;   # ssh
     accept ipprotocol tcp and dport 139;  # samba
-    accept ipprotocol tcp and dport 443;  # http
+    accept ipprotocol tcp and dport 443;  # https
     accept ipprotocol tcp and dport 445;  # samba
     accept ipprotocol tcp and dport 6443; # kubeapi
     accept ipprotocol tcp and dport 2049; # nfs
@@ -80,15 +80,15 @@ resource "zerotier_member" "glados" {
   ip_assignments          = ["10.0.0.43"]
 }
 
-resource "zerotier_member" "chell" {
-  name                    = "chell"
-  description             = "Managed by Terraform - Apple MacBook Pro 2020"
-  member_id               = "c6f7862584"
-  network_id              = zerotier_network.apeture.id
-  authorized              = true
-  allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.10"]
-}
+# resource "zerotier_member" "chell" {
+#   name                    = "chell"
+#   description             = "Managed by Terraform - Apple MacBook Pro 2020"
+#   member_id               = "c6f7862584"
+#   network_id              = zerotier_network.apeture.id
+#   authorized              = true
+#   allow_ethernet_bridging = false
+#   ip_assignments          = ["10.0.0.10"]
+# }
 
 resource "zerotier_member" "freeman" {
   name                    = "freeman"
@@ -97,18 +97,18 @@ resource "zerotier_member" "freeman" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.20"]
+  ip_assignments          = ["10.0.0.11"]
 }
 
-# resource "zerotier_member" "barney" {
-#   name                    = "barney"
-#   description             = "Managed by Terraform - Lenovo X1 Carbon G6"
-#   member_id               = "TODO"
-#   network_id              = zerotier_network.apeture.id
-#   authorized              = true
-#   allow_ethernet_bridging = false
-#   ip_assignments          = ["10.0.0.30"]
-# }
+resource "zerotier_member" "barney" {
+  name                    = "barney"
+  description             = "Managed by Terraform - Lenovo X1 Carbon G6"
+  member_id               = "TODO"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.12"]
+}
 
 resource "zerotier_member" "alyx" {
   name                    = "alyx"
@@ -117,7 +117,7 @@ resource "zerotier_member" "alyx" {
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.40"]
+  ip_assignments          = ["10.0.0.13"]
 }
 
 # resource "zerotier_member" "vance" {
