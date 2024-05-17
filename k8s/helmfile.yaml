@@ -35,7 +35,7 @@ releases:
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager
-    version: v1.11.0
+    version: v1.14.5
 
   - name: cloudflare-tunnel
     chart: cloudflare/cloudflare-tunnel-remote
@@ -59,7 +59,7 @@ releases:
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: kube-system
-    version: 1.14.1
+    version: 1.14.4
     values:
       - ./values/external-dns-cloudflare-tunnel.yaml
       - {{- $secrets.externalDnsCloudflareTunnel | toYaml | nindent 8 }}
@@ -67,7 +67,7 @@ releases:
   - name: external-dns-pihole
     chart: external-dns/external-dns
     namespace: kube-system
-    version: 1.14.1
+    version: 1.14.4
     values:
       - ./values/external-dns-pihole.yaml
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
@@ -95,7 +95,7 @@ releases:
   - name: metrics-server
     chart: metrics-server/metrics-server
     namespace: kube-system
-    version: 3.11.0
+    version: 3.12.1
     values:
       - ./values/metrics-server.yaml
 
@@ -136,7 +136,7 @@ releases:
   - name: nri-bundle
     chart: newrelic/nri-bundle
     namespace: newrelic
-    version: 5.0.45
+    version: 5.0.77
     values:
       - ./values/nri-bundle.yaml
       - {{ $secrets.newrelic | toYaml | nindent 8 }}
