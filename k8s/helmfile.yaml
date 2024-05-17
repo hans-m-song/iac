@@ -169,21 +169,19 @@ releases:
       - {{- $secrets.octopusDeployWorker | toYaml | nindent 8 }}
       - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
-  - name: redis
-    installed: false
-    chart: oci://registry-1.docker.io/bitnamicharts/redis
-    namespace: redis
-    version: 17.15.3
+  - name: overleaf
+    chart: ./charts/generic
+    namespace: overleaf
     values:
-      - architecture: standalone
-      - {{- $secrets.redis | toYaml | nindent 8}}
+      - ./values/overleaf.yaml
+      - {{- $secrets.overleaf | toYaml | nindent 8 }}
 
-  - name: redis-insight
-    installed: false
+  - name: redis
     chart: ./charts/generic
     namespace: redis
     values:
-      - ./values/redis-insight.yaml
+      - ./values/redis.yaml
+      - {{- $secrets.redis | toYaml | nindent 8}}
 
   - name: traefik
     chart: traefik/traefik

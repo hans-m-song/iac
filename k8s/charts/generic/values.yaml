@@ -1,6 +1,6 @@
 rbac:
   create: true
-  serviceAccountName: ""
+  serviceAccountName: ''
 
 deployment:
   replicas: 1
@@ -9,12 +9,14 @@ deployment:
     # kubernetes.io/arch: arm64
   strategy:
     type: RollingUpdate
+  terminationGracePeriodSeconds: 30
 
 containers:
   {}
   # app:
   #   image: ""
   #   imagePullPolicy: IfNotPresent
+  #   command: []
   #   args: []
   #   env:
   #     FOO: bar
@@ -31,11 +33,14 @@ containers:
   #   volumes:
   #     config:
   #       mount:
-  #         mountPath: /etc/config
+  #         mountPath: /opt/app.conf
   #         readOnly: true
   #       spec:
   #         configMap:
-  #           name: config
+  #           name: app-files
+  #           items:
+  #             - key: app.conf
+  #               path: app.conf
   #   livenessProbe:
   #     tcpSocket:
   #       port: 8080
@@ -56,7 +61,7 @@ secrets:
   # FOO: bar
 
 ingress:
-  ingressClassName: ""
+  ingressClassName: ''
   annotations: {}
   hosts:
     {}
@@ -74,6 +79,21 @@ pvc:
   #   capacity: 1Gi
   #   accessMode: ReadWriteOnce
 
+files:
+  {}
+  # init.sh: |
+  #   set -eo pipefail
+  #   echo "hello world"
+
+hooks:
+  {}
+  # init:
+  #   triggers: [post-install, post-upgrade]
+  #   weight: "0"
+  #   deletePolicy: "before-hook-creation"
+  #   containers: # same as deployment.containers
+
 extra:
   yaml: {}
-  raw: ""
+  yamlList: []
+  raw: ''

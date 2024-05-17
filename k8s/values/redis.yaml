@@ -1,0 +1,34 @@
+containers:
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      web:
+        protocol: TCP
+        internalPort: 8001
+        externalPort: 8001
+      redis:
+        protocol: TCP
+        internalPort: 6379
+        externalPort: 6379
+    livenessProbe:
+      tcpSocket:
+        port: 6379
+    volumes:
+      data:
+        mount:
+          mountPath: /data
+        spec:
+          persistentVolumeClaim:
+            claimName: redis-data
+
+pvc:
+  redis-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    redis.axatol.local:
+      - path: /
+        portName: web

@@ -1,0 +1,48 @@
+{{- range $name, $spec := .Values.hooks }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "generic.labels" $ | nindent 4 }}
+  annotations:
+    {{- $triggers := $spec.triggers | required "Must specify hook triggers" }}
+    helm.sh/hook: {{ $triggers | join "," }}
+    helm.sh/hook-weight: {{ $spec.weight | toString | default "0" | quote }}
+    helm.sh/hook-delete-policy: {{ $spec.deletePolicy | default "before-hook-creation" }}
+spec:
+  template:
+    metadata:
+      name: {{ $name }}
+      labels: {{- include "generic.labels" $ | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ default $.Release.Name $.Values.rbac.serviceAccountName }}
+      {{- $volumes := dict }}
+      {{- range $container := .containers }}
+      {{- $containerVolumes := $container.volumes | default (dict) }}
+      {{- $volumes = merge $volumes $containerVolumes }}
+      {{- end }}
+      {{- if gt (len $.Values.files) 0 }}
+      {{- $volumes = set $volumes "files" (dict
+        "spec" (dict
+          "configMap" (dict
+            "name" (print $.Release.Name "-files")
+          )
+        )
+      )}}
+      {{- end }}
+      {{- if gt (len $volumes) 0 }}
+      volumes:
+      {{- range $name, $volume := $volumes }}
+      - name: {{ $name }}
+        {{- $volume.spec | toYaml | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      containers:
+      {{- range $name, $container := $spec.containers }}
+      {{- $ctx := dict "root" $ "name" $name "container" $container }}
+      - {{- include "generic.container" $ctx | trim | nindent 8 -}}
+      {{- end }}
+{{- end }}

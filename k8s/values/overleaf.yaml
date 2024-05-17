@@ -1,0 +1,43 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  overleaf:
+    image: sharelatex/sharelatex:5
+    ports:
+      web:
+        protocol: TCP
+        internalPort: 80
+        externalPort: 80
+    readinessProbe:
+      tcpSocket:
+        port: 80
+    volumes:
+      log:
+        mount:
+          mountPath: /var/log/overleaf
+        spec:
+          persistentVolumeClaim:
+            claimName: overleaf-log
+      lib:
+        mount:
+          mountPath: /var/lib/overleaf
+        spec:
+          persistentVolumeClaim:
+            claimName: overleaf-lib
+
+pvc:
+  overleaf-log:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+  overleaf-lib:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    overleaf.axatol.local:
+      - path: /
+        portName: web

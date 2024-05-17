@@ -1,9 +1,16 @@
+deployment:
+  strategy:
+    type: Recreate
+  terminationGracePeriodSeconds: 120
+
 containers:
   mongo:
-    image: mongo:latest
+    image: mongo:7
+    command: [bash]
+    args: [/opt/files/entrypoint.sh]
     resources:
       limits:
-        cpu: 200m
+        cpu: 500m
         memory: 512Mi
     volumes:
       data:
@@ -18,12 +25,95 @@ containers:
         protocol: TCP
         internalPort: 27017
         externalPort: 27017
-    livenessProbe:
-      tcpSocket:
-        port: 27017
-      initialDelaySeconds: 10
+
+hooks:
+  init:
+    triggers:
+      - post-install
+      - post-upgrade
+    weight: '1'
+    containers:
+      init:
+        image: mongo:7
+        command: [mongosh]
+        args: [--nodb, /opt/files/init.js]
+        envFrom:
+          - secretRef:
+              name: mongo
+        volumes:
+          files:
+            mount:
+              mountPath: /opt/files
+            spec:
+              configMap:
+                name: mongo-files
 
 pvc:
   data:
     storageClassName: nfs-persistent
     capacity: 1Gi
+
+files:
+  entrypoint.sh: |
+    set -evo pipefail
+    echo $keyfile > /keyfile
+    chmod 0400 /keyfile
+    chown 999:999 /keyfile
+    docker-entrypoint.sh mongod --auth --bind_ip_all --replSet rs0 --keyFile /keyfile
+  init.js: |
+    user = process.env.MONGO_INITDB_ROOT_USERNAME;
+    pass = process.env.MONGO_INITDB_ROOT_PASSWORD;
+    host = process.env.MONGO_SERVICE_HOST;
+    port = process.env.MONGO_SERVICE_PORT;
+    name = process.env.MONGO_INITDB_DATABASE;
+    uri = `mongodb://${user}:${pass}@${host}:${port}/${name}`;
+    primaryUri = `${host}:${port}`;
+    users = JSON.parse(process.env.MONGO_INIT_USERS);
+
+    console.log(`connecting to ${primaryUri}...`);
+    while (true) {
+      try {
+        db = connect(uri);
+        console.log("connection succeeded")
+        break;
+      } catch (error) {
+        console.error(error.message, "waiting to retry...")
+        sleep(5000);
+      }
+    }
+
+    try {
+      console.log("initiating replicaset...");
+      rs.initiate({ _id: "rs0", members: [{ _id: 0, host: primaryUri, priority: 1 }] });
+    } catch (error) {
+      console.error("failed to initiate replicaset:", error);
+      if (error.codeName !== "AlreadyInitialized") {
+        throw error;
+      }
+
+      console.log("reconfiguring replicaset...");
+      rs.reconfig(
+        { _id: "rs0", members: [{ _id: 0, host: primaryUri, priority: 1 }] },
+        { force: true },
+      );
+    }
+
+    console.log("setting default write concern...");
+    db.adminCommand({
+      setDefaultRWConcern: 1,
+      defaultReadConcern: { level: "local" },
+      defaultWriteConcern: { w: 1, j: 1 },
+    });
+
+    // head -c 5 /dev/urandom | md5
+    users.forEach((user) => {
+      db = db.getSiblingDB(user.db);
+      if (!db.getUser(user.name)) {
+        console.log(`creating user: ${user.name} in db: ${user.db}`)
+        db.createUser({
+          user: user.name,
+          pwd: user.password,
+          roles: [{ role: "readWrite", db: user.db }],
+        });
+      }
+    });

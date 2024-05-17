@@ -17,3 +17,12 @@ Common selectors
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
+
+{{/*
+Config checksum
+*/}}
+{{- define "generic.configChecksum" -}}
+{{- $secrets := dict "__secrets" $.Values.secrets | toYaml -}}
+{{- $config := include (print $.Template.BasePath "/configmap.yaml") $ }}
+{{- print $secrets $config | sha256sum -}}
+{{- end -}}
