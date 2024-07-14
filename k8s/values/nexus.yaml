@@ -1,0 +1,45 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  nexus:
+    image: sonatype/nexus3:3.68.0
+    command: []
+    args: []
+    # command: [sh]
+    # args:
+    #   - -c
+    #   - |
+    #     whoami
+    #     id
+    #     ls -lad /nexus-data
+    #     ls -la /nexus-data
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 8081
+        externalPort: 8081
+    volumes:
+      data:
+        mount:
+          mountPath: /nexus-data
+        spec:
+          persistentVolumeClaim:
+            claimName: data
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    nexus.axatol.local:
+      - path: /
+        portName: http
+
+pvc:
+  data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

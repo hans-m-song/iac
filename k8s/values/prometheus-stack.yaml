@@ -1,0 +1,46 @@
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-persistent
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - alerts.monitoring.axatol.local
+
+grafana:
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.monitoring.axatol.local
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: nfs-persistent
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.monitoring.axatol.local
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-persistent
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi

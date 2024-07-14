@@ -5,6 +5,10 @@ deployment:
 containers:
   overleaf:
     image: sharelatex/sharelatex:5
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
     ports:
       web:
         protocol: TCP

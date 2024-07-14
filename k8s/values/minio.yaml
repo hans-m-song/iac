@@ -4,8 +4,8 @@ containers:
     args: ["server", "/data", "--console-address", ":9001"]
     resources:
       limits:
-        cpu: 200m
-        memory: 512Mi
+        cpu: 400m
+        memory: 1024Mi
     volumes:
       data:
         mount:

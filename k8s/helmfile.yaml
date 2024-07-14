@@ -1,10 +1,20 @@
 {{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
 
 helmfiles:
-  - ./helmfile.defaults.yaml
+  - ./helmfile.repositories.yaml
+  - ./helmfile.monitoring.yaml
+  - ./helmfile.networking.yaml
 
 helmDefaults:
   kubeContext: wheatley
+  atomic: true
+  cleanupOnFail: false
+  createNamespace: true
+  devel: false
+  historyMax: 10
+  skipDeps: true
+  wait: true
+  waitForJobs: true
 
 releases:
   - name: actions-runner-controller
@@ -32,46 +42,9 @@ releases:
     values:
       - ./values/actions-runners.yaml
 
-  - name: cert-manager
-    chart: jetstack/cert-manager
-    namespace: cert-manager
-    version: v1.14.5
-
-  - name: cloudflare-tunnel
-    chart: cloudflare/cloudflare-tunnel-remote
-    namespace: kube-system
-    version: 0.1.1
-    values:
-      - replicaCount: 2
-        image:
-          tag: 2024.2.0
-      - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
-
-  - name: cluster-issuer
-    chart: ./charts/cluster-issuers
-    namespace: cert-manager
-    values:
-      - {{- $secrets.clusterIssuers | toYaml | nindent 8 }}
-
   - name: custom
     chart: ./charts/custom
 
-  - name: external-dns-cloudflare-tunnel
-    chart: external-dns/external-dns
-    namespace: kube-system
-    version: 1.14.4
-    values:
-      - ./values/external-dns-cloudflare-tunnel.yaml
-      - {{- $secrets.externalDnsCloudflareTunnel | toYaml | nindent 8 }}
-
-  - name: external-dns-pihole
-    chart: external-dns/external-dns
-    namespace: kube-system
-    version: 1.14.4
-    values:
-      - ./values/external-dns-pihole.yaml
-      - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
-  
   - name: flipt
     chart: flipt/flipt
     namespace: flipt
@@ -88,16 +61,10 @@ releases:
   - name: huisheng
     chart: huisheng/huisheng
     namespace: huisheng
+    version: 0.0.5
     values:
       - ./values/huisheng.yaml
       - {{- $secrets.huisheng | toYaml | nindent 8 }}
-
-  - name: metrics-server
-    chart: metrics-server/metrics-server
-    namespace: kube-system
-    version: 3.12.1
-    values:
-      - ./values/metrics-server.yaml
 
   - name: minio
     chart: ./charts/generic
@@ -126,20 +93,12 @@ releases:
     values:
       - ./values/mqtt.yaml
 
-  - name: nfs-subdir-external-provisioner
-    chart: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
-    namespace: kube-system
-    version: 4.0.18
+  - name: nexus
+    installed: false
+    chart: ./charts/generic
+    namespace: nexus
     values:
-      - ./values/nfs-subdir-external-provisioner.yaml
-
-  - name: nri-bundle
-    chart: newrelic/nri-bundle
-    namespace: newrelic
-    version: 5.0.77
-    values:
-      - ./values/nri-bundle.yaml
-      - {{ $secrets.newrelic | toYaml | nindent 8 }}
+      - ./values/nexus.yaml
 
   - name: octopus-deploy
     installed: false
@@ -170,6 +129,7 @@ releases:
       - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
   - name: overleaf
+    installed: false
     chart: ./charts/generic
     namespace: overleaf
     values:
@@ -183,12 +143,13 @@ releases:
       - ./values/redis.yaml
       - {{- $secrets.redis | toYaml | nindent 8}}
 
-  - name: traefik
-    chart: traefik/traefik
-    namespace: kube-system
-    version: 25.0.0
+  - name: vault
+    chart: hashicorp/vault
+    namespace: vault
+    version: 0.28.0
     values:
-      - ./values/traefik.yaml
+    - ./values/vault.yaml
+    - {{- $secrets.vault | toYaml | nindent 8 }}
 
   - name: zigbee2mqtt
     chart: ./charts/generic
