@@ -50,7 +50,7 @@
       community.docker.docker_container:
         name: pihole
         image: pihole/pihole:latest
-        pull: always
+        # pull: always
         restart_policy: always
         env:
           DNS1: "{{ adblock.doh_address }}"

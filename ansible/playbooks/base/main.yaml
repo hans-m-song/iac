@@ -25,7 +25,6 @@
         - git
         - gnupg
         - jq
-        - neovim
         - nfs-common
         - samba
         - software-properties-common
