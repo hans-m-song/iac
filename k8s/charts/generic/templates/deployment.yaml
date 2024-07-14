@@ -16,6 +16,9 @@ spec:
       labels: {{- include "generic.selectors" . | nindent 8 }}
       annotations:
         checksum/config: {{ include "generic.configChecksum" . }}
+        {{- range $key, $value := .Values.deployment.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       {{- $volumes := dict }}
       {{- range $container := .Values.containers }}

@@ -10,6 +10,7 @@ deployment:
   strategy:
     type: RollingUpdate
   terminationGracePeriodSeconds: 30
+  podAnnotations: {}
 
 containers:
   {}
