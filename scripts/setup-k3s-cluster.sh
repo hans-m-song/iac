@@ -1,7 +1,12 @@
 curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=stable sh -s - \
-  --disable traefik \
-  --disable metrics-server \
-  --disable local-storage \
+  --cluster-init \
+  --tls-san=10.0.0.42 \
+  --disable=traefik \
+  --disable=metrics-server \
+  --disable=local-storage \
+  --disable-cloud-controller \
+  --disable-helm-controller \
+  --node-label=k8s.axatol.xyz/supports-nfs=true \
   --kube-apiserver-arg="oidc-issuer-url=https://axatol.au.auth0.com/" \
   --kube-apiserver-arg="oidc-client-id=${OIDC_CLIENT_ID}" \
   --kube-apiserver-arg="oidc-username-claim=email" \
