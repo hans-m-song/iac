@@ -63,7 +63,7 @@ resource "zerotier_member" "gman" {
 resource "zerotier_member" "wheatley" {
   name                    = "wheatley"
   description             = "Managed by Terraform - Dell Optiplex 9020 USFF"
-  member_id               = "253ddd04a8"
+  member_id               = "0e5a4e81e7"
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
