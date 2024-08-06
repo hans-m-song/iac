@@ -47,7 +47,7 @@ resource "aws_iam_policy" "custom_resource_permissions_boundary" {
 
 resource "aws_ssm_parameter" "custom_resource_permissions_boundary" {
   provider = aws.apse2
-  name     = "/application/shared/custom_resource_permissions_boundary_arn"
+  name     = "/infrastructure/iam/custom_resource_permissions_boundary_arn"
   type     = "String"
   value    = aws_iam_policy.custom_resource_permissions_boundary.arn
 }
@@ -82,7 +82,7 @@ resource "aws_iam_policy" "deployment_permissions_boundary" {
 
 resource "aws_ssm_parameter" "deployment_permissions_boundary" {
   provider = aws.apse2
-  name     = "/application/shared/deployment_permissions_boundary_arn"
+  name     = "/infrastructure/iam/deployment_permissions_boundary_arn"
   type     = "String"
   value    = aws_iam_policy.deployment_permissions_boundary.arn
 }
@@ -188,7 +188,7 @@ resource "aws_iam_policy" "lambda_permissions_boundary" {
 
 resource "aws_ssm_parameter" "lambda_permissions_boundary" {
   provider = aws.apse2
-  name     = "/application/shared/lambda_permissions_boundary_arn"
+  name     = "/infrastructure/iam/lambda_permissions_boundary_arn"
   type     = "String"
   value    = aws_iam_policy.lambda_permissions_boundary.arn
 }

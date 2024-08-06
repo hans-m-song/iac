@@ -14,9 +14,13 @@ resource "aws_iam_policy" "assume_cdk_lookup_role" {
 
 data "aws_iam_policy_document" "assume_cdk_deploy_role" {
   statement {
-    effect    = "Allow"
-    actions   = ["sts:AssumeRole"]
-    resources = ["arn:aws:iam::${local.account_id}:role/cdk-toolkit-deploy-role-${local.account_id}-*"]
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    resources = [
+      "arn:aws:iam::${local.account_id}:role/cdk-toolkit-deploy-role-${local.account_id}-*",
+      "arn:aws:iam::${local.account_id}:role/cdk-toolkit-file-publishing-role-${local.account_id}-*",
+      "arn:aws:iam::${local.account_id}:role/cdk-toolkit-image-publishing-role-${local.account_id}-*",
+    ]
   }
 }
 
