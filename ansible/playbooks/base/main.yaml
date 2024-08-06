@@ -26,6 +26,7 @@
         - gnupg
         - jq
         - nfs-common
+        - rsync
         - samba
         - software-properties-common
 

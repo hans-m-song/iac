@@ -7,6 +7,15 @@
       prompt: Sudo password
       private: true
   tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - lvm2
+        - nfs-kernel-server
+        - samba
+
     - name: Setup NFS server
       ansible.builtin.import_role:
         name: nfs-server
