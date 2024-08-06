@@ -5,24 +5,12 @@ import * as cdk from "aws-cdk-lib";
 
 import { Stack } from "~/lib/cdk/Stack";
 import { ECR, Region, hostedZones } from "~/lib/constants";
-import { CertificateStack } from "~/lib/constructs/cloudformation/CertificateStack";
 import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDNSStack";
 import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
 import { ECRPublicStack } from "~/lib/constructs/cloudformation/ECRPublicStack";
 import { HostedZoneUpdateStack } from "~/lib/constructs/cloudformation/HostedZoneUpdateStack";
 
 const app = new cdk.App();
-
-new CertificateStack(app, "Certificate", {
-  env: { region: Region.NVirginia },
-  requests: [
-    { domainName: "hsong.me" },
-    {
-      domainName: "cloud.axatol.xyz",
-      alternateNames: ["*.cloud.axatol.xyz"],
-    },
-  ],
-});
 
 new CloudflareDNSStack(app, "CloudflareDNS", {
   env: { region: Region.Sydney },
