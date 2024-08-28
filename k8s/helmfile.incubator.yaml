@@ -1,0 +1,104 @@
+{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+
+releases:
+  - name: arc
+    installed: false
+    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+    namespace: arc-systems
+    version: 0.9.3
+    values:
+      - flags:
+          logLevel: debug
+          logFormat: json
+          updateStrategy: eventual
+
+  - name: arc-runner-set
+    installed: false
+    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+    namespace: arc-runners
+    version: 0.9.3
+    values:
+      - flags:
+          logLevel: debug
+          logFormat: json
+          updateStrategy: eventual
+
+  - name: mongo
+    installed: false
+    chart: ./charts/generic
+    namespace: mongo
+    values:
+      - ./values/mongo.yaml
+      - {{- $secrets.mongo | toYaml | nindent 8 }}
+
+  - name: mongo-express
+    installed: false
+    chart: ./charts/generic
+    namespace: mongo
+    values:
+      - ./values/mongo-express.yaml
+      - {{- $secrets.mongoExpress | toYaml | nindent 8 }}
+
+  - name: nexus
+    installed: false
+    chart: ./charts/generic
+    namespace: nexus
+    values:
+      - ./values/nexus.yaml
+
+  - name: nri-bundle
+    installed: false
+    chart: newrelic/nri-bundle
+    namespace: monitoring
+    version: 5.0.85
+    labels:
+      purpose: monitoring
+    values:
+      - ./values/nri-bundle.yaml
+      - {{- $secrets.newrelic | toYaml | nindent 8 }}
+
+  - name: openobserve-collector
+    installed: false
+    chart: openobserve/openobserve-collector
+    namespace: monitoring
+    version: 0.3.8
+    labels:
+      purpose: monitoring
+    values:
+      - {{- $secrets.openobserveCollector | toYaml | nindent 8 }}
+
+  - name: opentelemetry-operator
+    installed: false
+    chart: open-telemetry/opentelemetry-operator
+    namespace: monitoring
+    version: 0.64.2
+    labels:
+      purpose: monitoring
+    values:
+      - ./values/opentelemetry-operator.yaml
+
+  - name: prometheus-stack
+    installed: false
+    chart: prometheus-community/kube-prometheus-stack
+    namespace: monitoring
+    version: 61.3.1
+    labels:
+      purpose: monitoring
+    values:
+      - ./values/prometheus-stack.yaml
+      - {{- $secrets.prometheusStack | toYaml | nindent 8 }}
+
+  - name: vault
+    installed: false
+    chart: hashicorp/vault
+    namespace: vault
+    version: 0.28.0
+    values:
+    - ./values/vault.yaml
+    - {{- $secrets.vault | toYaml | nindent 8 }}
+
+  - name: zerotier
+    chart: ./charts/generic
+    namespace: zerotier
+    values:
+      - ./values/zerotier.yaml

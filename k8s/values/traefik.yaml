@@ -28,10 +28,48 @@ logs:
       retryAttempts: true
       minDuration: "10ms"
 
-experimental:
-  plugins:
+ingressRoute:
+  dashboard:
     enabled: true
+    matchRule: PathPrefix(`/dashboard`)
+
+# experimental:
+#   plugins:
+#     enabled: true
 
 additionalArguments:
+  - --api.insecure=true
   # - --experimental.plugins.jwt.moduleName=github.com/team-carepay/traefik-jwt-plugin
   # - --experimental.plugins.jwt.version=v0.6.0
+
+extraObjects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: traefik-api
+    spec:
+      type: ClusterIP
+      selector:
+        app.kubernetes.io/name: traefik
+        app.kubernetes.io/instance: traefik-kube-system
+      ports:
+        - name: traefik
+          protocol: TCP
+          port: 9000
+          targetPort: 9000
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: traefik-dashboard
+    spec:
+      rules:
+        - host: traefik.axatol.local
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: traefik-api
+                    port:
+                      name: traefik

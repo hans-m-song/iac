@@ -8,6 +8,7 @@ cdk.out*
 .dccache
 .DS_Store
 .env
+.envrc
 .iac-data
 k8s/secrets.yaml
 ansible/secrets.yaml

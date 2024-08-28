@@ -6,9 +6,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Release.Name }}-{{ $name }}"
-  namespace: {{ .Release.Namespace }}
-  labels: {{- include "generic.labels" . | nindent 4 }}
+  name: "{{ $.Release.Name }}-{{ $name }}"
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "generic.labels" $ | nindent 4 }}
 data:
   {{- range $key, $value := $env }}
   {{ $key }}: {{ $value }}
@@ -16,16 +16,16 @@ data:
 {{- end }}
 {{- end }}
 {{- end }}
-{{- if gt (len .Values.files) 0 }}
+{{- if gt (len $.Values.files) 0 }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-files
-  namespace: {{ .Release.Namespace }}
-  labels: {{- include "generic.labels" . | nindent 4 }}
+  name: {{ $.Release.Name }}-files
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- include "generic.labels" $ | nindent 4 }}
 data:
-  {{- range $name, $value := .Values.files }}
+  {{- range $name, $value := $.Values.files }}
   {{ $name }}: |
     {{- $value | trim | nindent 4 }}
   {{- end }}

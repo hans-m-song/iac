@@ -22,7 +22,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Config checksum
 */}}
 {{- define "generic.configChecksum" -}}
-{{- $secrets := dict "__secrets" $.Values.secrets | toYaml -}}
+{{- $secrets := $.Values.secrets | toYaml -}}
 {{- $config := include (print $.Template.BasePath "/configmap.yaml") $ }}
 {{- print $secrets $config | sha256sum -}}
 {{- end -}}

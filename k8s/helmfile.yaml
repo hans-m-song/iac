@@ -1,12 +1,46 @@
-{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+repositories:
+  - name: actions-runner-controller
+    url: https://actions-runner-controller.github.io/actions-runner-controller
+  - name: cloudflare
+    url: https://cloudflare.github.io/helm-charts/
+  - name: csi-driver-nfs
+    url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  - name: external-dns
+    url: https://kubernetes-sigs.github.io/external-dns/
+  - name: flipt
+    url: https://helm.flipt.io
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+  - name: huisheng
+    url: https://huisheng.charts.axatol.xyz # git+https://github.com/hans-m-song/huisheng@charts?ref=master
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: metrics-server
+    url: https://kubernetes-sigs.github.io/metrics-server/
+  - name: minio
+    url: https://charts.min.io/
+  - name: newrelic
+    url: https://helm-charts.newrelic.com
+  - name: nfs-subdir-external-provisioner
+    url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+  - name: openobserve
+    url: https://charts.openobserve.ai
+  - name: open-telemetry
+    url: https://open-telemetry.github.io/opentelemetry-helm-charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: traefik
+    url: https://helm.traefik.io/traefik
 
 helmfiles:
-  - ./helmfile.repositories.yaml
-  - ./helmfile.monitoring.yaml
-  - ./helmfile.networking.yaml
+  - path: ./helmfile.infrastructure.yaml
+  - path: ./helmfile.applications.yaml
+  - path: ./helmfile.incubator.yaml
 
 helmDefaults:
   kubeContext: wheatley
+  diffArgs:
+    - --allow-unreleased
   atomic: true
   cleanupOnFail: false
   createNamespace: true
@@ -16,143 +50,5 @@ helmDefaults:
   wait: true
   waitForJobs: true
 
-releases:
-  - name: actions-runner-controller
-    chart: actions-runner-controller/actions-runner-controller
-    namespace: actions-runner-system
-    version: 0.23.7
-    values:
-      - ./values/actions-runner-controller.yaml
-      - {{- $secrets.actionsRunnerController | toYaml | nindent 8 }}
-
-  - name: arc
-    installed: false
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
-    namespace: arc-systems
-    version: 0.8.1
-    values:
-      - flags:
-          logLevel: debug
-          logFormat: json
-          updateStrategy: eventual
-
-  - name: actions-runners
-    chart: ./charts/actions-runners
-    namespace: actions-runner-system
-    values:
-      - ./values/actions-runners.yaml
-
-  - name: custom
-    chart: ./charts/custom
-
-  - name: flipt
-    chart: flipt/flipt
-    namespace: flipt
-    version: 0.52.0
-    values:
-      - ./values/flipt.yaml
-
-  - name: home-assistant
-    chart: ./charts/generic
-    namespace: home-assistant
-    values:
-      - ./values/home-assistant.yaml
-
-  - name: huisheng
-    chart: huisheng/huisheng
-    namespace: huisheng
-    version: 0.0.5
-    values:
-      - ./values/huisheng.yaml
-      - {{- $secrets.huisheng | toYaml | nindent 8 }}
-
-  - name: minio
-    chart: ./charts/generic
-    namespace: minio
-    values:
-      - ./values/minio.yaml
-      - {{- $secrets.minio | toYaml | nindent 8 }}
-
-  - name: mongo
-    chart: ./charts/generic
-    namespace: mongo
-    values:
-      - ./values/mongo.yaml
-      - {{- $secrets.mongo | toYaml | nindent 8 }}
-
-  - name: mongo-express
-    chart: ./charts/generic
-    namespace: mongo
-    values:
-      - ./values/mongo-express.yaml
-      - {{- $secrets.mongoExpress | toYaml | nindent 8 }}
-
-  - name: mqtt
-    chart: ./charts/generic
-    namespace: mqtt
-    values:
-      - ./values/mqtt.yaml
-
-  - name: nexus
-    installed: false
-    chart: ./charts/generic
-    namespace: nexus
-    values:
-      - ./values/nexus.yaml
-
-  - name: octopus-deploy
-    installed: false
-    chart: oci://registry-1.docker.io/octopusdeploy/octopusdeploy-helm
-    namespace: octopus
-    version: 2023.2.12482
-    values:
-      - ./values/octopus-deploy.yaml
-      - octopus:
-          image:
-            tag: 2024.1.12210
-      - {{- $secrets.octopusDeploy | toYaml | nindent 8 }}
-
-  - name: octopus-deploy-mssql
-    installed: false
-    chart: ./charts/generic
-    namespace: octopus
-    values:
-      - ./values/octopus-deploy-mssql.yaml
-      - {{- $secrets.octopusDeployMssql | toYaml | nindent 8 }}
-
-  - name: octopus-deploy-worker
-    installed: false
-    chart: ./charts/octopus-deploy-worker
-    namespace: octopus
-    values:
-      - {{- $secrets.octopusDeployWorker | toYaml | nindent 8 }}
-      - image: public.ecr.aws/axatol/octopus-deploy-tentacle
-
-  - name: overleaf
-    installed: false
-    chart: ./charts/generic
-    namespace: overleaf
-    values:
-      - ./values/overleaf.yaml
-      - {{- $secrets.overleaf | toYaml | nindent 8 }}
-
-  - name: redis
-    chart: ./charts/generic
-    namespace: redis
-    values:
-      - ./values/redis.yaml
-      - {{- $secrets.redis | toYaml | nindent 8}}
-
-  - name: vault
-    chart: hashicorp/vault
-    namespace: vault
-    version: 0.28.0
-    values:
-    - ./values/vault.yaml
-    - {{- $secrets.vault | toYaml | nindent 8 }}
-
-  - name: zigbee2mqtt
-    chart: ./charts/generic
-    namespace: home-assistant
-    values:
-      - ./values/zigbee2mqtt.yaml
+commonLabels:
+  app.kubernetes.io/managed-by: helmfile
