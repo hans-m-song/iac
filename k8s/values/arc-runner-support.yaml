@@ -1,0 +1,24 @@
+templates:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: arc-runner-secrets
+      namespace: "{{ .Release.Namespace }}"
+    type: Opaque
+    data:
+      github_token: "{{ .Values.githubToken | b64enc }}"
+
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: arc-runner-cache
+      namespace: "{{ .Release.Namespace }}"
+    spec:
+      resources:
+        requests:
+          storage: 1Gi
+      volumeMode: Filesystem
+      storageClassName: nfs-persistent
+      accessModes:
+        - ReadWriteOnce
+        - ReadWriteMany

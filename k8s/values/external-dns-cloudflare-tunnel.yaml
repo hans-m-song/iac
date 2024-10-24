@@ -16,7 +16,7 @@ provider:
   name: webhook
   webhook:
     image:
-      repository: docker.io/axatol/external-dns-cloudflare-tunnel-webhook
+      repository: public.ecr.aws/axatol/external-dns-cloudflare-tunnel-webhook
       tag: latest
     securityContext:
       allowPrivilegeEscalation: false
@@ -31,8 +31,10 @@ provider:
     env:
       - name: LOG_LEVEL
         value: debug
-      - name: DOMAIN_FILTERS
-        value: axatol.xyz
+      # - name: DOMAIN_FILTERS
+      #   value: axatol.xyz
+      # - name: DRY_RUN
+      #   value: "true"
       - name: CLOUDFLARE_ACCOUNT_ID
         valueFrom:
           secretKeyRef:
@@ -50,4 +52,4 @@ provider:
             key: CLOUDFLARE_API_TOKEN
 
 extraArgs:
-  - --annotation-filter=external-dns.alpha.kubernetes.io/hostname
+  - --domain-filter=axatol.xyz

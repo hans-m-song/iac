@@ -1,0 +1,25 @@
+githubConfigSecret: arc-runner-secrets
+maxRunners: 5
+minRunners: 0
+controllerServiceAccount:
+  name: arc-gha-rs-controller
+  namespace: arc-systems
+containerMode:
+  type: dind
+template:
+  spec:
+    containers:
+      - name: runner
+        image: public.ecr.aws/axatol/github-actions-runner:latest
+        command: ["/home/runner/run.sh"]
+        volumeMounts:
+          - name: cache
+            mountPath: /opt/hostedtoolcache
+            subPath: opt/hostedtoolcache
+          - name: cache
+            mountPath: /home/runner/.cache
+            subPath: home/runner/.cache
+    volumes:
+      - name: cache
+        persistentVolumeClaim:
+          claimName: arc-runner-cache
