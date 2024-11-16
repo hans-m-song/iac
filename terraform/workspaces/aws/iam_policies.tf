@@ -92,3 +92,68 @@ resource "aws_iam_policy" "cloudfront_invalidator" {
   name     = "cloudfront-invalidator-policy"
   policy   = data.aws_iam_policy_document.cloudfront_invalidator.json
 }
+
+data "aws_iam_policy_document" "user_access_self_service" {
+  statement {
+    sid    = "AllowReadIAM"
+    effect = "Allow"
+    actions = [
+      "iam:List*",
+      "iam:Get*",
+      "iam:CreateVirtualMFADevice",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowSelfService"
+    effect = "Allow"
+    actions = [
+      # user
+      "iam:GetLoginProfile",
+      "iam:UpdateLoginProfile",
+      # password
+      "iam:ChangePassword",
+      # access key
+      "iam:CreateAccessKey",
+      "iam:DeleteAccessKey",
+      "iam:UpdateAccessKey",
+      "iam:GetAccessKeyLastUsed",
+      # mfa
+      "iam:EnableMFADevice",
+      "iam:ResyncMFADevice",
+      "iam:DeactivateMFADevice",
+    ]
+    resources = [
+      "arn:aws:iam::*:user/$${aws:username}"
+    ]
+  }
+
+  statement {
+    sid    = "DenyAllIfNoMFA"
+    effect = "Deny"
+    not_actions = [
+      "iam:List*",
+      "iam:Get*",
+      "iam:CreateVirtualMFADevice",
+      "sts:GetCallerIdentity",
+      "iam:GetLoginProfile",
+      "iam:UpdateLoginProfile",
+      "iam:ChangePassword",
+      "iam:EnableMFADevice",
+      "iam:ResyncMFADevice",
+    ]
+    resources = ["*"]
+    condition {
+      test     = "BoolIfExists"
+      variable = "aws:MultiFactorAuthPresent"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "user_access_self_service" {
+  provider = aws.apse2
+  name     = "user-access-self-service-policy"
+  policy   = data.aws_iam_policy_document.user_access_self_service.json
+}
