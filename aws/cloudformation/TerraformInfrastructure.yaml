@@ -151,17 +151,42 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
+              # certificates
               - acm:DeleteCertificate
               - acm:RenewCertificate
               - acm:RequestCertificate
               - acm:UpdateCertificateOptions
+              # apigateway settings
               - apigateway:GET
               - apigateway:PATCH
+              # iam oidc
               - iam:AddClientIDToOpenIDConnectProvider
               - iam:CreateOpenIDConnectProvider
               - iam:DeleteOpenIDConnectProvider
               - iam:RemoveClientIDFromOpenIDConnectProvider
               - iam:UpdateOpenIDConnectProviderThumbprint
+              # iam roles
+              - iam:CreateRole
+              - iam:UpdateRole
+              - iam:UpdateRoleDescription
+              - iam:DeleteRole
+              - iam:AttachRolePolicy
+              - iam:DetachRolePolicy
+              - iam:UpdateAssumeRolePolicy
+              - iam:PutRolePermissionsBoundary
+              - iam:DeleteRolePermissionsBoundary
+              # iam groups
+              - iam:CreateGroup
+              - iam:UpdateGroup
+              - iam:DeleteGroup
+              - iam:AttachGroupPolicy
+              - iam:DetachGroupPolicy
+              # iam policies
+              - iam:CreatePolicy
+              - iam:CreatePolicyVersion
+              - iam:DeletePolicy
+              - iam:DeletePolicyVersion
+              # parameters
               - ssm:DeleteParameter
               - ssm:DeleteParameters
               - ssm:DeleteResourcePolicy
@@ -169,6 +194,7 @@ Resources:
             Resource:
               - Fn::Sub: arn:${AWS::Partition}:acm:*:${AWS::AccountId}:certificate/*
               - Fn::Sub: arn:${AWS::Partition}:apigateway:*::/account
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:group/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/*
               - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
