@@ -32,9 +32,11 @@ module "huisheng_github_repository" {
   providers       = { github = github.hans_m_song }
   repository_name = "huisheng"
 
-  github_actions_webhook = var.github_actions_runner_webhook_url
-  actions_secrets = merge(local.project_secrets, {
+  actions_variables = {
     NEW_RELIC_DEPLOYMENT_ENTITY_GUID = module.huisheng_newrelic_application.workload_guid
+  }
+
+  actions_secrets = merge(local.project_secrets, {
   })
 
   environments = {

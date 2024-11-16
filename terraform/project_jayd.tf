@@ -3,9 +3,7 @@ module "jayd_github_repository" {
   providers       = { github = github.axatol }
   repository_name = "jayd"
 
-  github_actions_webhook = var.github_actions_runner_webhook_url
-  new_relic_license_key  = var.github_new_relic_license_key
-  actions_secrets        = local.project_secrets
+  actions_secrets = local.project_secrets
 
   environments = {
     "production" = {

@@ -16,12 +16,6 @@ variable "actions_secrets" {
   default     = {}
 }
 
-variable "github_actions_webhook" {
-  description = "(Optional) URL of a Github Actions Controller to deliver workflow_job events to"
-  type        = string
-  default     = ""
-}
-
 variable "new_relic_license_key" {
   description = "(Optional) License key used to deliver repository events to"
   type        = string

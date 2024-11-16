@@ -23,18 +23,6 @@ resource "github_actions_repository_oidc_subject_claim_customization_template" "
   ]
 }
 
-resource "github_repository_webhook" "actions_runner" {
-  count      = var.github_actions_webhook != "" ? 1 : 0
-  repository = var.repository_name
-  active     = true
-  events     = ["workflow_job"]
-
-  configuration {
-    url          = var.github_actions_webhook
-    content_type = "json"
-  }
-}
-
 resource "github_repository_webhook" "new_relic" {
   count      = var.new_relic_license_key != "" ? 1 : 0
   repository = var.repository_name

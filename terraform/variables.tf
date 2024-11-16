@@ -34,10 +34,10 @@ variable "github_actions_new_relic_api_key" {
   sensitive   = true
 }
 
-variable "github_actions_runner_webhook_url" {
-  description = "/infrastructure/github_actions/runner_webhook_url"
+variable "github_actions_new_relic_license_key" {
+  description = "/infrastructure/github_actions/new_relic_license_key"
   type        = string
-  sensitive   = false
+  sensitive   = true
 }
 
 variable "github_actions_slack_webhook_url" {
@@ -77,33 +77,33 @@ variable "new_relic_terraform_api_key" {
 }
 
 variable "oci_tenancy_ocid" {
-  description = "TODO"
+  description = "/infrastructure/oci/tenancy_ocid"
   type        = string
   sensitive   = true
 }
 
-variable "oci_user_ocid" {
-  description = "TODO"
+variable "oci_terraform_user_ocid" {
+  description = "/infrastructure/oci/terraform_user_ocid"
   type        = string
   sensitive   = true
 }
 
-variable "oci_terraform_fingerprint" {
-  description = "TODO"
+variable "oci_terraform_api_key_fingerprint" {
+  description = "/infrastructure/oci/terraform_api_key_fingerprint"
   type        = string
   sensitive   = true
 }
 
 variable "oci_terraform_api_private_key" {
-  description = "TODO"
+  description = "/infrastructure/oci/terraform_api_private_key"
   type        = string
   sensitive   = true
 }
 
-variable "oci_region" {
-  description = "TODO"
+variable "openssh_public_keys" {
+  description = "/infrastructure/ssh/openssh_public_keys"
   type        = string
-  sensitive   = true
+  sensitive   = false
 }
 
 variable "terraform_deploy_role" {
