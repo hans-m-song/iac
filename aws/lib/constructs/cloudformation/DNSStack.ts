@@ -3,101 +3,117 @@ import * as r53 from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 
 import { Stack, StackProps } from "~/lib/cdk/Stack";
-import { snakeToPascalCase, urlToPascalCase } from "~/lib/utils/string";
+import { urlToPascalCase } from "~/lib/utils/string";
 
 export interface RecordProps {
+  name: string;
+  hostedZone: r53.HostedZoneAttributes;
+  ttl?: number;
   a?: string[];
   aaaa?: string[];
   cname?: string;
-  ttl?: number;
 }
 
-interface Records {
-  a?: r53.ARecord[];
-  aaaa?: r53.AaaaRecord[];
+export interface RecordCollection {
+  a?: r53.ARecord;
+  aaaa?: r53.AaaaRecord;
   cname?: r53.CnameRecord;
 }
 
-export interface CNamesStackProps extends StackProps {
-  records: Record<string, RecordProps>;
-  hostedZones: Record<string, r53.HostedZoneAttributes>;
+export interface DNSStackProps extends StackProps {
+  records: RecordProps[];
 }
 
 export class DNSStack extends Stack {
   hostedZones: Record<string, r53.IHostedZone> = {};
-  records: Record<string, Records> = {};
+  records: Record<string, RecordCollection> = {};
 
   constructor(
     scope: Construct,
     id: string,
-    { records, hostedZones, ...props }: CNamesStackProps,
+    { records, ...props }: DNSStackProps,
   ) {
     super(scope, id, props);
 
-    this.hostedZones = Object.fromEntries(
-      Object.entries(hostedZones).map(([name, attributes]) => [
-        attributes.zoneName,
-        r53.HostedZone.fromHostedZoneAttributes(
-          this,
-          `${snakeToPascalCase(name)}HostedZone`,
-          attributes,
-        ),
-      ]),
-    );
-
-    Object.entries(records).forEach(([record, props]) => {
-      if (!record.endsWith(".")) {
-        throw new Error("must specify a FQDN, e.g. foo.example.com.");
-      }
-
-      const recordName = record.replace(/\.$/, "");
-      const recordID = urlToPascalCase(recordName);
-      const ttl = props.ttl ? cdk.Duration.minutes(props.ttl) : undefined;
-
-      const zone = this.hostedZone(recordName);
-
-      if (props.a?.length) {
-        new r53.ARecord(zone, `${recordID}ARecord`, {
-          zone,
-          recordName: record,
-          target: r53.RecordTarget.fromIpAddresses(...props.a),
-          ttl,
-        });
-      }
-
-      if (props.aaaa?.length) {
-        new r53.AaaaRecord(zone, `${recordID}AAAARecord`, {
-          zone,
-          recordName: record,
-          target: r53.RecordTarget.fromIpAddresses(...props.aaaa),
-          ttl,
-        });
-      }
-
-      if (props.cname) {
-        const value = props.cname.endsWith(".")
-          ? props.cname
-          : `${props.cname}.`;
-
-        new r53.CnameRecord(zone, `${recordID}CNameRecord`, {
-          zone,
-          recordName: record,
-          domainName: value,
-          ttl,
-        });
-      }
-    });
+    for (const props of records) {
+      const hostedZone = this.fromHostedZoneAttributes(props.hostedZone);
+      this.addRecordSet(hostedZone, props);
+    }
   }
 
-  hostedZone(domain: string) {
-    const zone = Object.values(this.hostedZones).find((zone) =>
-      domain.endsWith(zone.zoneName),
-    );
-
-    if (!zone) {
-      throw new Error(`no hosted zone configured to serve domain "${domain}"`);
+  private fromHostedZoneAttributes(
+    hostedZone: r53.HostedZoneAttributes,
+  ): r53.IHostedZone {
+    if (!this.hostedZones[hostedZone.zoneName]) {
+      this.hostedZones[hostedZone.zoneName] =
+        r53.HostedZone.fromHostedZoneAttributes(
+          this,
+          `${urlToPascalCase(hostedZone.zoneName)}HostedZone`,
+          hostedZone,
+        );
     }
 
-    return zone;
+    return this.hostedZones[hostedZone.zoneName];
+  }
+
+  addRecordSet(hostedZone: r53.IHostedZone, props: RecordProps) {
+    const recordName = props.name.replace(/\.$/, "");
+    const recordID = urlToPascalCase(recordName);
+    const ttl = props.ttl ? cdk.Duration.minutes(props.ttl) : undefined;
+
+    if (!this.records[recordName]) {
+      this.records[recordName] = {};
+    }
+
+    if (props.a) {
+      if (this.records[recordName].a) {
+        throw new Error(`a record with name ${recordName} already exists`);
+      }
+
+      this.records[recordName].a = new r53.ARecord(
+        hostedZone,
+        `${recordID}ARecord`,
+        {
+          zone: hostedZone,
+          recordName: props.name,
+          target: r53.RecordTarget.fromIpAddresses(...props.a),
+          ttl,
+        },
+      );
+    }
+
+    if (props.aaaa) {
+      if (this.records[recordName].aaaa) {
+        throw new Error(`aaaa record with name ${recordName} already exists`);
+      }
+
+      this.records[recordName].aaaa = new r53.AaaaRecord(
+        hostedZone,
+        `${recordID}AAAARecord`,
+        {
+          zone: hostedZone,
+          recordName: props.name,
+          target: r53.RecordTarget.fromIpAddresses(...props.aaaa),
+          ttl,
+        },
+      );
+    }
+
+    if (props.cname) {
+      if (this.records[recordName].cname) {
+        throw new Error(`cname record with name ${recordName} already exists`);
+      }
+
+      this.records[recordName].cname = new r53.CnameRecord(
+        hostedZone,
+        `${recordID}CNameRecord`,
+        {
+          zone: hostedZone,
+          recordName: props.name,
+          domainName: props.cname,
+          ttl,
+        },
+      );
+    }
   }
 }

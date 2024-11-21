@@ -43,7 +43,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
         { repo: "hans-m-song/iac", context: { pr: true, ref: "*" } },
         { repo: "hans-m-song/blog", context: { ref: "*", env: "public" } },
       ],
-      SSM.GithubActionsCDKDiffRoleARN,
+      { parameterName: SSM.GithubActionsCDKDiffRoleARN },
     );
 
     cdkDiffRole.addPolicies({
@@ -66,7 +66,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
           actor: "hans-m-song",
         },
       ],
-      SSM.GithubActionsCDKDeployRoleARN,
+      { parameterName: SSM.GithubActionsCDKDeployRoleARN },
     );
 
     cdkDeployRole.addPolicies({
@@ -100,7 +100,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
           actor: "hans-m-song",
         },
       ],
-      SSM.GithubActionsECRPublisherRoleARN,
+      { parameterName: SSM.GithubActionsECRPublisherRoleARN },
     );
 
     ecrPublisherRole.addManagedPolicy(
@@ -117,7 +117,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     const cloudFrontInvalidatorRole = this.role(
       "CloudFrontInvalidatorRole",
       [{ repo: "hans-m-song/blog", context: { env: "public", ref: "master" } }],
-      SSM.GithubActionsCloudFrontInvalidatorRoleARN,
+      { parameterName: SSM.GithubActionsCloudFrontInvalidatorRoleARN },
     );
 
     cloudFrontInvalidatorRole.addPolicies(
@@ -159,7 +159,7 @@ export class GithubActionsOIDCProviderStack extends Stack {
     const terraformRole = this.role(
       "TerraformRole",
       [{ repo: "hans-m-song/iac", context: { ref: "master" } }],
-      SSM.GithubActionsTerraformRoleARN,
+      { parameterName: SSM.GithubActionsTerraformRoleARN },
     );
 
     terraformLockTable.grantReadWriteData(terraformRole);

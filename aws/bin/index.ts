@@ -3,8 +3,7 @@ import "source-map-support/register";
 
 import * as cdk from "aws-cdk-lib";
 
-import { Stack } from "~/lib/cdk/Stack";
-import { ECR, Region, hostedZones } from "~/lib/constants";
+import { ECR, Region, githubPagesRecords, hostedZones } from "~/lib/constants";
 import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDNSStack";
 import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
 import { ECRPublicStack } from "~/lib/constructs/cloudformation/ECRPublicStack";
@@ -32,23 +31,13 @@ new CloudflareDNSStack(app, "CloudflareDNS", {
 
 new DNSStack(app, "DNS", {
   env: { region: Region.Sydney },
-  hostedZones,
-  records: {
-    "hsong.me.": {
-      a: [
-        "185.199.108.153",
-        "185.199.109.153",
-        "185.199.110.153",
-        "185.199.111.153",
-      ],
-      aaaa: [
-        "2606:50c0:8000::153",
-        "2606:50c0:8001::153",
-        "2606:50c0:8002::153",
-        "2606:50c0:8003::153",
-      ],
+  records: [
+    {
+      name: "hsong.me.",
+      hostedZone: hostedZones.hsong_me,
+      ...githubPagesRecords,
     },
-  },
+  ],
 });
 
 new ECRPublicStack(app, "ECRPublic", {

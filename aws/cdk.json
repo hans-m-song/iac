@@ -1,6 +1,8 @@
 {
   "app": "tsx bin/index.ts",
   "region": "ap-southeast-2",
+  "assetMetadata": false,
+  "pathMetadata": false,
   "versionReporting": false,
   "context": {
     "@aws-cdk/core:bootstrapQualifier": "toolkit",

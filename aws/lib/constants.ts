@@ -31,7 +31,7 @@ export enum SSM {
   GithubActionsLookupRoleARN = "/infrastructure/github_actions/lookup_role_arn",
   GithubActionsOIDCProviderARN = "/infrastructure/github_actions/oidc_provider_arn",
   GithubActionsTerraformRoleARN = "/infrastructure/github_actions/terraform_role_arn",
-  IAMECRImagePublisherManagedPolicyARN = "/infrastructure/iam/ecr_image_publisher_managed_policy_arn",
+  IAMECRImagePublisherManagedPolicyARN = "/infrastructure/github_actions/ecr_image_publisher_managed_policy_arn",
   IAMExecutionBoundaryPolicyARN = "/infrastructure/iam/execution_boundary_policy_arn",
   IAMLambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
   IAMTerraformBackendPolicyARN = "/infrastructure/iam/terraform_state_policy_arn",
@@ -49,6 +49,8 @@ export enum ECR {
   Huisheng = "huisheng",
   JAYD = "jayd",
   OctopusDeployTentacle = "octopus-deploy-tentacle",
+  Shrodinger = "shrodinger",
+  ShrodingerAPI = "shrodinger-api",
 }
 
 export const hostedZones = {
@@ -60,4 +62,20 @@ export const hostedZones = {
     zoneName: "cloud.axatol.xyz",
     hostedZoneId: "Z06906322LG6UMVSAT4VH",
   },
+};
+
+//docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+export const githubPagesRecords = {
+  a: [
+    "185.199.108.153",
+    "185.199.109.153",
+    "185.199.110.153",
+    "185.199.111.153",
+  ],
+  aaaa: [
+    "2606:50c0:8000::153",
+    "2606:50c0:8001::153",
+    "2606:50c0:8002::153",
+    "2606:50c0:8003::153",
+  ],
 };
