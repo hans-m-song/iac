@@ -64,6 +64,21 @@ resource "aws_ssm_parameter" "cloud_axatol_xyz_acm_certificate_arn_use1" {
   value    = module.cloud_axatol_xyz_acm_certificate.arn
 }
 
+module "cloud_axatol_xyz_apse2_acm_certificate" {
+  providers                 = { aws = aws.apse2 }
+  source                    = "./modules/acm_certificate"
+  zone_id                   = data.aws_route53_zone.cloud_axatol_xyz.zone_id
+  domain_name               = "cloud.axatol.xyz"
+  subject_alternative_names = ["*.cloud.axatol.xyz", "*.wheatley.cloud.axatol.xyz"]
+}
+
+resource "aws_ssm_parameter" "cloud_axatol_xyz_regional_acm_certificate_arn_apse2" {
+  provider = aws.apse2
+  name     = "/infrastructure/acm/cloud.axatol.xyz/regional_certificate_arn"
+  type     = "String"
+  value    = module.cloud_axatol_xyz_apse2_acm_certificate.arn
+}
+
 module "hsong_me_acm_certificate" {
   providers                 = { aws = aws.use1 }
   source                    = "./modules/acm_certificate"

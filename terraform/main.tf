@@ -4,6 +4,16 @@ data "auth0_tenant" "this" {
 data "aws_caller_identity" "current" {
 }
 
+data "aws_acm_certificate" "cloud_axatol_xyz" {
+  provider = aws.use1
+  domain   = "cloud.axatol.xyz"
+}
+
+data "aws_acm_certificate" "hsong_me" {
+  provider = aws.use1
+  domain   = "hsong.me"
+}
+
 data "github_user" "hans_m_song" {
   username = "hans-m-song"
 }
@@ -17,7 +27,7 @@ locals {
     AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN = module.aws.ecr_publisher_github_actions_role_arn
     DISCORD_WEBHOOK_URL              = var.github_actions_discord_webhook_url
     SLACK_WEBHOOK_URL                = var.github_actions_slack_webhook_url
-    NEW_RELIC_API_KEY                = var.github_actions_new_relic_api_key
+    NEW_RELIC_LICENSE_KEY            = var.github_actions_new_relic_license_key
   }
 
   slack_alerts_channel_id = "C05QK1T67JA"
