@@ -12,47 +12,6 @@
             gateway: "{{ adblock.network_gateway }}"
         state: present
 
-    - name: Cloudflared DOH
-      community.docker.docker_container:
-        name: cloudflared
-        image: cloudflare/cloudflared:latest
-        pull: missing
-        restart_policy: always
-        command:
-          - proxy-dns
-          - --address
-          - "{{ adblock.doh_address }}"
-          - --port
-          - "53"
-          - --upstream
-          - "{{ adblock.doh_upstream_address }}"
-        networks:
-          - name: "{{ adblock.network_name }}"
-            ipv4_address: "{{ adblock.doh_address }}"
-
-    - name: Pihole
-      community.docker.docker_container:
-        name: pihole
-        image: pihole/pihole:latest
-        pull: missing
-        state: absent
-        restart_policy: always
-        env:
-          DNS1: "{{ adblock.doh_address }}"
-          DNS2: "{{ adblock.doh_address }}"
-          WEBPASSWORD: "{{ adblock.pihole_webpassword }}"
-          DNSMASQ_USER: root
-        networks:
-          - name: "{{ adblock.network_name }}"
-            ipv4_address: "{{ adblock.pihole_address }}"
-        ports:
-          - "8001:80/tcp"
-          # - "53:53/tcp"
-          # - "53:53/udp"
-        volumes:
-          - /opt/pihole/etc:/etc/pihole:rw
-          - /opt/pihole/dnsmasq.d:/etc/dnsmasq.d:rw
-
     - name: AdGuard
       community.docker.docker_container:
         name: adguard
