@@ -1,0 +1,15 @@
+---
+- name: Pull images
+  hosts: gman.local
+  tasks:
+    - name: Pull Cloudflared
+      community.docker.docker_image_pull:
+        name: cloudflare/cloudflared:latest
+
+    - name: Pull Pihole
+      community.docker.docker_image_pull:
+        name: pihole/pihole:latest
+
+    - name: Pull AdGuard
+      community.docker.docker_image_pull:
+        name: adguard/adguardhome:latest

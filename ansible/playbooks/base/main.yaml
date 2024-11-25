@@ -29,6 +29,7 @@
         - rsync
         - samba
         - software-properties-common
+        - zsh
 
     - name: Install and configure ZeroTier
       ansible.builtin.import_role:
