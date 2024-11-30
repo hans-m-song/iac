@@ -1,0 +1,100 @@
+---
+- name: Check required variables
+  ansible.builtin.assert:
+    that:
+      - issuer_hostname is defined
+      - s3_bucket_name is defined
+      - keys_destination is defined
+
+- name: Run locally
+  delegate_to: localhost
+  block:
+    - name: Create jwks directory
+      ansible.builtin.file:
+        path: jwks
+        recurse: true
+        state: directory
+        mode: "0755"
+
+    - name: Create jwks gitignore
+      ansible.builtin.copy:
+        content: "*"
+        dest: jwks/.gitignore
+        mode: "0755"
+
+    - name: Generate service account signer private key
+      community.crypto.openssl_privatekey:
+        path: jwks/sa-signer.pem
+        type: RSA
+        size: 2048
+        mode: "0400"
+      register: private_key
+
+    - name: Generate service account signer ssh public key
+      community.crypto.openssl_publickey:
+        path: jwks/sa-signer.pub
+        format: OpenSSH
+        privatekey_path: "{{ private_key.filename }}"
+      register: public_key
+
+    - name: Generate service account signer pem public key
+      community.crypto.openssl_publickey:
+        path: jwks/sa-signer-pub.pem
+        format: PEM
+        privatekey_path: "{{ private_key.filename }}"
+      register: pkcs_key
+
+    - name: Generate jwks
+      ansible.builtin.command:
+        chdir: "{{ role_path ~ '/generate-jwks' }}"
+        cmd: go run main.go -key {{ playbook_dir }}/{{ pkcs_key.filename }}
+      register: jwks
+      changed_when: public_key.changed
+
+    - name: Write keys.json
+      ansible.builtin.copy:
+        content: "{{ jwks.stdout }}"
+        dest: jwks/keys.json
+        mode: "0755"
+
+    - name: Template discovery.json
+      ansible.builtin.template:
+        dest: jwks/discovery.json
+        src: discovery.json.j2
+        mode: "0755"
+
+    - name: Upload keys.json to S3
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        mode: put
+        src: jwks/keys.json
+        object: keys.json
+
+    - name: Upload discovery.json to S3
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        mode: put
+        src: jwks/discovery.json
+        object: .well-known/openid-configuration
+
+    - name: Upload keys to S3
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        mode: put
+        src: jwks/{{ item }}
+        object: private/{{ item }}
+      with_items:
+        - sa-signer.pem
+        - sa-signer.pub
+        - sa-signer-pub.pem
+
+- name: Upload keys to server
+  ansible.builtin.copy:
+    src: jwks/{{ item }}
+    dest: "{{ keys_destination }}/{{ item }}"
+    mode: "0600"
+    backup: true
+  with_items:
+    - sa-signer.pem
+    - sa-signer.pub
+    - sa-signer-pub.pem
