@@ -8,6 +8,7 @@ import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDN
 import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
 import { ECRPublicStack } from "~/lib/constructs/cloudformation/ECRPublicStack";
 import { HostedZoneUpdateStack } from "~/lib/constructs/cloudformation/HostedZoneUpdateStack";
+import { OIDCDiscoveryStack } from "~/lib/constructs/cloudformation/OIDCDiscoveryStack";
 
 const app = new cdk.App();
 
@@ -50,6 +51,9 @@ new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
   hostedZones: Object.values(hostedZones),
 });
 
-for (const child of app.node.children) {
-  (child as Stack).tag();
-}
+new OIDCDiscoveryStack(app, "WheatleyOIDCDiscovery", {
+  env: { region: Region.Sydney },
+  issuerDomainName: "oidc.wheatley.cloud.axatol.xyz",
+  hostedZoneId: hostedZones.cloud_axatol_xyz.hostedZoneId,
+  zoneName: hostedZones.cloud_axatol_xyz.zoneName,
+});
