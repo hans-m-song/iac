@@ -1,0 +1,49 @@
+containers:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    ports:
+      elasticsearch:
+        protocol: TCP
+        internalPort: 9200
+        externalPort: 9200
+    volumes:
+      elasticsearch-data:
+        mount:
+          mountPath: /usr/share/elasticsearch/data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: elasticsearch-data
+    readinessProbe:
+      httpGet:
+        path: /
+        port: elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    ports:
+      kibana:
+        protocol: TCP
+        internalPort: 5601
+        externalPort: 5601
+    readinessProbe:
+      httpGet:
+        path: /
+        port: kibana
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    elastic.axatol.local:
+      - path: /
+        portName: http
+
+pvc:
+  elasticsearch-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+secrets:
+  ELASTIC_PASSWORD: 24183527@ElasticSearch
+  KIBANA_TOKEN: 24183527@Kibana
+  STACK_VERSION: "8.15.3"

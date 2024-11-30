@@ -1,0 +1,15 @@
+templates:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "{{ .Release.Name }}"
+      namespace: "{{ .Release.Namespace }}"
+    spec:
+      type: NodePort
+      selector:
+        app.kubernetes.io/instance: yt-dlp-webui
+      ports:
+        - name: web
+          port: 17442
+          targetPort: 17442
+          nodePort: 32033

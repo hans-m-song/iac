@@ -31,8 +31,7 @@ releases:
       - runnerScaleSetName: axatol
         githubConfigUrl: https://github.com/axatol
 
-  - name: arc-runner-set-hans-m-song
-    installed: false
+  - name: arc-runner-set-hans-m-song-shrodinger
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
     version: 0.9.3
@@ -40,8 +39,8 @@ releases:
       purpose: deployment
     values:
       - ./values/arc-runner-set.yaml
-      - runnerScaleSetName: hans-m-song
-        githubConfigUrl: https://github.com/hans-m-song
+      - runnerScaleSetName: hans-m-song-shrodinger
+        githubConfigUrl: https://github.com/hans-m-song/shrodinger
 
   - name: cert-manager
     chart: jetstack/cert-manager

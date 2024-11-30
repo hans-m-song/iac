@@ -1,0 +1,62 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  youtubedl-material:
+    image: tzahi12345/youtubedl-material
+    ports:
+      web:
+        protocol: TCP
+        internalPort: 17442
+        externalPort: 17442
+    readinessProbe:
+      tcpSocket:
+        port: web
+    volumes:
+      audio:
+        mount:
+          mountPath: /app/audio
+        spec:
+          persistentVolumeClaim:
+            claimName: audio
+      video:
+        mount:
+          mountPath: /app/video
+        spec:
+          persistentVolumeClaim:
+            claimName: video
+
+  # ytdlpui:
+  #   image: marcobaobao/yt-dlp-webui
+  #   ports:
+  #     web:
+  #       protocol: TCP
+  #       internalPort: 3033
+  #       externalPort: 3033
+  #   readinessProbe:
+  #     tcpSocket:
+  #       port: web
+  #   volumes:
+  #     downloads:
+  #       mount:
+  #         mountPath: /downloads
+  #       spec:
+  #         persistentVolumeClaim:
+  #           claimName: data
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    ytdlp.axatol.local:
+      - path: /
+        portName: web
+
+pvc:
+  audio:
+    storageClassName: nfs-ephemeral
+    capacity: 1Gi
+
+  video:
+    storageClassName: nfs-ephemeral
+    capacity: 1Gi

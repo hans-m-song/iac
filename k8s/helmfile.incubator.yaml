@@ -75,8 +75,26 @@ releases:
     - ./values/vault.yaml
     - {{- $secrets.vault | toYaml | nindent 8 }}
 
+  - name: yt-dlp-webui
+    chart: ./charts/generic
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui.yaml
+
+  - name: yt-dlp-webui-nodeport
+    chart: ./charts/shim
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui-nodeport.yaml
+
   - name: zerotier
     chart: ./charts/generic
     namespace: zerotier
     values:
       - ./values/zerotier.yaml
+
+  - name: elasticsearch
+    chart: ./charts/generic
+    namespace: elastic
+    values:
+      - ./values/elasticsearch.yaml
