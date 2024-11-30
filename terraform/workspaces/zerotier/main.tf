@@ -50,45 +50,23 @@ resource "zerotier_network" "apeture" {
   EOT
 }
 
-resource "zerotier_member" "gman" {
-  name                    = "gman"
-  description             = "Managed by Terraform - Dell Wyse 5070"
-  member_id               = "d8f15af653"
+data "zerotier_members" "members" {
+  network_id = zerotier_network.apeture.id
+}
+
+resource "terraform_data" "test" {
+  input = data.zerotier_members.members
+}
+
+resource "zerotier_member" "chell" {
+  name                    = "chell"
+  description             = "Managed by Terraform - Lenovo X1 Carbon G6"
+  member_id               = "d82b83bd57"
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.41"]
+  ip_assignments          = ["10.0.0.10"]
 }
-
-resource "zerotier_member" "wheatley" {
-  name                    = "wheatley"
-  description             = "Managed by Terraform - Dell Optiplex 9020 USFF"
-  member_id               = "0e5a4e81e7"
-  network_id              = zerotier_network.apeture.id
-  authorized              = true
-  allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.42"]
-}
-
-resource "zerotier_member" "glados" {
-  name                    = "glados"
-  description             = "Managed by Terraform - Lenovo ThinkCentre M710Q Tiny"
-  member_id               = "d6475fe97d"
-  network_id              = zerotier_network.apeture.id
-  authorized              = true
-  allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.43"]
-}
-
-# resource "zerotier_member" "chell" {
-#   name                    = "chell"
-#   description             = "Managed by Terraform - Apple MacBook Pro 2020"
-#   member_id               = "c6f7862584"
-#   network_id              = zerotier_network.apeture.id
-#   authorized              = true
-#   allow_ethernet_bridging = false
-#   ip_assignments          = ["10.0.0.10"]
-# }
 
 resource "zerotier_member" "freeman" {
   name                    = "freeman"
@@ -113,11 +91,41 @@ resource "zerotier_member" "barney" {
 resource "zerotier_member" "alyx" {
   name                    = "alyx"
   description             = "Managed by Terraform - Apple MacBook Pro 2023"
-  member_id               = "7e729cf670"
+  member_id               = "daedeb7943"
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
   ip_assignments          = ["10.0.0.13"]
+}
+
+resource "zerotier_member" "gman" {
+  name                    = "gman"
+  description             = "Managed by Terraform - Dell Wyse 5070"
+  member_id               = "d8f15af653"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.41"]
+}
+
+resource "zerotier_member" "wheatley" {
+  name                    = "wheatley"
+  description             = "Managed by Terraform - Dell Optiplex 9020 USFF"
+  member_id               = "253ddd04a8" # "0e5a4e81e7"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.42"]
+}
+
+resource "zerotier_member" "glados" {
+  name                    = "glados"
+  description             = "Managed by Terraform - Lenovo ThinkCentre M710Q Tiny"
+  member_id               = "d6475fe97d"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.43"]
 }
 
 # resource "zerotier_member" "vance" {
