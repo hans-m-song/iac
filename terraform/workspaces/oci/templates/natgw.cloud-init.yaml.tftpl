@@ -1,0 +1,20 @@
+#cloud-config
+#https://github.com/System-aan-den-Rijn/terraform-oci-nat-instance/blob/master/instances_user_data_scripts.tf
+write_files:
+  - path: /etc/sysctl.d/98-ip-forward.conf
+    content: |
+      net.ipv4.ip_forward = 1
+  - path: /etc/rc.local
+    content: |
+      #!/bin/bash     
+      sleep 10s # This is necessary to give time to the secondary VNIC to show up in the OS
+      ip addr add ${lan_ip}/24 dev enp1s0
+      iptables --delete FORWARD 1
+      iptables --table nat --append POSTROUTING --out-interface enp0s3 --jump MASQUERADE
+    permissions: "0755"
+
+runcmd:
+  - echo 'This instance was provisioned by Terraform.' >> /etc/motd
+  - echo '-------------------------------------------' >> /etc/motd
+  - sleep 20s # This is necessary to give time to the secondary VNIC to show up in the OS
+  - /etc/rc.local # Run it for the initial setup
