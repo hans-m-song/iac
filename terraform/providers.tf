@@ -35,12 +35,12 @@ terraform {
 
     oci = {
       source  = "oracle/oci"
-      version = "5.36.0"
+      version = "6.8.0"
     }
 
     zerotier = {
       source  = "zerotier/zerotier"
-      version = "1.4.2"
+      version = "1.6.0"
     }
   }
 }
@@ -103,10 +103,10 @@ provider "newrelic" {
 
 provider "oci" {
   tenancy_ocid = var.oci_tenancy_ocid
-  user_ocid    = var.oci_user_ocid
-  fingerprint  = var.oci_terraform_fingerprint
+  user_ocid    = var.oci_terraform_user_ocid
+  fingerprint  = var.oci_terraform_api_key_fingerprint
   private_key  = var.oci_terraform_api_private_key
-  region       = var.oci_region
+  region       = "ap-sydney-1"
 }
 
 provider "zerotier" {

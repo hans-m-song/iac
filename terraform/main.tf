@@ -50,6 +50,12 @@ module "newrelic" {
   discord_webhook_url = var.new_relic_discord_webhook_url
 }
 
+module "oci" {
+  source              = "./workspaces/oci"
+  oci_tenancy_ocid    = var.oci_tenancy_ocid
+  openssh_public_keys = var.openssh_public_keys
+}
+
 module "zerotier" {
   source = "./workspaces/zerotier"
 }
