@@ -19,10 +19,73 @@
         state: present
         sysctl_set: true
 
-    - name: Pull images
-      ansible.builtin.import_tasks:
-        file: ./pull-images.yaml
+    - name: Traefik
+      community.docker.docker_container:
+        name: traefik
+        image: traefik:latest
+        command:
+          - --providers.docker
+          - --providers.docker.exposedByDefault=false
+        pull: missing
+        restart_policy: always
+        ports:
+          - 80:80
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
 
-    - name: Start adblock
-      ansible.builtin.import_tasks:
-        file: ./start-adblock.yaml
+    - name: Portainer
+      community.docker.docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        pull: missing
+        restart_policy: always
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /opt/portainer:/data
+        labels:
+          traefik.enable: "true"
+          traefik.http.services.portainer.loadbalancer.server.port: "9000"
+          traefik.http.routers.portainer.rule: Host(`portainer.axatol.local`)
+
+    - name: Adguard
+      community.docker.docker_container:
+        name: adguard
+        image: adguard/adguardhome:latest
+        pull: missing
+        restart_policy: always
+        ports:
+          # - "3000:3000/tcp"
+          - "53:53/tcp"
+          - "53:53/udp"
+        volumes:
+          - /opt/adguard/work:/opt/adguardhome/work:rw
+          - /opt/adguard/conf:/opt/adguardhome/conf:rw
+        labels:
+          traefik.enable: "true"
+          traefik.http.services.adguard.loadbalancer.server.port: "80"
+          traefik.http.routers.adguard.rule: Host(`adguard.axatol.local`)
+
+    - name: Gluetun
+      community.docker.docker_container:
+        name: gluetun
+        image: qmcgaw/gluetun:latest
+        pull: missing
+        restart_policy: always
+        env:
+          VPN_SERVICE_PROVIDER: mullvad
+          VPN_TYPE: wireguard
+          WIREGUARD_PRIVATE_KEY: "{{ vpn.wireguard_private_key }}"
+          WIREGUARD_ADDRESSES: "{{ vpn.wireguard_ipv4_address }}"
+          WIREGUARD_ENDPOINT_PORT: "{{ vpn.wireguard_port }}"
+          SERVER_COUNTRIES: Australia
+          TZ: Australia/Brisbane
+        ports:
+          - 8888:8888/tcp # http
+          - 8388:8388/tcp # shadowsocks
+          - 8388:8388/udp
+        volumes:
+          - /opt/gluetun:/gluetun
+        devices:
+          - /dev/net/tun
+        capabilities:
+          - NET_ADMIN

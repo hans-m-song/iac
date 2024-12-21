@@ -2,6 +2,11 @@
 - name: Pull images
   hosts: gman.local
   tasks:
-    - name: Pull AdGuard
+    - name: Pull images
       community.docker.docker_image_pull:
-        name: adguard/adguardhome:latest
+        name: "{{ item }}"
+      with_items:
+        - traefik:latest
+        - portainer/portainer-ce:latest
+        - adguard/adguardhome:latest
+        - qmcgaw/gluetun:latest
