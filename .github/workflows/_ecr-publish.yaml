@@ -20,7 +20,7 @@ on:
 jobs:
   publish:
     runs-on:
-      - ${{ github.event.repository.owner }}-${{ github.event.repository.name }}
+      - ${{ github.repository_owner }}-${{ github.event.repository.name }}
 
     permissions:
       id-token: write
