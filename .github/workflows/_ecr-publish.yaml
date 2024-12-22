@@ -20,7 +20,7 @@ on:
 jobs:
   publish:
     runs-on:
-      - self-hosted
+      - ${{ github.event.repository.owner }}-${{ github.event.repository.name }}
 
     permissions:
       id-token: write

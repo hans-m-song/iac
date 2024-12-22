@@ -5,3 +5,8 @@ service:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: actions-runner-controller.axatol.xyz
     external-dns.alpha.kubernetes.io/target: http://actions-runner-controller-github-webhook-server.actions-runner-system.svc.cluster.local:80
+
+metrics:
+  controllerManagerAddr: :8080
+  listenerAddr: :8080
+  listenerEndpoint: /metrics
