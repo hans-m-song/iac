@@ -1,0 +1,11 @@
+alloy:
+  stabilityLevel: experimental # to enable livedebugging
+  mounts:
+    varlog: true
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  faroPort: 12345
+  hosts:
+    - alloy.monitoring.axatol.local

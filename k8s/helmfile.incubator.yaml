@@ -55,17 +55,6 @@ releases:
     values:
       - ./values/opentelemetry-operator.yaml
 
-  - name: prometheus-stack
-    installed: false
-    chart: prometheus-community/kube-prometheus-stack
-    namespace: monitoring
-    version: 61.3.1
-    labels:
-      purpose: monitoring
-    values:
-      - ./values/prometheus-stack.yaml
-      - {{- $secrets.prometheusStack | toYaml | nindent 8 }}
-
   - name: vault
     installed: false
     chart: hashicorp/vault
@@ -94,6 +83,7 @@ releases:
       - ./values/zerotier.yaml
 
   - name: elasticsearch
+    installed: false
     chart: ./charts/generic
     namespace: elastic
     values:

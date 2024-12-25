@@ -1,0 +1,48 @@
+{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+
+releases:
+  - name: alloy
+    chart: grafana/alloy
+    namespace: monitoring
+    version: 0.10.1
+    labels:
+      purpose: monitoring
+    values:
+      - alloy:
+          configMap:
+            content: |
+              {{- readFile "./static/alloy/config.alloy" | nindent 14 }}
+              {{- readFile "./static/alloy/kubernetes-pod-logs.alloy" | nindent 14 }}
+              {{- readFile "./static/alloy/kubernetes-events.alloy" | nindent 14 }}
+              {{- readFile "./static/alloy/loki.alloy" | nindent 14 }}
+      - ./values/alloy.yaml
+
+  - name: loki
+    chart: grafana/loki
+    namespace: monitoring
+    version: 6.24.0
+    labels:
+      purpose: monitoring
+    values:
+      - ./values/loki.yaml
+      - {{- $secrets.loki | toYaml | nindent 8 }}
+
+  - name: metrics-server
+    chart: metrics-server/metrics-server
+    namespace: kube-system
+    version: 3.12.1
+    labels:
+      purpose: monitoring
+      tier: critical
+    values:
+      - ./values/metrics-server.yaml
+
+  - name: prometheus-stack
+    chart: prometheus-community/kube-prometheus-stack
+    namespace: monitoring
+    version: 67.4.0
+    labels:
+      purpose: monitoring
+    values:
+      - ./values/prometheus-stack.yaml
+      - {{- $secrets.prometheusStack | toYaml | nindent 8 }}

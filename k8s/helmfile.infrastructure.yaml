@@ -52,7 +52,7 @@ releases:
           - https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/deploy/crd-csi-snapshot.yaml
     values:
       - ./values/csi-driver-nfs.yaml
-        
+
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns
@@ -73,16 +73,6 @@ releases:
       - ./values/external-dns-pihole.yaml
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
   
-  - name: metrics-server
-    chart: metrics-server/metrics-server
-    namespace: kube-system
-    version: 3.12.1
-    labels:
-      purpose: monitoring
-      tier: critical
-    values:
-      - ./values/metrics-server.yaml
-
   - name: nfs-storage-classes
     chart: ./charts/shim
     namespace: kube-system

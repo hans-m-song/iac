@@ -9,6 +9,8 @@ repositories:
     url: https://kubernetes-sigs.github.io/external-dns/
   - name: flipt
     url: https://helm.flipt.io
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
   - name: hashicorp
     url: https://helm.releases.hashicorp.com
   - name: huisheng
@@ -37,6 +39,7 @@ helmfiles:
   - path: ./helmfile.applications.yaml
   - path: ./helmfile.incubator.yaml
   - path: ./helmfile.deployment.yaml
+  - path: ./helmfile.monitoring.yaml
 
 helmDefaults:
   kubeContext: wheatley

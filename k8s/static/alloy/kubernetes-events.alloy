@@ -1,0 +1,4 @@
+loki.source.kubernetes_events "events" {
+	log_format = "json"
+	forward_to = [loki.write.default.receiver]
+}
