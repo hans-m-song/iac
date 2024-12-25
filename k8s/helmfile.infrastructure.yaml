@@ -1,58 +1,6 @@
 {{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
 
 releases:
-  - name: arc
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
-    namespace: arc-systems
-    version: 0.10.1
-    labels:
-      purpose: deployment
-    values:
-      - flags:
-          logLevel: debug
-          logFormat: text
-          updateStrategy: immediate
-
-  - name: arc-runner-support
-    chart: ./charts/shim
-    namespace: arc-runners
-    values:
-      - ./values/arc-runner-support.yaml
-      - {{- $secrets.arcRunnerSecrets | toYaml | nindent 8 }}
-
-  - name: arc-runner-set-hans-m-song-iac
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-    namespace: arc-runners
-    version: 0.10.1
-    labels:
-      purpose: deployment
-    values:
-      - ./values/arc-runner-set.yaml
-      - runnerScaleSetName: hans-m-song-iac
-        githubConfigUrl: https://github.com/hans-m-song/iac
-
-  - name: arc-runner-set-axatol
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-    namespace: arc-runners
-    version: 0.10.1
-    labels:
-      purpose: deployment
-    values:
-      - ./values/arc-runner-set.yaml
-      - runnerScaleSetName: axatol
-        githubConfigUrl: https://github.com/axatol
-
-  - name: arc-runner-set-buildtrust-au
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-    namespace: arc-runners
-    version: 0.10.1
-    labels:
-      purpose: deployment
-    values:
-      - ./values/arc-runner-set.yaml
-      - runnerScaleSetName: buildtrust-au
-        githubConfigUrl: https://github.com/buildtrust-au
-
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager

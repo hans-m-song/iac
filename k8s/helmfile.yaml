@@ -36,6 +36,7 @@ helmfiles:
   - path: ./helmfile.infrastructure.yaml
   - path: ./helmfile.applications.yaml
   - path: ./helmfile.incubator.yaml
+  - path: ./helmfile.deployment.yaml
 
 helmDefaults:
   kubeContext: wheatley
