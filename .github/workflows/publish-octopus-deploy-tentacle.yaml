@@ -12,12 +12,12 @@ on:
       - master
     paths:
       - "github/images/octopus-deploy-tentacle/**"
-      - .github/workflows/_ecr-publish.yaml
+      - .github/workflows/_ecr-public-publish.yaml
       - .github/workflows/publish-octopus-deploy-tentacle.yaml
 
 jobs:
   publish-ecr:
-    uses: ./.github/workflows/_ecr-publish.yaml
+    uses: ./.github/workflows/_ecr-public-publish.yaml
     with:
       context: ./images/octopus-deploy-tentacle
       image: public.ecr.aws/axatol/octopus-deploy-tentacle

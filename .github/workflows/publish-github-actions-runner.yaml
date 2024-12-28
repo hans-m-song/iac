@@ -12,12 +12,12 @@ on:
       - master
     paths:
       - "github/images/github-actions-runner/**"
-      - .github/workflows/_ecr-publish.yaml
+      - .github/workflows/_ecr-public-publish.yaml
       - .github/workflows/publish-github-actions-runner.yaml
 
 jobs:
   publish-ecr:
-    uses: ./.github/workflows/_ecr-publish.yaml
+    uses: ./.github/workflows/_ecr-public-publish.yaml
     with:
       context: ./images/github-actions-runner
       image: public.ecr.aws/axatol/github-actions-runner

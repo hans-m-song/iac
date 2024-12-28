@@ -12,14 +12,15 @@ on:
       - master
     paths:
       - "github/images/grafana-lambda-promtail/**"
-      - .github/workflows/_ecr-publish.yaml
+      - .github/workflows/_ecr-private-publish.yaml
       - .github/workflows/publish-grafana-lambda-promtail.yaml
 
 jobs:
   publish-ecr:
-    uses: ./.github/workflows/_ecr-publish.yaml
+    uses: ./.github/workflows/_ecr-private-publish.yaml
     with:
       context: ./images/grafana-lambda-promtail
-      image: public.ecr.aws/axatol/grafana-lambda-promtail
+      repository: grafana-lambda-promtail
     secrets:
       AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
