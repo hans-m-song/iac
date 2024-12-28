@@ -3,11 +3,17 @@ import "source-map-support/register";
 
 import * as cdk from "aws-cdk-lib";
 
-import { ECR, Region, githubPagesRecords, hostedZones } from "~/lib/constants";
+import {
+  ECR,
+  ECRPublic,
+  Region,
+  githubPagesRecords,
+  hostedZones,
+} from "~/lib/constants";
 import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDNSStack";
 import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
+import { ECRPrivateStack } from "~/lib/constructs/cloudformation/ECRPrivateStack";
 import { ECRPublicStack } from "~/lib/constructs/cloudformation/ECRPublicStack";
-import { HostedZoneUpdateStack } from "~/lib/constructs/cloudformation/HostedZoneUpdateStack";
 import { OIDCDiscoveryStack } from "~/lib/constructs/cloudformation/OIDCDiscoveryStack";
 
 const app = new cdk.App();
@@ -41,14 +47,14 @@ new DNSStack(app, "DNS", {
   ],
 });
 
-new ECRPublicStack(app, "ECRPublic", {
-  env: { region: Region.NVirginia },
+new ECRPrivateStack(app, "ECRPrivate", {
+  env: { region: Region.Sydney },
   repositories: Object.values(ECR),
 });
 
-new HostedZoneUpdateStack(app, "HostedZoneUpdateStack", {
-  env: { region: Region.Sydney },
-  hostedZones: Object.values(hostedZones),
+new ECRPublicStack(app, "ECRPublic", {
+  env: { region: Region.NVirginia },
+  repositories: Object.values(ECRPublic),
 });
 
 new OIDCDiscoveryStack(app, "WheatleyOIDCDiscovery", {

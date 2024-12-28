@@ -42,6 +42,10 @@ export enum SSM {
 }
 
 export enum ECR {
+  GrafanaLambdaPromtail = "grafana-lambda-promtail",
+}
+
+export enum ECRPublic {
   ActionsJobDispatcher = "actions-job-dispatcher",
   ExternalDNSCloudflareTunnelWebhook = "external-dns-cloudflare-tunnel-webhook",
   GithubActionsRunner = "github-actions-runner",
