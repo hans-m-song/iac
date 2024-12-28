@@ -82,7 +82,9 @@ module "iac_github_repository" {
   providers       = { github = github.hans_m_song }
   repository_name = "iac"
 
-  actions_secrets = local.project_secrets
+  actions_secrets = merge(local.project_secrets, {
+    AWS_ACCOUNT_ID = local.aws_account_id
+  })
 }
 
 module "shrodinger_github_repository" {

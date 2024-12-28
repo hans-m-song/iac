@@ -34,6 +34,7 @@ data "aws_iam_policy_document" "ecr_publisher" {
   statement {
     effect = "Allow"
     actions = [
+      "ecr:GetAuthorizationToken",
       "sts:GetServiceBearerToken",
       "ecr-public:GetAuthorizationToken",
     ]
@@ -51,6 +52,18 @@ data "aws_iam_policy_document" "ecr_publisher" {
       "ecr-public:DescribeImageTags",
       "ecr-public:GetRepositoryCatalogData",
       "ecr-public:GetRegistryCatalogData",
+
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetRepositoryPolicy",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
+      "ecr:DescribeImages",
+      "ecr:BatchGetImage",
+      "ecr:GetLifecyclePolicy",
+      "ecr:GetLifecyclePolicyPreview",
+      "ecr:ListTagsForResource",
+      "ecr:DescribeImageScanFindings",
     ]
     resources = ["*"]
   }
@@ -65,6 +78,11 @@ data "aws_iam_policy_document" "ecr_publisher" {
       "ecr-public:TagResource",
       "ecr-public:UntagResource",
       "ecr-public:UploadLayerPart",
+
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:PutImage",
     ]
     resources = ["*"]
   }
@@ -95,7 +113,6 @@ resource "aws_iam_policy" "cloudfront_invalidator" {
 
 data "aws_iam_policy_document" "user_access_self_service" {
   statement {
-    sid    = "AllowReadIAM"
     effect = "Allow"
     actions = [
       "iam:List*",
