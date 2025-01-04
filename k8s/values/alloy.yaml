@@ -1,5 +1,6 @@
 alloy:
   stabilityLevel: experimental # to enable livedebugging
+  enableReporting: false
   mounts:
     varlog: true
 

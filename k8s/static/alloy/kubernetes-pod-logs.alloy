@@ -19,13 +19,13 @@ discovery.relabel "pods" {
 	rule {
 		source_labels = ["__meta_kubernetes_pod_name"]
 		action        = "replace"
-		target_label  = "pod_name"
+		target_label  = "pod"
 	}
 
 	rule {
 		source_labels = ["__meta_kubernetes_pod_container_name"]
 		action        = "replace"
-		target_label  = "container_name"
+		target_label  = "container"
 	}
 
 	rule {

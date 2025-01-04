@@ -45,4 +45,5 @@ releases:
       purpose: monitoring
     values:
       - ./values/prometheus-stack.yaml
+      - ./values/prometheus-scrape-configs.yaml
       - {{- $secrets.prometheusStack | toYaml | nindent 8 }}

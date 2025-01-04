@@ -12,6 +12,9 @@ domainFilters: [axatol.xyz]
 image:
   pullPolicy: Always
 
+serviceMonitor:
+  enabled: true
+
 provider:
   name: webhook
   webhook:
@@ -50,6 +53,3 @@ provider:
           secretKeyRef:
             name: external-dns-cloudflare-tunnel
             key: CLOUDFLARE_API_TOKEN
-
-extraArgs:
-  - --domain-filter=axatol.xyz

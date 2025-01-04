@@ -33,6 +33,20 @@ test:
 lokiCanary:
   enabled: false
 
+resultsCache:
+  enabled: false
+
+chunksCache:
+  enabled: false
+
+gateway:
+  enabled: true
+  verboseLogging: false # TODO change?
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: loki.axatol.xyz
+      external-dns.alpha.kubernetes.io/target: http://loki-gateway.monitoring.svc.cluster.local:80
+
 # resultsCache:
 #   enabled: false
 # chunksCache:

@@ -59,16 +59,19 @@ releases:
     version: 1.14.5
     labels:
       purpose: networking
+      dns: 'true'
     values:
       - ./values/external-dns-cloudflare-tunnel.yaml
       - {{- $secrets.externalDnsCloudflareTunnel | toYaml | nindent 8 }}
 
   - name: external-dns-pihole
     chart: external-dns/external-dns
+    installed: false
     namespace: external-dns
     version: 1.14.5
     labels:
       purpose: networking
+      dns: 'true'
     values:
       - ./values/external-dns-pihole.yaml
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
