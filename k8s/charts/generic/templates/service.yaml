@@ -6,7 +6,7 @@
 {{- end }}
 {{- end }}
 {{- end }}
-{{- if gt (len $exposedPorts) 0}}
+{{- if gt (len $exposedPorts) 0 }}
 ---
 apiVersion: v1
 kind: Service

@@ -1,6 +1,6 @@
 rbac:
   create: true
-  serviceAccountName: ''
+  serviceAccountName: ""
 
 deployment:
   replicas: 1
@@ -53,6 +53,12 @@ containers:
   #       protocol: TCP
   #       internalPort: 8080 # exposed by pod
   #       externalPort: 0    # specify to expose by service
+  #       metricsEndpoints:  # requires prometheus ServiceMonitor CRD
+  #         - path: /metrics/cadvisor
+  #           honorLabels: true
+  #         - path: /metrics/ruler
+  #           scheme: https
+  #           tlsConfig: {}
 
 service:
   annotations: {}
@@ -62,7 +68,7 @@ secrets:
   # FOO: bar
 
 ingress:
-  ingressClassName: ''
+  ingressClassName: ""
   annotations: {}
   hosts:
     {}
@@ -97,4 +103,4 @@ hooks:
 extra:
   yaml: {}
   yamlList: []
-  raw: ''
+  raw: ""
