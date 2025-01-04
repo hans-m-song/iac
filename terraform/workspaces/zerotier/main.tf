@@ -50,14 +50,6 @@ resource "zerotier_network" "apeture" {
   EOT
 }
 
-data "zerotier_members" "members" {
-  network_id = zerotier_network.apeture.id
-}
-
-resource "terraform_data" "test" {
-  input = data.zerotier_members.members
-}
-
 resource "zerotier_member" "chell" {
   name                    = "chell"
   description             = "Managed by Terraform - Lenovo X1 Carbon G6"
@@ -78,15 +70,15 @@ resource "zerotier_member" "freeman" {
   ip_assignments          = ["10.0.0.11"]
 }
 
-resource "zerotier_member" "barney" {
-  name                    = "barney"
-  description             = "Managed by Terraform - Lenovo X1 Carbon G6"
-  member_id               = "TODO"
-  network_id              = zerotier_network.apeture.id
-  authorized              = true
-  allow_ethernet_bridging = false
-  ip_assignments          = ["10.0.0.12"]
-}
+# resource "zerotier_member" "barney" {
+#   name                    = "barney"
+#   description             = "Managed by Terraform - Lenovo X1 Carbon G6"
+#   member_id               = "TODO"
+#   network_id              = zerotier_network.apeture.id
+#   authorized              = true
+#   allow_ethernet_bridging = false
+#   ip_assignments          = ["10.0.0.12"]
+# }
 
 resource "zerotier_member" "alyx" {
   name                    = "alyx"
@@ -96,6 +88,16 @@ resource "zerotier_member" "alyx" {
   authorized              = true
   allow_ethernet_bridging = false
   ip_assignments          = ["10.0.0.13"]
+}
+
+resource "zerotier_member" "lamarr" {
+  name                    = "lamarr"
+  description             = "Managed by Terraform - Apple Mac Mini 2024"
+  member_id               = "4ed04a030c"
+  network_id              = zerotier_network.apeture.id
+  authorized              = true
+  allow_ethernet_bridging = false
+  ip_assignments          = ["10.0.0.14"]
 }
 
 resource "zerotier_member" "gman" {
@@ -111,7 +113,7 @@ resource "zerotier_member" "gman" {
 resource "zerotier_member" "wheatley" {
   name                    = "wheatley"
   description             = "Managed by Terraform - Dell Optiplex 9020 USFF"
-  member_id               = "253ddd04a8" # "0e5a4e81e7"
+  member_id               = "0e5a4e81e7"
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
@@ -121,7 +123,7 @@ resource "zerotier_member" "wheatley" {
 resource "zerotier_member" "glados" {
   name                    = "glados"
   description             = "Managed by Terraform - Lenovo ThinkCentre M710Q Tiny"
-  member_id               = "d6475fe97d"
+  member_id               = "8c409a32c5"
   network_id              = zerotier_network.apeture.id
   authorized              = true
   allow_ethernet_bridging = false
