@@ -7,20 +7,15 @@
       prompt: Sudo password
       private: true
   tasks:
-    - name: Install required packages
-      ansible.builtin.package:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - lvm2
-        - nfs-kernel-server
-        - samba
+    - name: Server landing zone
+      ansible.builtin.import_role:
+        name: server_landing_zone
 
     - name: Setup NFS server
       ansible.builtin.import_role:
-        name: nfs-server
+        name: nfs_server
       vars:
-        nfs_exports:
+        nfs_server_exports:
           /mnt/data/nfs/k8s:
             clients:
               - "192.168.1.0/24"
@@ -32,8 +27,14 @@
 
     - name: Setup Samba server
       ansible.builtin.import_role:
-        name: samba-server
+        name: samba_server
       vars:
-        samba_shares:
+        samba_server_shares:
           /mnt/data/samba/share:
             groups: [samba]
+
+    # - name: Setup k3s server
+    #   ansible.builtin.import_role:
+    #     name: k3s_server
+    #   vars:
+    #     k3s_server_node_labels:

@@ -2,8 +2,18 @@
 - name: Bootstrap glados
   hosts: glados.local
   become: true
+  gather_facts: true
   vars_prompt:
     - name: ansible_sudo_pass
       prompt: Sudo password
       private: true
-  tasks: []
+  tasks:
+    - name: Install base packages
+      ansible.builtin.import_role:
+        name: server_landing_zone
+
+    - name: Install ZeroTier
+      ansible.builtin.import_role:
+        name: zerotier_client
+      vars:
+        zerotier_client_network_id: "{{ zerotier.network_id }}"

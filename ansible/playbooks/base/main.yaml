@@ -33,6 +33,6 @@
 
     - name: Install and configure ZeroTier
       ansible.builtin.import_role:
-        name: zerotier-client
+        name: zerotier_client
       vars:
-        network_id: "{{ zerotier.network_id }}"
+        zerotier_client_network_id: "{{ zerotier.network_id }}"

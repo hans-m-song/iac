@@ -1,5 +1,5 @@
 ---
-- name: Install NFS server dependencies
+- name: Install NFS server
   ansible.builtin.package:
     name: nfs-kernel-server
     state: present
@@ -18,4 +18,4 @@
     name: nfs-kernel-server
     state: started
     enabled: true
-  when: nfs_exports | length
+  when: nfs_server_exports | length

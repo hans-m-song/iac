@@ -9,7 +9,7 @@
 # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
 #
 
-{% for path, export in nfs_exports.items() %}
+{% for path, export in nfs_server_exports.items() %}
 {{- path }}
 {{- " " }}
 {%- for client in export.clients %}

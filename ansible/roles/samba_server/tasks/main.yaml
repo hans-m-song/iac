@@ -17,7 +17,7 @@
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
-  loop: "{{ samba_shares.values() | map(attribute='group', default='samba') | unique }}"
+  loop: "{{ samba_server_shares.values() | map(attribute='group', default='samba') | unique }}"
 
 - name: Create share directories
   ansible.builtin.file:
@@ -26,11 +26,11 @@
     owner: root
     group: root
     mode: "0750"
-  loop: "{{ samba_shares.keys() }}"
+  loop: "{{ samba_server_shares.keys() }}"
 
 - name: Ensure Samba status
   ansible.builtin.service:
     name: smbd
     state: started
     enabled: true
-  when: samba_shares | length
+  when: samba_server_shares | length

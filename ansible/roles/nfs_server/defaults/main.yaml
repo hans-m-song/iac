@@ -1,4 +1,4 @@
-nfs_exports:
+nfs_server_exports:
   {}
   # /mnt/data/nfs:
   #   clients:

@@ -1,8 +1,16 @@
-playbook ?= ""
-task     ?= ""
+playbook ?=
+task     ?=
+debug    ?=
 
-args := --diff --verbose --extra-vars @secrets.yaml
-args += $(if $(task) != "",--start-at-task=$(task))
+args :=--diff --verbose --extra-vars @secrets.yaml
+
+ifneq ($(task),)
+args +=--start-at-task="$(task)"
+endif
+
+ifneq ($(debug),) # an extra level
+args +=--verbose
+endif
 
 prepare:
 	ansible-galaxy collection install --requirements-file=./requirements.yaml

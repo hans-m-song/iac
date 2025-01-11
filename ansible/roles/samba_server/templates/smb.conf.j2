@@ -5,7 +5,7 @@
     inherit permissions = yes
     security            = user
 
-{% for path, config in samba_shares.items() %}
+{% for path, config in samba_server_shares.items() %}
 {% set name = config.name | default(path | basename) %}
 {% set comment = 'Samba share for ' + name %}
 {% set users = config.users | default([]) %}
