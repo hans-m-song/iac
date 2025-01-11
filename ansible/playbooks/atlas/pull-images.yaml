@@ -1,6 +1,6 @@
 ---
 - name: Pull images
-  hosts: gman.local
+  hosts: atlas.local
   tasks:
     - name: Pull images
       community.docker.docker_image_pull:
