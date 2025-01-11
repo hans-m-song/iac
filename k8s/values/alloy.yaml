@@ -9,4 +9,4 @@ ingress:
   ingressClassName: traefik
   faroPort: 12345
   hosts:
-    - alloy.monitoring.axatol.local
+    - alloy.axatol.local

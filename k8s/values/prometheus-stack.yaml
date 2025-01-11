@@ -17,14 +17,14 @@ alertmanager:
     enabled: true
     ingressClassName: traefik
     hosts:
-      - alertmanager.monitoring.axatol.local
+      - alertmanager.axatol.local
 
 grafana:
   enabled: true
   ingress:
     enabled: true
     hosts:
-      - grafana.monitoring.axatol.local
+      - grafana.axatol.local
   persistence:
     enabled: true
     type: sts
@@ -41,7 +41,7 @@ prometheus:
     enabled: true
     ingressClassName: traefik
     hosts:
-      - prometheus.monitoring.axatol.local
+      - prometheus.axatol.local
   prometheusSpec:
     ruleSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false

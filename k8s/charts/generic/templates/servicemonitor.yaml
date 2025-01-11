@@ -2,7 +2,7 @@
 {{- range $container := .Values.containers }}
 {{- range $name, $port := $container.ports }}
 {{- range $endpoint := $port.metricsEndpoints }}
-{{- $defaultEndpoint = dict "port" $name }}
+{{- $defaultEndpoint := dict "port" $name }}
 {{- $scrapeEndpoints = append $scrapeEndpoints (merge $defaultEndpoint $endpoint) }}
 {{- end }}
 {{- end }}
@@ -14,16 +14,16 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
-  labels: {{ include "generic.labels" . | nindent 4 }}
+  labels: {{- include "generic.labels" . | nindent 4 }}
 spec:
   namespaceSelector:
     matchNames:
     - {{ .Release.Namespace }}
   selector:
-    matchLabels: {{ include "generic.labels" . | nindent 6 }}
+    matchLabels: {{- include "generic.labels" . | nindent 6 }}
   jobLabel: app.kubernetes.io/instance
   endpoints:
   {{- range $endpoint := $scrapeEndpoints }}
-  - {{ $endpoint | toYaml | nindent 4}}
+  - {{- $endpoint | toYaml | nindent 4}}
   {{- end}}
 {{- end}}

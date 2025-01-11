@@ -46,3 +46,7 @@ prometheus:
               - __meta_kubernetes_pod_label_app_kubernetes_io_name
             action: replace
             target_label: app_name
+      - job_name: node-exporter
+        static_configs:
+          - targets:
+              - atlas.local:9100
