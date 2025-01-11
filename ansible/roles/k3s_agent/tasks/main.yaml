@@ -1,0 +1,29 @@
+---
+- name: Check inputs
+  ansible.builtin.assert:
+    that:
+      - k3s_agent_server_url
+      - k3s_agent_join_token is defined
+
+- name: Get service facts
+  ansible.builtin.service_facts: {}
+
+- name: Fetch k3s installation script
+  ansible.builtin.uri:
+    url: https://get.k3s.io
+    owner: root
+    group: root
+    mode: "0755"
+    dest: /opt/script/install-k3s.sh
+
+- name: Bootstrap agent
+  ansible.builtin.command:
+    argv:
+      - /opt/script/install-k3s.sh
+      - agent
+      - --server
+      - "{{ k3s_agent_server_url }}"
+      - --token
+      - "{{ k3s_agent_join_token }}"
+  register: bootstrap
+  changed_when: "'No change detected so skipping service start' not in bootstrap.stdout"
