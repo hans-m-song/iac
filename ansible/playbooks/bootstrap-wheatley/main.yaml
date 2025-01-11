@@ -2,6 +2,7 @@
 - name: Bootstrap wheatley
   hosts: wheatley.local
   become: true
+  gather_facts: true
   vars_prompt:
     - name: ansible_sudo_pass
       prompt: Sudo password
@@ -33,8 +34,10 @@
           /mnt/data/samba/share:
             groups: [samba]
 
-    # - name: Setup k3s server
-    #   ansible.builtin.import_role:
-    #     name: k3s_server
-    #   vars:
-    #     k3s_server_node_labels:
+    - name: Setup k3s server
+      ansible.builtin.import_role:
+        name: k3s_server
+      vars:
+        k3s_server_channel: "{{ kubernetes.k3s_version }}"
+        k3s_server_tls_sans:
+          - "10.0.0.42"

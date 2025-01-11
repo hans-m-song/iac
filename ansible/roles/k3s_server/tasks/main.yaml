@@ -1,10 +1,4 @@
 ---
-- name: Check inputs
-  ansible.builtin.assert:
-    that:
-      - k3s_agent_server_url != ''
-      - k3s_agent_join_token != ''
-
 - name: Fetch k3s installation script
   ansible.builtin.uri:
     url: https://get.k3s.io
@@ -17,13 +11,16 @@
   ansible.builtin.command:
     argv:
       - /opt/script/install-k3s.sh
-      - agent
-      - --server
-      - "{{ k3s_agent_server_url }}"
-      - --token
-      - "{{ k3s_agent_join_token }}"
+      - server
+      - --cluster-init
+      - --disable=traefik
+      - --disable=metrics-server
+      - --disable=local-storage
+      - --disable-cloud-controller
+      - --disable-helm-controller
+      - "{{ '--tls-san=' ~ (k3s_server_tls_sans | join(',')) if (k3s_server_tls_sans | length) > 0 }}"
   environment:
-    INSTALL_K3S_CHANNEL: "{{ k3s_agent_channel }}"
+    INSTALL_K3S_CHANNEL: "{{ k3s_server_channel }}"
   register: bootstrap
   when:
   changed_when: "'No change detected so skipping service start' not in bootstrap.stdout"

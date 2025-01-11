@@ -1,0 +1,6 @@
+# https://docs.k3s.io/upgrades/manual#release-channels
+k3s_agent_channel: stable
+
+# https://docs.k3s.io/cli/agent
+k3s_agent_server_url: ""
+k3s_agent_join_token: ""

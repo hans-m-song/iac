@@ -22,5 +22,6 @@
       ansible.builtin.import_role:
         name: k3s_agent
       vars:
+        k3s_agent_channel: "{{ kubernetes.k3s_version }}"
         k3s_agent_server_url: "{{ kubernetes.k3s_server_url }}"
         k3s_agent_join_token: "{{ kubernetes.k3s_agent_token }}"

@@ -1,0 +1,5 @@
+# https://docs.k3s.io/upgrades/manual#release-channels
+k3s_server_channel: stable
+
+# https://docs.k3s.io/cli/server
+k3s_server_tls_sans: []
