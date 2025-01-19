@@ -36,6 +36,8 @@ export enum SSM {
   IAMLambdaBoundaryPolicyARN = "/infrastructure/iam/lambda_boundary_policy_arn",
   IAMTerraformBackendPolicyARN = "/infrastructure/iam/terraform_state_policy_arn",
   IAMUserBoundaryPolicyARN = "/infrastructure/iam/user_boundary_policy_arn",
+  LogsSubscriptionFilterLambdaDestinationARN = "/infrastructure/logs/subscription_filter_lambda_destination_arn",
+  LokiLogIngestEndpoint = "/infrastructure/logs/loki_log_ingest_endpoint",
   NewRelicAccountID = "/infrastructure/new_relic/account_id",
   TerraformLockTableName = "/infrastructure/terraform/lock_table_name",
   TerraformStateBucketName = "/infrastructure/terraform/state_bucket_name",

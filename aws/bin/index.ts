@@ -14,6 +14,7 @@ import { CloudflareDNSStack } from "~/lib/constructs/cloudformation/CloudflareDN
 import { DNSStack } from "~/lib/constructs/cloudformation/DNSStack";
 import { ECRPrivateStack } from "~/lib/constructs/cloudformation/ECRPrivateStack";
 import { ECRPublicStack } from "~/lib/constructs/cloudformation/ECRPublicStack";
+import { LokiIngestStack } from "~/lib/constructs/cloudformation/LokiIngestStack";
 import { OIDCDiscoveryStack } from "~/lib/constructs/cloudformation/OIDCDiscoveryStack";
 
 const app = new cdk.App();
@@ -55,6 +56,10 @@ new ECRPrivateStack(app, "ECRPrivate", {
 new ECRPublicStack(app, "ECRPublic", {
   env: { region: Region.NVirginia },
   repositories: Object.values(ECRPublic),
+});
+
+new LokiIngestStack(app, "LokiIngest", {
+  env: { region: Region.Sydney },
 });
 
 new OIDCDiscoveryStack(app, "WheatleyOIDCDiscovery", {
