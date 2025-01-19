@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ghcr.io/actions/actions-runner:2.320.0
+FROM --platform=linux/amd64 ghcr.io/actions/actions-runner:latest
 
 RUN \
   --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
