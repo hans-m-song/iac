@@ -1,11 +1,12 @@
 {{- range .Values.templates }}
 ---
 {{- if typeIsLike "string" . }}
-{{ . }}
+{{ tpl . $ }}
 {{- else }}
 {{ tpl (. | toYaml) $ }}
 {{- end }}
 {{- end }}
+
 {{- range .Values.raw }}
 ---
 {{- if typeIsLike "string" . }}

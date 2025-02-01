@@ -9,6 +9,19 @@ releases:
       purpose: deployment
     values:
       - ./values/arc.yaml
+    hooks:
+      - events: [presync]
+        showlogs: true
+        command: bash
+        args:
+          - -c
+          - |
+            set -eo pipefail
+            filepath=charts/gha-runner-scale-set-controller/crds
+            ref=gha-runner-scale-set-0.10.1
+            url=https://api.github.com/repos/actions/actions-runner-controller/contents/$filepath?ref=$ref
+            crds=($(curl $url | jq --raw-output 'map(.download_url)[]'))
+            for crd in ${crds[@]}; do kubectl replace --filename $crd; done
 
   - name: arc-runner-support
     chart: ./charts/shim
