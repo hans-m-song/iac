@@ -1,0 +1,41 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    env:
+      MEILI_NO_ANALYTICS: "true"
+    ports:
+      api:
+        protocol: TCP
+        internalPort: 7700
+        externalPort: 7700
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: api
+    resources:
+      limits:
+        cpu: 500m
+        memory: 3Gi
+    volumes:
+      data:
+        mount:
+          mountPath: /meili_data
+        spec:
+          persistentVolumeClaim:
+            claimName: meilisearch-data
+    securityContext:
+      readOnlyRootFilesystem: false
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: buildsight-meilisearch.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://meilisearch.buildsight.svc.cluster.local:7700
+
+pvc:
+  meilisearch-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

@@ -1,6 +1,13 @@
 {{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
 
 releases:
+  - name: meilisearch
+    chart: ./charts/generic
+    namespace: buildsight
+    values:
+      - ./values/meilisearch.yaml
+      - {{- $secrets.meilisearch | toYaml | nindent 8 }}
+
   - name: mongo
     installed: false
     chart: ./charts/generic
