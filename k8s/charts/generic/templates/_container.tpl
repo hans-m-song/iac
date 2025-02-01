@@ -5,6 +5,13 @@
 {{- $ports := .ports | default (dict) }}
 {{- $env := .env | default (dict) }}
 {{- $envFrom := .envFrom | default (list) }}
+{{- if gt (len $env) 0 }}
+{{- $envFrom = append $envFrom (dict
+  "configMapRef" (dict
+    "name" (printf "%s-%s" $.Release.Name $name)
+  )
+) }}
+{{- end }}
 {{- if gt (len $.Values.secrets) 0 }}
 {{- $envFrom = append $envFrom (dict
   "secretRef" (dict
@@ -19,6 +26,22 @@
     "mountPath" "/opt/files"
   )
 )}}
+{{- end }}
+{{- $defaultSecurityContext := dict
+  "allowPrivilegeEscalation" false
+  "readOnlyRootFilesystem" true
+  "runAsUser" 1000
+  "runAsGroup" 1000
+  "fsGroup" 1000
+  "capabilities" (dict
+    "drop" (list 
+      "ALL"
+    )
+  )
+}}
+{{- $securityContext := dict }}
+{{- if kindIs "map" .securityContext }}
+{{- $securityContext = mergeOverwrite $defaultSecurityContext .securityContext }}
 {{- end }}
 {{- $args := .args | default (list) }}
 {{- $command := .command | default (list) }}
@@ -35,9 +58,7 @@ resources:
 {{- if .lifecycle }}
 lifecycle: {{ .lifecycle | toYaml | nindent 2 }}
 {{- end }}
-{{- if .securityContext }}
-securityContext: {{ .securityContext | toYaml | nindent 2 }}
-{{- end }}
+securityContext: {{ $securityContext | toYaml | nindent 2 }}
 {{- if gt (len $args) 0 }}
 args: {{ $args | toYaml | nindent 2 }}
 {{- end }}
@@ -50,13 +71,6 @@ ports:
 - name: {{ $name }}
   containerPort: {{ $port.internalPort }}
   protocol: {{ $port.protocol }}
-{{- end }}
-{{- end }}
-{{- if gt (len $env) 0 }}
-env:
-{{- range $key, $value := $env }}
-- name: {{ $key }}
-  value: {{ quote $value }}
 {{- end }}
 {{- end }}
 {{- if gt (len $envFrom) 0 }}

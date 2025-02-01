@@ -14,3 +14,10 @@
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{- if .Values.extra.templates }}
+{{- range .Values.extra.templates }}
+---
+{{ tpl . $ }}
+{{- end }}
+{{- end }}

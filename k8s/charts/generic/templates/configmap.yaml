@@ -11,7 +11,7 @@ metadata:
   labels: {{- include "generic.labels" $ | nindent 4 }}
 data:
   {{- range $key, $value := $env }}
-  {{ $key }}: {{ $value }}
+  {{ $key }}: {{ $value | toString | quote }}
   {{- end }}
 {{- end }}
 {{- end }}

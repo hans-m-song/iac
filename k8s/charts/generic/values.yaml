@@ -24,6 +24,15 @@ containers:
   #   envFrom:
   #     - configMapRef:
   #         name: config
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     allowPrivilegeEscalation: false
+  #     runAsUser: 1000
+  #     runAsGroup: 1000
+  #     fsGroup: 1000
+  #     capabilities:
+  #       drop:
+  #         - all
   #   resources:
   #     limits:
   #       cpu: 100m
@@ -85,6 +94,22 @@ pvc:
   #   storageClassName: ""
   #   capacity: 1Gi
   #   accessMode: ReadWriteOnce
+
+networkPolicy:
+  ingress:
+    []
+    # - cidr: 1.2.3.4/32
+    #   ports:
+    #     - protocol: TCP
+    #       port: 8080
+  egress:
+    []
+    # - namespace: kube-system
+    #   pods:
+    #     app.kubernetes.io/name: app
+    #   ports:
+    #     - protocol: TCP
+    #       port: 8080
 
 files:
   {}
