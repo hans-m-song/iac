@@ -19,6 +19,12 @@ template:
           - name: cache
             mountPath: /home/runner/.cache
             subPath: home/runner/.cache
+          - name: cache
+            mountPath: /home/runner/.npm
+            subPath: home/runner/.npm
+          - name: cache
+            mountPath: /home/runner/go
+            subPath: home/runner/go
     volumes:
       - name: cache
         persistentVolumeClaim:
