@@ -21,6 +21,10 @@ alertmanager:
 
 grafana:
   enabled: true
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: grafana.axatol.xyz
+      external-dns.alpha.kubernetes.io/target: http://prometheus-stack-grafana.monitoring.svc.cluster.local:80
   ingress:
     enabled: true
     hosts:
