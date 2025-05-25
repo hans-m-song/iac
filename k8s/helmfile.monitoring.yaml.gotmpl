@@ -4,9 +4,9 @@ releases:
   - name: alloy
     chart: grafana/alloy
     namespace: monitoring
-    version: 0.10.1
+    version: 1.0.3
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - alloy:
           configMap:
@@ -20,9 +20,9 @@ releases:
   - name: loki
     chart: grafana/loki
     namespace: monitoring
-    version: 6.24.0
+    version: 6.29.0
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - ./values/loki.yaml
       - {{- $secrets.loki | toYaml | nindent 8 }}
@@ -32,7 +32,7 @@ releases:
     namespace: kube-system
     version: 3.12.1
     labels:
-      purpose: monitoring
+      monitoring: true
       tier: critical
     values:
       - ./values/metrics-server.yaml
@@ -40,9 +40,9 @@ releases:
   - name: prometheus-stack
     chart: prometheus-community/kube-prometheus-stack
     namespace: monitoring
-    version: 67.4.0
+    version: 72.5.0
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - ./values/prometheus-stack.yaml
       - ./values/prometheus-scrape-configs.yaml

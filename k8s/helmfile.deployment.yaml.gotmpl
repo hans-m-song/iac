@@ -4,9 +4,9 @@ releases:
   - name: arc
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
     namespace: arc-systems
-    version: 0.10.1
+    version: 0.11.0
     labels:
-      purpose: deployment
+      deployment: true
     values:
       - ./values/arc.yaml
     hooks:
@@ -15,17 +15,19 @@ releases:
         command: bash
         args:
           - -c
-          - |
-            set -eo pipefail
-            filepath=charts/gha-runner-scale-set-controller/crds
-            ref=gha-runner-scale-set-0.10.1
-            url=https://api.github.com/repos/actions/actions-runner-controller/contents/$filepath?ref=$ref
-            crds=($(curl $url | jq --raw-output 'map(.download_url)[]'))
-            for crd in ${crds[@]}; do kubectl replace --filename $crd; done
+          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl apply --server-side --force-conflicts --filename -
+      - events: [postuninstall]
+        showlogs: true
+        command: bash
+        args:
+          - -c
+          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl delete --filename -
 
   - name: arc-runner-support
     chart: ./charts/shim
     namespace: arc-runners
+    labels:
+      deployment: true
     values:
       - ./values/arc-runner-support.yaml
       - {{- $secrets.arcRunnerSecrets | toYaml | nindent 8 }}
@@ -33,10 +35,13 @@ releases:
   - name: arc-runner-set-axatol
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.10.1
+    version: 0.11.0
     labels:
-      purpose: deployment
+      deployment: true
       gha-rs: 'true'
+    needs:
+      - arc-runners/arc-runner-support
+      - arc-systems/arc
     values:
       - ./values/arc-runner-set.yaml
       - runnerScaleSetName: axatol
@@ -45,10 +50,13 @@ releases:
   - name: arc-runner-set-buildtrust-au
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.10.1
+    version: 0.11.0
     labels:
-      purpose: deployment
+      deployment: true
       gha-rs: 'true'
+    needs:
+      - arc-runners/arc-runner-support
+      - arc-systems/arc
     values:
       - ./values/arc-runner-set.yaml
       - runnerScaleSetName: buildtrust-au
@@ -57,10 +65,13 @@ releases:
   - name: arc-runner-set-hans-m-song-iac
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.10.1
+    version: 0.11.0
     labels:
-      purpose: deployment
+      deployment: true
       gha-rs: 'true'
+    needs:
+      - arc-runners/arc-runner-support
+      - arc-systems/arc
     values:
       - ./values/arc-runner-set.yaml
       - runnerScaleSetName: hans-m-song-iac
@@ -69,10 +80,13 @@ releases:
   - name: arc-runner-set-hans-m-song-huisheng
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.10.1
+    version: 0.11.0
     labels:
-      purpose: deployment
+      deployment: true
       gha-rs: 'true'
+    needs:
+      - arc-runners/arc-runner-support
+      - arc-systems/arc
     values:
       - ./values/arc-runner-set.yaml
       - runnerScaleSetName: hans-m-song-huisheng

@@ -44,6 +44,18 @@ releases:
       - ./values/redis.yaml
       - {{- $secrets.redis | toYaml | nindent 8}}
 
+  - name: yt-dlp-webui
+    chart: ./charts/generic
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui.yaml
+
+  - name: yt-dlp-webui-nodeport
+    chart: ./charts/shim
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui-nodeport.yaml
+
   - name: zigbee2mqtt
     chart: ./charts/generic
     namespace: home-assistant

@@ -1,0 +1,35 @@
+raw:
+  - apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: nfs-csi-persistent
+      namespace: kube-system
+    provisioner: nfs.csi.k8s.io
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    allowVolumeExpansion: true
+    parameters:
+      mountPermissions: "0"
+      server: wheatley.local
+      share: /mnt/data/nfs/k8s
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}
+    mountOptions:
+      - nfsvers=4.1
+      - hard
+  - apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: nfs-csi-ephemeral
+      namespace: kube-system
+    provisioner: nfs.csi.k8s.io
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    allowVolumeExpansion: true
+    parameters:
+      mountPermissions: "0"
+      server: wheatley.local
+      share: /mnt/data/nfs/k8s
+      subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}
+    mountOptions:
+      - nfsvers=4.1
+      - hard

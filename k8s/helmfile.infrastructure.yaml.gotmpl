@@ -4,9 +4,9 @@ releases:
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager
-    version: 1.15.3
+    version: 1.17.2
     labels:
-      purpose: networking
+      networking: true
       tier: critical
     values:
       - crds: 
@@ -17,28 +17,39 @@ releases:
     chart: ./charts/cluster-issuers
     namespace: cert-manager
     labels:
-      purpose: networking
+      networking: true
     values:
       - {{- $secrets.clusterIssuers | toYaml | nindent 8 }}
 
   - name: cloudflare-tunnel
     chart: cloudflare/cloudflare-tunnel-remote
     namespace: kube-system
-    version: 0.1.1
+    version: 0.1.2
     labels:
-      purpose: networking
+      networking: true
+      tier: critical
     values:
       - replicaCount: 2
         image:
           tag: 2024.2.0
       - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
 
+  - name: csi-driver-nfs-storage-classes
+    chart: ./charts/shim
+    namespace: kube-system
+    version: 4.11.0
+    labels:
+      storage: true
+      tier: critical
+    values:
+      - ./values/csi-driver-nfs-storage-classes.yaml
+
   - name: csi-driver-nfs
     chart: csi-driver-nfs/csi-driver-nfs
     namespace: kube-system
-    version: 4.8.0
+    version: 4.11.0
     labels:
-      purpose: storage
+      storage: true
       tier: critical
     hooks:
       - events: [presync]
@@ -56,9 +67,9 @@ releases:
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.14.5
+    version: 1.16.1
     labels:
-      purpose: networking
+      networking: true
       dns: 'true'
     values:
       - ./values/external-dns-cloudflare-tunnel.yaml
@@ -68,9 +79,9 @@ releases:
     chart: external-dns/external-dns
     installed: false
     namespace: external-dns
-    version: 1.14.5
+    version: 1.16.1
     labels:
-      purpose: networking
+      networking: true
       dns: 'true'
     values:
       - ./values/external-dns-pihole.yaml
@@ -80,7 +91,7 @@ releases:
     chart: ./charts/shim
     namespace: kube-system
     labels:
-      purpose: storage
+      storage: true
       tier: critical
     values:
       - ./values/nfs-storage-classes.yaml
@@ -90,7 +101,7 @@ releases:
     namespace: kube-system
     version: 4.0.18
     labels:
-      purpose: storage
+      storage: true
       tier: critical
     values:
       - ./values/nfs-subdir-external-provisioner.yaml
@@ -98,19 +109,22 @@ releases:
   - name: traefik
     chart: traefik/traefik
     namespace: kube-system
-    version: 30.1.0
+    version: 35.2.0
     labels:
-      purpose: networking
+      networking: true
       tier: critical
     hooks:
       - events: [presync]
         showlogs: true
-        command: kubectl
+        command: bash
         args: 
-          - apply
-          - --server-side
-          - --force-conflicts
-          - --kustomize
-          - https://github.com/traefik/traefik-helm-chart/traefik/crds?ref=v30.1.0
+          - -c
+          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl apply --server-side --force-conflicts --filename -
+      - events: [postuninstall]
+        showlogs: true
+        command: bash
+        args:
+          - -c
+          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl delete --filename -
     values:
       - ./values/traefik.yaml

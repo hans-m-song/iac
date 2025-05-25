@@ -35,11 +35,11 @@ repositories:
     url: https://helm.traefik.io/traefik
 
 helmfiles:
-  - path: ./helmfile.infrastructure.yaml
-  - path: ./helmfile.applications.yaml
-  - path: ./helmfile.incubator.yaml
-  - path: ./helmfile.deployment.yaml
-  - path: ./helmfile.monitoring.yaml
+  - path: ./helmfile.applications.yaml.gotmpl
+  - path: ./helmfile.deployment.yaml.gotmpl
+  - path: ./helmfile.incubator.yaml.gotmpl
+  - path: ./helmfile.infrastructure.yaml.gotmpl
+  - path: ./helmfile.monitoring.yaml.gotmpl
 
 helmDefaults:
   kubeContext: wheatley

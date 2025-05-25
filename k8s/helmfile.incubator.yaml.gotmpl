@@ -1,6 +1,29 @@
 {{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
 
 releases:
+  - name: media-support
+    chart: ./charts/shim
+    namespace: media
+    values:
+      - ./values/media-support.yaml
+
+  - name: indexers
+    chart: ./charts/generic
+    namespace: media
+    values:
+      - ./values/indexers.yaml
+
+  - name: jellyfin
+    chart: ./charts/generic
+    namespace: media
+    values:
+      - ./values/jellyfin.yaml
+
+  - name: qbittorrent
+    chart: ./charts/generic
+    namespace: media
+    values:
+      - ./values/qbittorrent.yaml
   - name: meilisearch
     chart: ./charts/generic
     namespace: buildsight
@@ -37,7 +60,7 @@ releases:
     namespace: monitoring
     version: 5.0.85
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - ./values/nri-bundle.yaml
       - {{- $secrets.newrelic | toYaml | nindent 8 }}
@@ -48,7 +71,7 @@ releases:
     namespace: monitoring
     version: 0.3.8
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - {{- $secrets.openobserveCollector | toYaml | nindent 8 }}
 
@@ -58,7 +81,7 @@ releases:
     namespace: monitoring
     version: 0.64.2
     labels:
-      purpose: monitoring
+      monitoring: true
     values:
       - ./values/opentelemetry-operator.yaml
 
@@ -71,19 +94,8 @@ releases:
     - ./values/vault.yaml
     - {{- $secrets.vault | toYaml | nindent 8 }}
 
-  - name: yt-dlp-webui
-    chart: ./charts/generic
-    namespace: yt-dlp-webui
-    values:
-      - ./values/yt-dlp-webui.yaml
-
-  - name: yt-dlp-webui-nodeport
-    chart: ./charts/shim
-    namespace: yt-dlp-webui
-    values:
-      - ./values/yt-dlp-webui-nodeport.yaml
-
   - name: zerotier
+    installed: false
     chart: ./charts/generic
     namespace: zerotier
     values:
