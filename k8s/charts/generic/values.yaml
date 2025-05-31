@@ -12,6 +12,12 @@ deployment:
   terminationGracePeriodSeconds: 30
   podAnnotations: {}
 
+initContainers:
+  {}
+  # sidecar:
+  #   image: ""
+  #   restartPolicy: Always
+
 containers:
   {}
   # app:
@@ -57,6 +63,7 @@ containers:
   #       initialDelaySeconds: 5
   #       periodSeconds: 10
   #   readinessProbe: {}
+  #   startupProbe: {}
   #   ports:
   #     http:
   #       protocol: TCP

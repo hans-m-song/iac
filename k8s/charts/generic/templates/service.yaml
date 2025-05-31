@@ -1,5 +1,6 @@
 {{- $exposedPorts := dict }}
-{{- range $container := .Values.containers }}
+{{- $containers := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
+{{- range $container := $containers }}
 {{- range $name, $port := $container.ports }}
 {{- if $port.externalPort }}
 {{- $exposedPorts = set $exposedPorts $name $port }}

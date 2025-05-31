@@ -1,0 +1,16 @@
+templates:
+  - |
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: downloads
+      namespace: {{ .Release.Namespace }}
+      labels: {{- include "generic.labels" . | nindent 4 }}
+    spec:
+      storageClassName: nfs-persistent
+      accessModes:
+        - ReadWriteOnce
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Gi

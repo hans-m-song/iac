@@ -21,7 +21,7 @@ spec:
         {{- end }}
     spec:
       {{- $volumes := dict }}
-      {{- range $container := merge .Values.containers .Values.initContainers }}
+      {{- range $container := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
       {{- $containerVolumes := $container.volumes | default (dict) }}
       {{- $volumes = merge $volumes $containerVolumes }}
       {{- end }}

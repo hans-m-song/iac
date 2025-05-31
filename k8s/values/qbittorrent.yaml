@@ -1,0 +1,125 @@
+deployment:
+  strategy:
+    type: Recreate
+
+initContainers:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    restartPolicy: Always
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      readOnlyRootFilesystem: false
+      allowPrivilegeEscalation: true
+      privileged: true
+      capabilities:
+        add: [NET_ADMIN]
+        drop: []
+    startupProbe:
+      exec:
+        command:
+          - test
+          - -f
+          - /gluetun/forwarded_port
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 30
+    env:
+      LOG_LEVEL: debug
+      VPN_TYPE: wireguard
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_PORT_FORWARDING: "on"
+      VPN_PORT_FORWARDING_PROVIDER: protonvpn
+      VPN_PORT_FORWARDING_STATUS_FILE: /gluetun/forwarded_port
+    volumes:
+      gluetun:
+        mount:
+          mountPath: /gluetun
+        spec:
+          persistentVolumeClaim:
+            claimName: gluetun
+      tunnel:
+        mount:
+          mountPath: /dev/net/tun
+          readOnly: false
+        spec:
+          hostPath:
+            path: /dev/net/tun
+
+containers:
+  debug:
+    image: axatol/debug:latest
+    command:
+      - sh
+    args:
+      - -c
+      - |
+        trap cleanup SIGTERM
+        sleep 24h &
+        cleanup() {
+          echo "Debug container stopping..."
+          kill $!
+          exit 0
+        }
+        wait
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Australia/Brisbane
+      WEBUI_PORT: "8080"
+      FILE__TORRENTING_PORT: /gluetun/forwarded_port
+    securityContext: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: qbittorrent-config
+      downloads:
+        mount:
+          mountPath: /downloads
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: downloads
+      gluetun:
+        mount:
+          mountPath: /gluetun
+        spec:
+          persistentVolumeClaim:
+            claimName: gluetun
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 8080
+        externalPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    qbittorent.axatol.local:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+
+pvc:
+  gluetun:
+    storageClassName: nfs-csi-persistent
+    capacity: 1Gi
+  qbittorrent-config:
+    storageClassName: nfs-csi-persistent
+    capacity: 1Gi

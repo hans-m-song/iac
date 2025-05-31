@@ -1,5 +1,6 @@
-{{- if gt (len .Values.containers) 0 }}
-{{- range $name, $container := .Values.containers }}
+{{- $containers := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
+{{- if gt (len $containers) 0 }}
+{{- range $name, $container := $containers }}
 {{- $env := $container.env | default (dict) }}
 {{- if gt (len $env) 0 }}
 ---

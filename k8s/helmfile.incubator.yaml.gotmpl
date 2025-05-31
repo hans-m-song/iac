@@ -24,6 +24,8 @@ releases:
     namespace: media
     values:
       - ./values/qbittorrent.yaml
+      - {{- $secrets.qbittorrent | toYaml | nindent 8 }}
+
   - name: meilisearch
     chart: ./charts/generic
     namespace: buildsight

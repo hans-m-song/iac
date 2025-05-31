@@ -49,7 +49,7 @@ helmDefaults:
   cleanupOnFail: false
   createNamespace: true
   devel: false
-  historyMax: 10
+  historyMax: 3
   skipDeps: true
   wait: true
   waitForJobs: true

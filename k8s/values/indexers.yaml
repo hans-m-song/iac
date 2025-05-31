@@ -1,0 +1,161 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    securityContext: false
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Australia/Brisbane
+      WEBUI_PORT: "9696"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          subPath: prowlarr
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-config
+    ports:
+      prowlarr:
+        protocol: TCP
+        internalPort: 9696
+        externalPort: 9696
+    readinessProbe:
+      tcpSocket:
+        port: 9696
+      initialDelaySeconds: 60
+      periodSeconds: 60
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    securityContext: false
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Australia/Brisbane
+      WEBUI_PORT: "7878"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          subPath: radarr
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-config
+    ports:
+      radarr:
+        protocol: TCP
+        internalPort: 7878
+        externalPort: 7878
+    readinessProbe:
+      tcpSocket:
+        port: 7878
+      initialDelaySeconds: 60
+      periodSeconds: 60
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    securityContext: false
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Australia/Brisbane
+      WEBUI_PORT: "8989"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          subPath: readarr
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-config
+    ports:
+      readarr:
+        protocol: TCP
+        internalPort: 8787
+        externalPort: 8787
+    readinessProbe:
+      tcpSocket:
+        port: 8787
+      initialDelaySeconds: 60
+      periodSeconds: 60
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    securityContext: false
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Australia/Brisbane
+      WEBUI_PORT: "8989"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          subPath: sonarr
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-config
+    ports:
+      sonarr:
+        protocol: TCP
+        internalPort: 8989
+        externalPort: 8989
+    readinessProbe:
+      tcpSocket:
+        port: 8989
+      initialDelaySeconds: 60
+      periodSeconds: 60
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    prowlarr.axatol.local:
+      - path: /
+        portName: prowlarr
+    radarr.axatol.local:
+      - path: /
+        portName: radarr
+    readarr.axatol.local:
+      - path: /
+        portName: readarr
+    sonarr.axatol.local:
+      - path: /
+        portName: sonarr
+
+pvc:
+  indexers-config:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+networkPolicy:
+  ingress:
+    - cidr: 192.168.1.41/32
+    - namespace: media
+  egress:
+    - cidr: 192.168.1.41/32
+    - namespace: media

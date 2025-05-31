@@ -1,5 +1,6 @@
 {{- $scrapeEndpoints := list }}
-{{- range $container := .Values.containers }}
+{{- $containers := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
+{{- range $container := $containers }}
 {{- range $name, $port := $container.ports }}
 {{- range $endpoint := $port.metricsEndpoints }}
 {{- $defaultEndpoint := dict "port" $name }}

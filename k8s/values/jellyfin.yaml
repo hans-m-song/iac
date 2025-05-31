@@ -1,0 +1,60 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    securityContext: false
+    env:
+      PUID: "1000"
+      PGID: "1000"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      config:
+        mount:
+          mountPath: /config
+          subPath: jellyfin
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+      data:
+        mount:
+          mountPath: /data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: downloads
+      hardware:
+        mount:
+          mountPath: /dev/dri
+          readOnly: false
+        spec:
+          hostPath:
+            path: /dev/dri
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 8096
+        externalPort: 8096
+    readinessProbe:
+      tcpSocket:
+        port: 8096
+      initialDelaySeconds: 20
+      periodSeconds: 20
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    jellyfin.axatol.local:
+      - path: /
+        portName: http
+
+pvc:
+  jellyfin-config:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

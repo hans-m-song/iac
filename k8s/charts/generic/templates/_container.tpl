@@ -92,5 +92,8 @@ readinessProbe: {{- .readinessProbe | toYaml | nindent 2 }}
 {{- if .livenessProbe }}
 livenessProbe: {{- .livenessProbe | toYaml | nindent 2 }}
 {{- end }}
+{{- if .startupProbe }}
+startupProbe: {{- .startupProbe | toYaml | nindent 2 }}
+{{- end }}
 {{- end -}}
 {{- end -}}
