@@ -64,6 +64,17 @@ releases:
     values:
       - ./values/csi-driver-nfs.yaml
 
+  - name: external-dns-adguard
+    chart: external-dns/external-dns
+    namespace: external-dns
+    version: 1.16.1
+    labels:
+      networking: true
+      dns: 'true'
+    values:
+      - ./values/external-dns-adguard.yaml
+      - {{- $secrets.externalDnsAdguard | toYaml | nindent 8 }}
+
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns
