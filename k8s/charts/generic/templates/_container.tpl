@@ -32,7 +32,6 @@
   "readOnlyRootFilesystem" true
   "runAsUser" 1000
   "runAsGroup" 1000
-  "fsGroup" 1000
   "capabilities" (dict
     "drop" (list 
       "ALL"
@@ -55,6 +54,9 @@ resources:
   requests:
     cpu: {{ ((.resources).requests).cpu | default "100m" }}
     memory: {{ ((.resources).requests).memory | default "256Mi" }}
+{{- if .restartPolicy }}
+restartPolicy: {{ .restartPolicy }}
+{{- end }}
 {{- if .lifecycle }}
 lifecycle: {{ .lifecycle | toYaml | nindent 2 }}
 {{- end }}
