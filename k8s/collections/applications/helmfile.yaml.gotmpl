@@ -1,0 +1,77 @@
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
+
+releases:
+  - name: glance
+    chart: ../../charts/generic
+    namespace: glance
+    values:
+      - ./values/glance.yaml
+      - {{- $secrets.glance | toYaml | nindent 8 }}
+
+  - name: home-assistant
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/home-assistant.yaml
+
+  - name: homepage
+    chart: ../../charts/generic
+    namespace: homepage
+    values:
+      - ./values/homepage.yaml
+
+  - name: huisheng
+    chart: huisheng/huisheng
+    namespace: huisheng
+    version: 0.0.5
+    values:
+      - ./values/huisheng.yaml
+      - {{- $secrets.huisheng | toYaml | nindent 8 }}
+
+  - name: meilisearch
+    chart: ../../charts/generic
+    namespace: buildsight
+    values:
+      - ./values/meilisearch.yaml
+      - {{- $secrets.meilisearch | toYaml | nindent 8 }}
+
+  - name: mongo-express
+    installed: false
+    chart: ../../charts/generic
+    namespace: mongo
+    values:
+      - ./values/mongo-express.yaml
+      - {{- $secrets.mongoExpress | toYaml | nindent 8 }}
+
+  - name: mongo
+    installed: false
+    chart: ../../charts/generic
+    namespace: mongo
+    values:
+      - ./values/mongo.yaml
+      - {{- $secrets.mongo | toYaml | nindent 8 }}
+
+  - name: supabase
+    chart: ../../charts/supabase
+    namespace: supabase
+
+  - name: vault
+    installed: false
+    chart: hashicorp/vault
+    namespace: vault
+    version: 0.28.0
+    values:
+    - ./values/vault.yaml
+    - {{- $secrets.vault | toYaml | nindent 8 }}
+
+  - name: yt-dlp-webui
+    chart: ../../charts/generic
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui.yaml
+
+  - name: yt-dlp-webui-nodeport
+    chart: ../../charts/shim
+    namespace: yt-dlp-webui
+    values:
+      - ./values/yt-dlp-webui-nodeport.yaml

@@ -1,0 +1,28 @@
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
+
+releases:
+
+  - name: media-support
+    chart: ../../charts/shim
+    namespace: media
+    values:
+      - ./values/media-support.yaml
+
+  - name: indexers
+    chart: ../../charts/generic
+    namespace: media
+    values:
+      - ./values/indexers.yaml
+
+  - name: jellyfin
+    chart: ../../charts/generic
+    namespace: media
+    values:
+      - ./values/jellyfin.yaml
+
+  - name: qbittorrent
+    chart: ../../charts/generic
+    namespace: media
+    values:
+      - ./values/qbittorrent.yaml
+      - {{- $secrets.qbittorrent | toYaml | nindent 8 }}

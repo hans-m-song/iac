@@ -1,0 +1,35 @@
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
+
+releases:
+  - name: elasticsearch
+    installed: false
+    chart: ../../charts/generic
+    namespace: elastic
+    values:
+      - ./values/elasticsearch.yaml
+
+  - name: flipt
+    chart: flipt/flipt
+    namespace: flipt
+    version: 0.52.0
+    values:
+      - ./values/flipt.yaml
+
+  - name: mqtt
+    chart: ../../charts/generic
+    namespace: mqtt
+    values:
+      - ./values/mqtt.yaml
+
+  - name: redis
+    chart: ../../charts/generic
+    namespace: redis
+    values:
+      - ./values/redis.yaml
+      - {{- $secrets.redis | toYaml | nindent 8}}
+
+  - name: zigbee2mqtt
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/zigbee2mqtt.yaml

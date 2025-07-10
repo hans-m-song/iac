@@ -1,0 +1,73 @@
+containers:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    env:
+      HOMEPAGE_ALLOWED_HOSTS: homepage.axatol.local
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 3000
+        externalPort: 3000
+    volumes:
+      config:
+        mount:
+          mountPath: /app/config
+          readOnly: false
+        spec:
+          configMap:
+            name: homepage-files
+      logs:
+        mount:
+          mountPath: /app/config/logs
+          readOnly: false
+        spec:
+          emtyDir: {}
+
+rbac:
+  roleKind: ClusterRole
+  rules:
+    - apiGroups: [""]
+      resources: [namespaces, pods, nodes]
+      verbs: [get, list]
+    - apiGroups: [extensions, networking.k8s.io]
+      resources: [ingresses]
+      verbs: [get, list]
+    - apiGroups: [traefik.io]
+      resources: [ingressroutes]
+      verbs: [get, list]
+    - apiGroups: [gateway.networking.k8s.io]
+      resources: [httproutes, gateways]
+      verbs: [get, list]
+    - apiGroups: [metrics.k8s.io]
+      resources: [nodes, pods]
+      verbs: [get, list]
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    homepage.axatol.local:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+
+files:
+  kubernetes.yaml:
+    mode: cluster
+  settings.yaml:
+    theme: dark
+    color: slate
+  docker.yaml: {}
+  services.yaml: {}
+  widgets.yaml:
+    - kubernetes:
+      cluster:
+        show: true
+        cpu: true
+        memory: true
+        showLabel: true
+        label: "cluster"
+      nodes:
+        show: true
+        cpu: true
+        memory: true
+        showLabel: true

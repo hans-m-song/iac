@@ -4,9 +4,12 @@ deployment:
 
 containers:
   meilisearch:
-    image: getmeili/meilisearch:v1.12
+    image: getmeili/meilisearch:v1
+    # args:
+    #   - --experimental-dumpless-upgrade
     env:
       MEILI_NO_ANALYTICS: "true"
+      MEILI_EXPERIMENTAL_LOGS_MODE: json
     ports:
       api:
         protocol: TCP

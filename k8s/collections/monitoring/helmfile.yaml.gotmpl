@@ -1,21 +1,25 @@
-{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
 
 releases:
   - name: alloy
     chart: grafana/alloy
     namespace: monitoring
-    version: 1.0.3
+    version: 1.1.1
     labels:
       monitoring: true
     values:
+      - ./values/alloy.yaml
+      - {{- $secrets.alloy | toYaml | nindent 8 }}
       - alloy:
           configMap:
             content: |
-              {{- readFile "./static/alloy/config.alloy" | nindent 14 }}
-              {{- readFile "./static/alloy/kubernetes-pod-logs.alloy" | nindent 14 }}
-              {{- readFile "./static/alloy/kubernetes-events.alloy" | nindent 14 }}
-              {{- readFile "./static/alloy/loki.alloy" | nindent 14 }}
-      - ./values/alloy.yaml
+              {{- readFile "./values/alloy/config.alloy" | nindent 14 }}
+              {{- readFile "./values/alloy/kubernetes-pod-logs.alloy" | nindent 14 }}
+              {{- readFile "./values/alloy/kubernetes-events.alloy" | nindent 14 }}
+              {{- readFile "./values/alloy/loki.alloy" | nindent 14 }}
+              {{- readFile "./values/alloy/otelcol.alloy" | nindent 14 }}
+    set:
+      {{- $secrets.alloySet | toYaml | nindent 6 }}
 
   - name: loki
     chart: grafana/loki
@@ -47,3 +51,13 @@ releases:
       - ./values/prometheus-stack.yaml
       - ./values/prometheus-scrape-configs.yaml
       - {{- $secrets.prometheusStack | toYaml | nindent 8 }}
+
+  - name: tempo
+    chart: grafana/tempo
+    namespace: monitoring
+    version: 1.21.1
+    labels:
+      monitoring: true
+    values:
+      - ./values/tempo.yaml
+      - {{- $secrets.tempo | toYaml | nindent 8 }}

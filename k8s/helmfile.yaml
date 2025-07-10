@@ -15,6 +15,8 @@ repositories:
     url: https://helm.releases.hashicorp.com
   - name: huisheng
     url: https://huisheng.charts.axatol.xyz # git+https://github.com/hans-m-song/huisheng@charts?ref=master
+  - name: jaegertracing
+    url: https://jaegertracing.github.io/helm-charts
   - name: jetstack
     url: https://charts.jetstack.io
   - name: metrics-server
@@ -35,11 +37,11 @@ repositories:
     url: https://helm.traefik.io/traefik
 
 helmfiles:
-  - path: ./helmfile.applications.yaml.gotmpl
-  - path: ./helmfile.deployment.yaml.gotmpl
-  - path: ./helmfile.incubator.yaml.gotmpl
-  - path: ./helmfile.infrastructure.yaml.gotmpl
-  - path: ./helmfile.monitoring.yaml.gotmpl
+  - path: ./collections/applications/helmfile.yaml.gotmpl
+  - path: ./collections/deployment/helmfile.yaml.gotmpl
+  - path: ./collections/infrastructure/helmfile.yaml.gotmpl
+  - path: ./collections/monitoring/helmfile.yaml.gotmpl
+  - path: ./collections/media/helmfile.yaml.gotmpl
 
 helmDefaults:
   kubeContext: wheatley

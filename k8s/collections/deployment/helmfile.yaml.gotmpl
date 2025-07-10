@@ -1,4 +1,4 @@
-{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
 
 releases:
   - name: arc
@@ -24,7 +24,7 @@ releases:
           - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl delete --filename -
 
   - name: arc-runner-support
-    chart: ./charts/shim
+    chart: ../../charts/shim
     namespace: arc-runners
     labels:
       deployment: true

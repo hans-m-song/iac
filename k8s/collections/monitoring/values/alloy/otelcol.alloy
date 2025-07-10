@@ -1,0 +1,36 @@
+// https://grafana.com/blog/2025/04/15/aws-lambda-opentelemetry-and-grafana-cloud-a-guide-to-serverless-observability-considerations/
+
+otelcol.auth.bearer "default" {
+	scheme = "token"
+	token  = sys.env("OTELCOL_BASIC_TOKEN")
+}
+
+otelcol.receiver.otlp "default" {
+	http {
+		auth = otelcol.auth.bearer.default.handler
+	}
+
+	output {
+		metrics = [otelcol.processor.batch.default.input]
+		logs    = [otelcol.processor.batch.default.input]
+		traces  = [otelcol.processor.batch.default.input]
+	}
+}
+
+otelcol.processor.batch "default" {
+	output {
+		metrics = [otelcol.exporter.otlp.default.input]
+		logs    = [otelcol.exporter.otlp.default.input]
+		traces  = [otelcol.exporter.otlp.default.input]
+	}
+}
+
+otelcol.exporter.otlp "default" {
+	client {
+		endpoint = "http://tempo.monitoring.svc.cluster.local:4317"
+
+		tls {
+			insecure = true
+		}
+	}
+}

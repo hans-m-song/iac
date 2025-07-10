@@ -1,6 +1,6 @@
 logging {
-	level  = "info"
-	format = "logfmt"
+	level  = "debug" // "info"
+	format = "json"
 }
 
 livedebugging {

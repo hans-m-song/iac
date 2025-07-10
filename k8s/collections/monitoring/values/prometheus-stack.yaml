@@ -1,0 +1,93 @@
+crds:
+  enabled: true
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: true
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: grafana.axatol.xyz
+      external-dns.alpha.kubernetes.io/target: http://prometheus-stack-grafana.monitoring.svc.cluster.local:80
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.axatol.local
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: nfs-persistent
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  sidecar:
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: false
+  additionalDataSources:
+    # - name: "Prometheus"
+    #   type: prometheus
+    #   uid: prometheus
+    #   url: http://prometheus-stack-kube-prom-prometheus.monitoring:9090/
+    #   access: proxy
+    #   isDefault: true
+    #   jsonData:
+    #     httpMethod: POST
+    #     timeInterval: 30s
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.monitoring.svc.cluster.local:3100
+      access: proxy
+    - name: Tempo
+      type: tempo
+      url: http://tempo.monitoring.svc.cluster.local:3100
+      access: proxy
+      basicAuth: false
+      jsonData:
+        streamingEnabled:
+          metrics: false
+          search: false
+        tracesToLogsV2:
+          datasourceUid: Loki
+        tracesToMetrics:
+          datasourceUid: prometheus
+        serviceMap:
+          datasourceUid: prometheus
+        # TODO
+        # tracesToProfiles:
+        #   datasourceUid: pyroscope
+        nodeGraph:
+          enabled: true
+  deleteDatasources:
+    - name: "Alertmanager"
+      type: alertmanager
+      uid: alertmanager
+      url: http://prometheus-stack-kube-prom-alertmanager.monitoring:9093/
+      access: proxy
+      jsonData:
+        handleGrafanaManagedAlerts: false
+        implementation: prometheus
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.axatol.local
+  prometheusSpec:
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-persistent
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi

@@ -1,0 +1,95 @@
+deployment:
+  replicas: 1
+
+containers:
+  glance:
+    image: glanceapp/glance
+    volumes:
+      config:
+        mount:
+          mountPath: /app/config
+        spec:
+          configMap:
+            name: glance-files
+    ports:
+      web:
+        protocol: TCP
+        internalPort: 8080
+        externalPort: 8080
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: glance.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://glance.glance.svc.cluster.local:8080
+
+ingress:
+  ingressClassName: traefik
+  hosts:
+    glance.axatol.local:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: web
+
+files:
+  # https://github.com/glanceapp/glance/blob/main/docs/configuration.md#configuring-glance
+  glance.yml:
+    pages:
+      - name: Home
+        hide-desktop-navigation: true
+        columns:
+          - size: full
+            widgets:
+              - type: group
+                title: News
+                widgets:
+                  - type: rss
+                    title: Self-Host
+                    limit: 5
+                    collapse-after: 5
+                    cache: 12h
+                    feeds:
+                      - title: selfh.st
+                        url: https://selfh.st/rss/
+
+                  - type: rss
+                    title: OzBargain
+                    limit: 5
+                    collapse-after: 5
+                    cache: 12h
+                    feeds:
+                      - title: Computing
+                        url: https://www.ozbargain.com.au/cat/computing/feed
+                      - title: Computing
+                        url: https://www.ozbargain.com.au/cat/computing/feed
+                      - title: Electrical and Electronics
+                        url: https://www.ozbargain.com.au/cat/electrical-electronics/feed
+                      - title: Gaming
+                        url: https://www.ozbargain.com.au/cat/gaming/feed
+
+                  - type: reddit
+                    subreddit: selfhosted
+                    show-thumbnails: true
+
+          - size: small
+            widgets:
+              - type: dns-stats
+                service: adguard
+                url: ${ADGUARD_URL}
+                username: ${ADGUARD_USERNAME}
+                password: ${ADGUARD_PASSWORD}
+
+              - type: weather
+                location: Brisbane, Australia
+                units: metric
+                hour-format: 12h
+                hide-location: true
+
+              - type: releases
+                cache: 1d
+                token: ${GITHUB_TOKEN}
+                show-source-icon: true
+                repositories:
+                  - glanceapp/glance
+                  - go-gitea/gitea
+                  - immich-app/immich
+                  - syncthing/syncthing

@@ -1,4 +1,4 @@
-{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
 
 releases:
   - name: cert-manager
@@ -14,7 +14,7 @@ releases:
 
   - name: cert-manager-cluster-issuers
     installed: false
-    chart: ./charts/cluster-issuers
+    chart: ../../charts/cluster-issuers
     namespace: cert-manager
     labels:
       networking: true
@@ -29,13 +29,10 @@ releases:
       networking: true
       tier: critical
     values:
-      - replicaCount: 2
-        image:
-          tag: 2024.2.0
       - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
 
   - name: csi-driver-nfs-storage-classes
-    chart: ./charts/shim
+    chart: ../../charts/shim
     namespace: kube-system
     version: 4.11.0
     labels:
@@ -99,7 +96,7 @@ releases:
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
   
   - name: nfs-storage-classes
-    chart: ./charts/shim
+    chart: ../../charts/shim
     namespace: kube-system
     labels:
       storage: true
@@ -139,3 +136,12 @@ releases:
           - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl delete --filename -
     values:
       - ./values/traefik.yaml
+
+  - name: minio
+    chart: ../../charts/generic
+    namespace: minio
+    labels:
+      purpose: storage
+    values:
+      - ./values/minio.yaml
+      - {{- $secrets.minio | toYaml | nindent 8 }}

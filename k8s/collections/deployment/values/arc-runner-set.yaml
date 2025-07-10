@@ -12,6 +12,9 @@ template:
       - name: runner
         image: public.ecr.aws/axatol/github-actions-runner:latest
         command: ["/home/runner/run.sh"]
+        env:
+          - name: npm_config_store_dir
+            value: /home/runner/.pnpm-store
         volumeMounts:
           - name: cache
             mountPath: /opt/hostedtoolcache
@@ -22,6 +25,9 @@ template:
           - name: cache
             mountPath: /home/runner/.npm
             subPath: home/runner/.npm
+          - name: cache
+            mountPath: /home/runner/.pnpm-store
+            subPath: home/runner/.pnpm-store
           - name: cache
             mountPath: /home/runner/go
             subPath: home/runner/go

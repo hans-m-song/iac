@@ -46,13 +46,13 @@ containers:
 
 service:
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: hass.axatol.xyz
+    external-dns.alpha.kubernetes.io/hostname: home.axatol.xyz
     external-dns.alpha.kubernetes.io/target: http://home-assistant.home-assistant.svc.cluster.local:8123
 
 ingress:
   ingressClassName: traefik
   hosts:
-    hass.axatol.local:
+    home.axatol.local:
       - path: /
         portName: console
 

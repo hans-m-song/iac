@@ -1,4 +1,4 @@
-{{- $secrets := readFile "./secrets.yaml" | fromYaml -}}
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
 
 releases:
   - name: actions-runner-controller
@@ -12,10 +12,28 @@ releases:
 
   - name: actions-runners
     installed: false
-    chart: ./charts/actions-runners
+    chart: ../../charts/actions-runners
     namespace: actions-runner-system
     values:
       - ./values/actions-runners.yaml
+
+  - name: nexus
+    installed: false
+    chart: ../../charts/generic
+    namespace: nexus
+    values:
+      - ./values/nexus.yaml
+
+  - name: nri-bundle
+    installed: false
+    chart: newrelic/nri-bundle
+    namespace: monitoring
+    version: 5.0.85
+    labels:
+      monitoring: true
+    values:
+      - ./values/nri-bundle.yaml
+      - {{- $secrets.newrelic | toYaml | nindent 8 }}
 
   - name: octopus-deploy
     installed: false
@@ -31,7 +49,7 @@ releases:
 
   - name: octopus-deploy-mssql
     installed: false
-    chart: ./charts/generic
+    chart: ../../charts/generic
     namespace: octopus
     values:
       - ./values/octopus-deploy-mssql.yaml
@@ -39,16 +57,43 @@ releases:
 
   - name: octopus-deploy-worker
     installed: false
-    chart: ./charts/octopus-deploy-worker
+    chart: ../../charts/octopus-deploy-worker
     namespace: octopus
     values:
       - {{- $secrets.octopusDeployWorker | toYaml | nindent 8 }}
       - image: public.ecr.aws/axatol/octopus-deploy-tentacle
 
+  - name: openobserve-collector
+    installed: false
+    chart: openobserve/openobserve-collector
+    namespace: monitoring
+    version: 0.3.8
+    labels:
+      monitoring: true
+    values:
+      - {{- $secrets.openobserveCollector | toYaml | nindent 8 }}
+
+  - name: opentelemetry-operator
+    installed: false
+    chart: open-telemetry/opentelemetry-operator
+    namespace: monitoring
+    version: 0.64.2
+    labels:
+      monitoring: true
+    values:
+      - ./values/opentelemetry-operator.yaml
+
   - name: overleaf
     installed: false
-    chart: ./charts/generic
+    chart: ../../charts/generic
     namespace: overleaf
     values:
       - ./values/overleaf.yaml
       - {{- $secrets.overleaf | toYaml | nindent 8 }}
+
+  - name: zerotier
+    installed: false
+    chart: ../../charts/generic
+    namespace: zerotier
+    values:
+      - ./values/zerotier.yaml

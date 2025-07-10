@@ -8,6 +8,7 @@ triggerLoopOnEvent: true
 
 sources: [service]
 domainFilters: [axatol.xyz]
+extraArgs: [--webhook-provider-url=http://localhost:8080]
 
 image:
   pullPolicy: Always
@@ -18,6 +19,8 @@ serviceMonitor:
 provider:
   name: webhook
   webhook:
+    service:
+      port: 8080
     image:
       repository: public.ecr.aws/axatol/external-dns-cloudflare-tunnel-webhook
       tag: latest
@@ -34,6 +37,8 @@ provider:
     env:
       - name: LOG_LEVEL
         value: debug
+      - name: PORT
+        value: "8080"
       # - name: DOMAIN_FILTERS
       #   value: axatol.xyz
       # - name: DRY_RUN
