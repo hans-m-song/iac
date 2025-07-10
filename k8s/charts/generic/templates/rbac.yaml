@@ -1,9 +1,37 @@
 {{- if .Values.rbac.create -}}
+{{- $roleKind := .Values.rbac.roleKind | default "Role" }}
+{{- $serviceAccountName := .Values.rbac.serviceAccountName | default .Release.Name }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ default .Release.Name .Values.rbac.serviceAccountName }}
+  name: {{ $serviceAccountName }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "generic.labels" . | nindent 4 }}
+{{- if .Values.rbac.rules }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ $roleKind }}
+metadata:
+  name: {{ $serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "generic.labels" . | nindent 4 }}
+spec:
+  rules: {{- .Values.rbac.rules | toYaml | nindent 2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ $roleKind }}Binding
+metadata:
+  name: {{ $serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "generic.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $serviceAccountName }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: {{ $roleKind }}
+  name: {{ $serviceAccountName }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
 {{- end }}

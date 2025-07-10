@@ -21,10 +21,6 @@ spec:
         {{- end }}
     spec:
       {{- $volumes := dict }}
-      {{- range $container := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
-      {{- $containerVolumes := $container.volumes | default (dict) }}
-      {{- $volumes = merge $volumes $containerVolumes }}
-      {{- end }}
       {{- if gt (len .Values.files) 0 }}
       {{- $volumes = set $volumes "files" (dict 
         "spec" (dict
@@ -33,6 +29,10 @@ spec:
           )
         )
       )}}
+      {{- end }}
+      {{- range $container := mergeOverwrite (dict) .Values.containers .Values.initContainers }}
+      {{- $containerVolumes := $container.volumes | default (dict) }}
+      {{- $volumes = merge $volumes $containerVolumes }}
       {{- end }}
       {{- if gt (len $volumes) 0 }}
       volumes:

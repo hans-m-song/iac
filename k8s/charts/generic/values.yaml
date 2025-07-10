@@ -123,6 +123,7 @@ files:
   # init.sh: |
   #   set -eo pipefail
   #   echo "hello world"
+filesMountPath: /opt/files
 
 hooks:
   {}

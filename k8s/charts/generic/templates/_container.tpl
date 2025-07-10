@@ -23,7 +23,7 @@
 {{- if gt (len $.Values.files) 0 }}
 {{- $volumes = set $volumes "files" (dict
   "mount" (dict
-    "mountPath" "/opt/files"
+    "mountPath" $.Values.filesMountPath
   )
 )}}
 {{- end }}

@@ -28,6 +28,10 @@ metadata:
 data:
   {{- range $name, $value := $.Values.files }}
   {{ $name }}: |
+    {{- if (kindIs "string" $value) }}
     {{- $value | trim | nindent 4 }}
+    {{- else }}
+    {{- $value | toYaml | nindent 4 }}
+    {{- end }}
   {{- end }}
 {{- end }}
