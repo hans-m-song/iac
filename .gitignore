@@ -4,6 +4,10 @@
 # cdk
 cdk.out*
 
+# helm
+k8s/charts/*/Chart.lock
+k8s/charts/*/charts
+
 # misc
 .dccache
 .DS_Store
