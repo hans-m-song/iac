@@ -26,10 +26,11 @@ resource "aws_iam_role" "cloudtrail_logging" {
   provider           = aws.apse2
   name               = "aws-service-role-cloudtrail-logging"
   assume_role_policy = data.aws_iam_policy_document.cloudtrail_logging_trust_relationship.json
-  inline_policy {
-    name   = "InlinePolicy"
-    policy = data.aws_iam_policy_document.cloudtrail_logging_permissions.json
-  }
+}
+
+resource "aws_iam_role_policy" "cloudtrail_logging" {
+  policy = data.aws_iam_policy_document.cloudtrail_logging_permissions.json
+  role   = aws_iam_role.cloudtrail_logging.id
 }
 
 resource "aws_cloudtrail" "management_events" {

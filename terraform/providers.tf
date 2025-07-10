@@ -10,27 +10,27 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "5.45.0"
+      version = "6.2.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.29.0"
+      version = "5.6.0"
     }
 
     github = {
       source  = "integrations/github"
-      version = "6.2.1"
+      version = "6.6.0"
     }
 
     http = {
       source  = "hashicorp/http"
-      version = "3.4.2"
+      version = "3.5.0"
     }
 
     newrelic = {
       source  = "newrelic/newrelic"
-      version = "3.34.1"
+      version = "3.63.0"
     }
 
     oci = {
@@ -55,10 +55,6 @@ provider "aws" {
   alias  = "apse2"
   region = "ap-southeast-2"
 
-  assume_role {
-    role_arn = var.terraform_deploy_role
-  }
-
   default_tags {
     tags = { "managed-by-terraform" = "true" }
   }
@@ -67,10 +63,6 @@ provider "aws" {
 provider "aws" {
   alias  = "use1"
   region = "us-east-1"
-
-  assume_role {
-    role_arn = var.terraform_deploy_role
-  }
 
   default_tags {
     tags = { "managed-by-terraform" = "true" }
