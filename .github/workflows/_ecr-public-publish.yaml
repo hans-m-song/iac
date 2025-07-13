@@ -19,8 +19,7 @@ on:
 
 jobs:
   publish:
-    runs-on:
-      - ${{ github.repository_owner }}-${{ github.event.repository.name }}
+    runs-on: ubuntu-latest
 
     permissions:
       id-token: write
