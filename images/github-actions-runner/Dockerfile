@@ -25,9 +25,16 @@ RUN curl -fsSLo ./awscli.zip \
   && rm -rf aws awscli.zip \
   && export AWS_PAGER=""
 
+ARG GH_VERSION=2.78.0
+RUN curl -fsSLo ./gh.tar.gz \
+  https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz \
+  && sudo tar -xzf gh.tar.gz -C /usr/local/bin/ --strip-components=2 gh_${GH_VERSION}_linux_amd64/bin/gh \
+  && sudo chmod 555 /usr/local/bin/gh \
+  && rm gh.tar.gz
+
 # kubectl
 # https://cdn.dl.k8s.io/release/stable.txt
-ARG KUBECTL_VERSION=v1.31.2
+ARG KUBECTL_VERSION=1.31.2
 RUN sudo curl -fsSLo /usr/local/bin/kubectl \
-  "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+  "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
   && sudo chmod 555 /usr/local/bin/kubectl
