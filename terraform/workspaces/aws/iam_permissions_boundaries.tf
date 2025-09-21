@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "custom_resource_permissions_boundary" {
       "arn:aws:ssm:*:${local.account_id}:parameter/application/*/dev/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/application/*/prd/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/application/shared/*",
-      "arn:aws:ssm:*:${local.account_id}:parameter/cdk-bootstrap/toolkit/*",
+      "arn:aws:ssm:*:${local.account_id}:parameter/cdk-bootstrap/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/custom_resource/acm/*/certificate_arn",
     ]
   }
@@ -120,7 +120,7 @@ data "aws_iam_policy_document" "lambda_permissions_boundary" {
       "arn:aws:ssm:*:${local.account_id}:parameter/application/*/dev/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/application/*/prd/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/application/shared/*",
-      "arn:aws:ssm:*:${local.account_id}:parameter/cdk-bootstrap/toolkit/*",
+      "arn:aws:ssm:*:${local.account_id}:parameter/cdk-bootstrap/*",
       "arn:aws:ssm:*:${local.account_id}:parameter/infrastructure/acm/*/certificate_arn",
     ]
   }
