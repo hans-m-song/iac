@@ -1,6 +1,6 @@
-gman:
+atlas:
   hosts:
-    gman.local:
+    atlas.local:
 
 wheatley:
   hosts:
@@ -9,3 +9,7 @@ wheatley:
 glados:
   hosts:
     glados.local:
+
+pbody:
+  hosts:
+    pbody.local:

@@ -1,0 +1,151 @@
+services:
+  # adguard:
+  #   container_name: adguard
+  #   image: adguard/adguardhome:latest
+  #   pull_policy: missing
+  #   restart: unless-stopped
+  #   ports:
+  #     # setup
+  #     # - "3000:3000/tcp"
+  #     # web
+  #     - 3000:80
+  #     # dns
+  #     - 53:53/tcp
+  #     - 53:53/udp
+  #     # dns over https
+  #     - 443:443/tcp
+  #     - 443:443/udp
+  #     # dns over tls
+  #     - 853:853/tcp
+  #     - 853:853/udp
+  #   volumes:
+  #     - /opt/adguard/work:/opt/adguardhome/work:rw
+  #     - /opt/adguard/conf:/opt/adguardhome/conf:rw
+  #   healthcheck:
+  #     test: wget --quiet --tries=1 --spider http://localhost/ || exit 1
+  #     interval: 30s
+  #     timeout: 1s
+  #     retries: 3
+  #     start_period: 5s
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.services.adguard.loadbalancer.server.port: "80"
+  #     traefik.http.routers.adguard.rule: Host(`adguard.atlas.local`) || Host(`adguard.atlas.axatol.xyz`)
+
+  node-exporter:
+    container_name: node-exporter
+    image: quay.io/prometheus/node-exporter:latest
+    pull_policy: missing
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+    network_mode: host
+    pid: host
+    ports:
+      - 9100:9100
+    volumes:
+      - /:/host:ro,rslave
+    healthcheck:
+      test: wget --quiet --tries=1 --spider http://localhost:9100/ || exit 1
+      interval: 30s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      DNSMASQ_USER: "{{ pihole.dnsmasq_user }}"
+      FTLCONF_dns_listeningMode: all
+      FTLCONF_dns_ratelimit_count: "0"
+      FTLCONF_dns_upstreams: "{{ pihole.dns }}"
+      FTLCONF_misc_etc_dnsmasq_d: "true"
+      FTLCONF_webserver_api_password: "{{ pihole.web_password }}"
+      FTLCONF_webserver_domain: pihole.atlas.axatol.xyz
+    ports:
+      # dns
+      - 53:53/tcp
+      - 53:53/udp
+      # web
+      - 3001:80
+    volumes:
+      - /opt/pihole/etc-pihole:/etc/pihole
+      - /opt/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    # healthcheck:
+    #   test: curl --sSfL http://localhost/ || exit 1
+    #   interval: 30s
+    #   timeout: 1s
+    #   retries: 3
+    #   start_period: 1m
+    network_mode: bridge
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.pihole.loadbalancer.server.port: "80"
+      traefik.http.routers.pihole.rule: Host(`pihole.atlas.axatol.xyz`)
+      traefik.http.routers.pihole.tls.certresolver: letsencrypt
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    pull_policy: missing
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer:/data
+    network_mode: bridge
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.portainer.loadbalancer.server.port: "9000"
+      traefik.http.routers.portainer.rule: Host(`portainer.atlas.axatol.xyz`)
+      traefik.http.routers.portainer.tls.certresolver: letsencrypt
+
+  traefik:
+    container_name: traefik
+    image: traefik:v3
+    command:
+      # - --accesslog=true
+      # - --accesslog.addinternals=true
+      # - --accesslog.format=json
+      - --api=true
+      - --api.dashboard=true
+      - --api.disabledashboardad=true
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --log=true
+      - --log.format=json
+      - --log.level=DEBUG
+      - --ping=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.letsencrypt.acme.email={{ letsencrypt.email }}
+      - --certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json
+      - --certificatesresolvers.letsencrypt.acme.caserver={{ letsencrypt.caserver }}
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+    environment:
+      CF_DNS_API_TOKEN: "{{ cloudflare.dns_api_token }}"
+    pull_policy: missing
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik:/traefik
+    healthcheck:
+      test: traefik healthcheck --ping
+      interval: 30s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.traefik.loadbalancer.server.port: "8080"
+      traefik.http.routers.traefik.rule: Host(`traefik.atlas.axatol.xyz`)
+      traefik.http.routers.traefik.tls.certresolver: letsencrypt

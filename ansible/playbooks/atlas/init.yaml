@@ -1,0 +1,20 @@
+---
+- name: Bootstrap atlas
+  hosts: atlas.local
+  become: true
+  gather_facts: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
+  tasks:
+    - name: Install docker
+      ansible.builtin.import_role:
+        name: docker
+
+    - name: IP Forwarding enable/persist
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        sysctl_set: true

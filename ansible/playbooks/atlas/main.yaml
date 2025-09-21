@@ -1,5 +1,5 @@
 ---
-- name: Bootstrap atlas
+- name: Configure containers
   hosts: atlas.local
   become: true
   gather_facts: true
@@ -8,113 +8,46 @@
       prompt: Sudo password
       private: true
   tasks:
-    - name: Install docker
-      ansible.builtin.import_role:
-        name: docker
+    - name: Pihole dnsmasq
+      ansible.builtin.copy:
+        dest: /opt/pihole/etc-dnsmasq.d/custom.conf
+        owner: 1000
+        group: 1000
+        mode: "0640"
+        content: |
+          address=/atlas.local/192.168.1.41
+          address=/.atlas.local/192.168.1.41
+          address=/wheatley.local/192.168.1.42
+          address=/glados.local/192.168.1.43
 
-    - name: IP Forwarding enable/persist
-      ansible.posix.sysctl:
-        name: net.ipv4.ip_forward
-        value: "1"
-        state: present
-        sysctl_set: true
+          address=/atlas.lan/192.168.1.41
+          address=/.atlas.lan/192.168.1.41
+          address=/wheatley.lan/192.168.1.42
+          address=/glados.lan/192.168.1.43
 
-    - name: Traefik
-      community.docker.docker_container:
-        name: traefik
-        image: traefik:latest
-        command:
-          - --api.insecure=true
-          - --providers.docker=true
-          - --providers.docker.exposedByDefault=false
+          address=/atlas.home/192.168.1.41
+          address=/.atlas.home/192.168.1.41
+          address=/wheatley.home/192.168.1.42
+          address=/glados.home/192.168.1.43
+
+    - name: Create /opt/atlas
+      ansible.builtin.file:
+        path: /opt/atlas
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Copy docker-compose.yaml
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/docker-compose.yaml"
+        dest: "/opt/atlas/docker-compose.yaml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Docker compose
+      community.docker.docker_compose_v2:
+        project_name: atlas
+        project_src: "/opt/atlas"
         pull: missing
-        restart_policy: unless-stopped
-        etc_hosts:
-          host.docker.internal: host-gateway
-        ports:
-          - 80:80
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-        labels:
-          traefik.enable: "true"
-          traefik.http.services.traefik.loadbalancer.server.port: "8080"
-          traefik.http.routers.traefik.rule: Host(`traefik.atlas.local`)
-
-    - name: Portainer
-      community.docker.docker_container:
-        name: portainer
-        image: portainer/portainer-ce:latest
-        pull: missing
-        restart_policy: unless-stopped
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /opt/portainer:/data
-        labels:
-          traefik.enable: "true"
-          traefik.http.services.portainer.loadbalancer.server.port: "9000"
-          traefik.http.routers.portainer.rule: Host(`portainer.atlas.local`)
-
-    - name: Adguard
-      community.docker.docker_container:
-        name: adguard
-        image: adguard/adguardhome:latest
-        pull: missing
-        restart_policy: unless-stopped
-        ports:
-          # - "3000:3000/tcp"
-          # dns
-          - 53:53/tcp
-          - 53:53/udp
-          # dns over https
-          - 443:443/tcp
-          - 443:443/udp
-          # dns over tls
-          - 853:853/tcp
-          - 853:853/udp
-        volumes:
-          - /opt/adguard/work:/opt/adguardhome/work:rw
-          - /opt/adguard/conf:/opt/adguardhome/conf:rw
-        labels:
-          traefik.enable: "true"
-          traefik.http.services.adguard.loadbalancer.server.port: "80"
-          traefik.http.routers.adguard.rule: Host(`adguard.atlas.local`)
-
-    - name: Gluetun
-      community.docker.docker_container:
-        name: gluetun
-        image: qmcgaw/gluetun:latest
-        pull: missing
-        restart_policy: unless-stopped
-        env:
-          VPN_SERVICE_PROVIDER: mullvad
-          VPN_TYPE: wireguard
-          WIREGUARD_PRIVATE_KEY: "{{ vpn.wireguard_private_key }}"
-          WIREGUARD_ADDRESSES: "{{ vpn.wireguard_ipv4_address }}"
-          WIREGUARD_ENDPOINT_PORT: "{{ vpn.wireguard_port }}"
-          SERVER_COUNTRIES: Australia
-          TZ: Australia/Brisbane
-        ports:
-          - 8888:8888/tcp # http
-          - 8388:8388/tcp # shadowsocks
-          - 8388:8388/udp
-        volumes:
-          - /opt/gluetun:/gluetun
-        devices:
-          - /dev/net/tun
-        capabilities:
-          - NET_ADMIN
-
-    - name: Node exporter
-      community.docker.docker_container:
-        name: node-exporter
-        image: quay.io/prometheus/node-exporter:latest
-        pull: missing
-        restart_policy: unless-stopped
-        command:
-          - --path.rootfs=/host
-        network_mode: host
-        pid_mode: host
-        ports:
-          - 9100:9100
-        volumes:
-          - /:/host:ro,rslave
