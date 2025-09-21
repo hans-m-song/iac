@@ -70,6 +70,11 @@ Resources:
       RoleName: terraform-deploy-role
       Path: /
       ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSESFullAccess
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+        - arn:aws:iam::aws:policy/AWSCloudTrail_FullAccess
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
         - arn:aws:iam::aws:policy/ReadOnlyAccess
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -79,7 +84,8 @@ Resources:
               - sts:AssumeRole
             Principal:
               AWS:
-                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:user/axatol-cli
+                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:user/axatol
 
   DeployRoleArnParameter:
     Type: AWS::SSM::Parameter
@@ -151,12 +157,15 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              # certificates
-              - acm:DeleteCertificate
-              - acm:RenewCertificate
-              - acm:RequestCertificate
-              - acm:UpdateCertificateOptions
-              # apigateway settings
+              - iam:PassRole
+            Resource:
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/AWSCloudFormationStackSetExecutionRole
+            Condition:
+              StringEquals:
+                iam:PassedToService: cloudformation.amazonaws.com
+          - Effect: Allow
+            Action:
+              # apigateway
               - apigateway:GET
               - apigateway:PATCH
               # iam oidc
@@ -186,34 +195,16 @@ Resources:
               - iam:CreatePolicyVersion
               - iam:DeletePolicy
               - iam:DeletePolicyVersion
-              # parameters
-              - ssm:DeleteParameter
-              - ssm:DeleteParameters
-              - ssm:DeleteResourcePolicy
-              - ssm:PutParameter
-            Resource:
-              - Fn::Sub: arn:${AWS::Partition}:acm:*:${AWS::AccountId}:certificate/*
-              - Fn::Sub: arn:${AWS::Partition}:apigateway:*::/account
-              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:group/*
-              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
-              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/*
-              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
-              - Fn::Sub: arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
-            Condition:
-              StringEqualsIfExists:
-                aws:RequestTag/managed-by-terraform: "true"
-                aws:ResourceTag/managed-by-terraform: "true"
-          - Effect: Allow
-            Action:
-              - acm:AddTagsToCertificate
-              - acm:RemoveTagsFromCertificate
-              - cloudtrail:AddTags
-              - cloudtrail:RemoveTags
               - iam:Tag*
               - iam:Untag*
               - route53:ChangeResourceRecordSets
               - route53:ChangeTagsForResource
+              - s3:*
               - ssm:AddTagsToResource
               - ssm:RemoveTagsFromResource
+              - ssm:DeleteParameter
+              - ssm:DeleteParameters
+              - ssm:DeleteResourcePolicy
+              - ssm:PutParameter
             Resource:
               - "*"

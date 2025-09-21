@@ -39,6 +39,8 @@ Resources:
             Principal:
               AWS:
                 - Fn::GetAtt: AdministrationRole.Arn
+              Service:
+                - cloudformation.amazonaws.com
             Action:
               - sts:AssumeRole
       Path: /
