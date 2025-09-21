@@ -64,10 +64,11 @@ releases:
   - name: external-dns-adguard
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.16.1
+    installed: false
+    version: 1.18.0
     labels:
       networking: true
-      dns: 'true'
+      external-dns: 'true'
     values:
       - ./values/external-dns-adguard.yaml
       - {{- $secrets.externalDnsAdguard | toYaml | nindent 8 }}
@@ -75,22 +76,21 @@ releases:
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.16.1
+    version: 1.18.0
     labels:
       networking: true
-      dns: 'true'
+      external-dns: 'true'
     values:
       - ./values/external-dns-cloudflare-tunnel.yaml
       - {{- $secrets.externalDnsCloudflareTunnel | toYaml | nindent 8 }}
 
   - name: external-dns-pihole
     chart: external-dns/external-dns
-    installed: false
     namespace: external-dns
-    version: 1.16.1
+    version: 1.18.0
     labels:
       networking: true
-      dns: 'true'
+      external-dns: 'true'
     values:
       - ./values/external-dns-pihole.yaml
       - {{- $secrets.externalDnsPihole | toYaml | nindent 8 }}
