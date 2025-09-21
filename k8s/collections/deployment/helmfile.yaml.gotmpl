@@ -4,7 +4,7 @@ releases:
   - name: arc
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
     namespace: arc-systems
-    version: 0.11.0
+    version: 0.12.1
     labels:
       deployment: true
     values:
@@ -35,7 +35,7 @@ releases:
   - name: arc-runner-set-axatol
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.11.0
+    version: 0.12.1
     labels:
       deployment: true
       gha-rs: 'true'
@@ -50,7 +50,7 @@ releases:
   - name: arc-runner-set-buildtrust-au
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.11.0
+    version: 0.12.1
     labels:
       deployment: true
       gha-rs: 'true'
@@ -65,7 +65,7 @@ releases:
   - name: arc-runner-set-hans-m-song-iac
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.11.0
+    version: 0.12.1
     labels:
       deployment: true
       gha-rs: 'true'
@@ -80,7 +80,7 @@ releases:
   - name: arc-runner-set-hans-m-song-huisheng
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
-    version: 0.11.0
+    version: 0.12.1
     labels:
       deployment: true
       gha-rs: 'true'
@@ -91,3 +91,16 @@ releases:
       - ./values/arc-runner-set.yaml
       - runnerScaleSetName: hans-m-song-huisheng
         githubConfigUrl: https://github.com/hans-m-song/huisheng
+
+  - name: arc-runner-set-hans-m-song-huisheng-rbac
+    chart: ../../charts/shim
+    namespace: huisheng
+    labels:
+      deployment: true
+      gha-rs-rbac: 'true'
+    needs:
+      - arc-runners/arc-runner-set-hans-m-song-huisheng
+    values:
+      - ./values/arc-runner-rbac.yaml
+      - serviceAccountName: hans-m-song-huisheng-gha-rs-no-permission
+  
