@@ -23,7 +23,7 @@ releases:
   - name: huisheng
     chart: huisheng/huisheng
     namespace: huisheng
-    version: 0.0.5
+    version: 0.0.9
     values:
       - ./values/huisheng.yaml
       - {{- $secrets.huisheng | toYaml | nindent 8 }}

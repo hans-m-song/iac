@@ -1,12 +1,14 @@
 env:
   DISCORD_BOT_PREFIX: ">"
-  MINIO_ENDPOINT: minio.minio.svc.cluster.local
-  MINIO_ENDPOINT_PORT: "9000"
-  MINIO_ENDPOINT_SSL: "false"
-  NEW_RELIC_ENABLED: "false"
-  # NEW_RELIC_APP_NAME: huisheng
-  # NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
-  # NEW_RELIC_NO_CONFIG_FILE: "true"
+  OTLP_LOGS_ENDPOINT: http://alloy-otlp.monitoring.svc.cluster.local:4318/v1/logs
+  OTLP_METRICS_ENDPOINT: http://alloy-otlp.monitoring.svc.cluster.local:4318/v1/metrics
+  OTLP_TRACES_ENDPOINT: http://alloy-otlp.monitoring.svc.cluster.local:4318/v1/traces
+  S3_ENDPOINT: minio.minio.svc.cluster.local
 
 podAnnotations:
   instrumentation.opentelemetry.io/inject-nodejs: monitoring/openobserve-nodejs
+
+potProvider:
+  enable: true
+  image: brainicism/bgutil-ytdlp-pot-provider
+  port: 4416
