@@ -18,7 +18,7 @@ loki:
   limits_config:
     allow_structured_metadata: true
     volume_enabled: true
-    # retention_period: 672h # 28 days retention
+    retention_period: 2160h # 90 days retention
   # storage_config:
   # aws:
   # bucketnames: loki-chunks
@@ -28,6 +28,9 @@ loki:
       chunks: loki-chunks
       rules: loki-rules
       admin: loki-admin
+  compactor:
+    retention_enabled: true
+    delete_request_store: s3
 
 test:
   enabled: false
@@ -65,6 +68,8 @@ singleBinary:
     enabled: true
     storageClass: nfs-persistent
     size: 5Gi
+  autoscaling:
+    enabled: true
 
 # SimpleScalable
 backend:
