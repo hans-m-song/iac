@@ -1,4 +1,14 @@
-loki.source.kubernetes_events "events" {
+loki.source.kubernetes_events "default" {
 	log_format = "json"
+	forward_to = [loki.relabel.kubernetes_events.receiver]
+}
+
+loki.relabel "kubernetes_events" {
 	forward_to = [loki.write.default.receiver]
+
+	rule {
+		action       = "replace"
+		target_label = "source"
+		replacement  = "kubernetes-events"
+	}
 }

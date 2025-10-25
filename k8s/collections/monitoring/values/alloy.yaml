@@ -7,12 +7,12 @@ alloy:
     - name: faro
       port: 12347
       targetPort: 12347
-    - name: otlp
+    - name: otlp-http
       port: 4318
       targetPort: 4318
-    - name: logs
-      port: 9999
-      targetPort: 9999
+    # - name: logs
+    #   port: 9999
+    #   targetPort: 9999
 
 extraObjects:
   - apiVersion: v1
@@ -32,7 +32,7 @@ extraObjects:
         app.kubernetes.io/instance: alloy
         app.kubernetes.io/name: alloy
       ports:
-        - name: faro
+        - name: rum
           protocol: TCP
           port: 12347
           targetPort: 12347
@@ -48,51 +48,36 @@ extraObjects:
         app.kubernetes.io/instance: alloy
         app.kubernetes.io/name: alloy
       ports:
-        - name: otlp
+        - name: otlp-http
           protocol: TCP
           port: 4318
           targetPort: 4318
+  # - apiVersion: v1
+  #   kind: Service
+  #   metadata:
+  #     name: alloy-logs
+  #     annotations:
+  #       external-dns.alpha.kubernetes.io/hostname: logs.axatol.xyz
+  #       external-dns.alpha.kubernetes.io/target: http://alloy.monitoring.svc.cluster.local:9999
+  #   spec:
+  #     selector:
+  #       app.kubernetes.io/instance: alloy
+  #       app.kubernetes.io/name: alloy
+  #     ports:
+  #       - name: logs
+  #         protocol: TCP
+  #         port: 9999
+  #         targetPort: 9999
   - apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
       name: alloy-web
-    spec:
-      ingressClassName: traefik
-      rules:
-        - host: alloy.axatol.local
-          http:
-            paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: alloy
-                    port:
-                      name: http-metrics
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      name: alloy-logs
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: logs.axatol.xyz
-        external-dns.alpha.kubernetes.io/target: http://alloy.monitoring.svc.cluster.local:9999
-    spec:
-      selector:
-        app.kubernetes.io/instance: alloy
-        app.kubernetes.io/name: alloy
-      ports:
-        - name: logs
-          protocol: TCP
-          port: 9999
-          targetPort: 9999
-  - apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      name: alloy-web
+        cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
     spec:
       ingressClassName: traefik
       rules:
-        - host: alloy.axatol.local
+        - host: alloy.lab.axatol.xyz
           http:
             paths:
               - path: /
@@ -102,3 +87,7 @@ extraObjects:
                     name: alloy
                     port:
                       name: http-metrics
+      tls:
+        - hosts:
+            - alloy.lab.axatol.xyz
+          secretName: alloy-web-tls
