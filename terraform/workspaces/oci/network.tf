@@ -28,16 +28,36 @@ resource "oci_core_security_list" "public_subnet" {
   vcn_id         = oci_core_vcn.default.id
   display_name   = "Public Subnet Security List"
 
-  ingress_security_rules {
-    protocol    = local.transport_protocol_all
-    source      = local.public_subnet_cidr
-    source_type = "CIDR_BLOCK"
+  egress_security_rules {
+    description      = "any egress"
+    protocol         = local.transport_protocol_all
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
   }
 
-  egress_security_rules {
-    protocol         = local.transport_protocol_all
-    destination      = local.public_subnet_cidr
-    destination_type = "CIDR_BLOCK"
+  ingress_security_rules {
+    description = "https ingress"
+    protocol    = local.transport_protocol_tcp
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  ingress_security_rules {
+    description = "tailscale ipv4 ingress"
+    protocol    = local.transport_protocol_udp
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = true
+
+    udp_options {
+      min = 41641
+      max = 41641
+    }
   }
 }
 
@@ -56,51 +76,4 @@ resource "oci_core_subnet" "public" {
 resource "oci_core_route_table_attachment" "public" {
   route_table_id = oci_core_route_table.public.id
   subnet_id      = oci_core_subnet.public.id
-}
-
-resource "oci_core_route_table" "private" {
-  vcn_id         = oci_core_vcn.default.id
-  compartment_id = local.compartment_id
-  display_name   = "Private Route Table"
-
-  route_rules {
-    network_entity_id = local.natgw_private_ip_id
-    destination_type  = "CIDR_BLOCK"
-    destination       = "0.0.0.0/0"
-  }
-}
-
-resource "oci_core_security_list" "private_subnet" {
-  compartment_id = local.compartment_id
-  vcn_id         = oci_core_vcn.default.id
-  display_name   = "Private Subnet Security List"
-
-  ingress_security_rules {
-    protocol    = local.transport_protocol_all
-    source      = local.private_subnet_cidr
-    source_type = "CIDR_BLOCK"
-  }
-
-  egress_security_rules {
-    protocol         = local.transport_protocol_all
-    destination      = local.private_subnet_cidr
-    destination_type = "CIDR_BLOCK"
-  }
-}
-
-resource "oci_core_subnet" "private" {
-  vcn_id                     = oci_core_vcn.default.id
-  compartment_id             = local.compartment_id
-  cidr_block                 = local.private_subnet_cidr
-  availability_domain        = local.sydney_ad_name
-  display_name               = "Private Subnet"
-  dns_label                  = "private"
-  security_list_ids          = [oci_core_security_list.private_subnet.id]
-  prohibit_internet_ingress  = true
-  prohibit_public_ip_on_vnic = true
-}
-
-resource "oci_core_route_table_attachment" "private" {
-  route_table_id = oci_core_route_table.private.id
-  subnet_id      = oci_core_subnet.private.id
 }

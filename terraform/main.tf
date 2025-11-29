@@ -9,10 +9,10 @@ data "aws_acm_certificate" "cloud_axatol_xyz" {
   domain   = "cloud.axatol.xyz"
 }
 
-data "aws_acm_certificate" "hsong_me" {
-  provider = aws.use1
-  domain   = "hsong.me"
-}
+# data "aws_acm_certificate" "hsong_me" {
+#   provider = aws.use1
+#   domain   = "hsong.me"
+# }
 
 data "github_user" "hans_m_song" {
   username = "hans-m-song"

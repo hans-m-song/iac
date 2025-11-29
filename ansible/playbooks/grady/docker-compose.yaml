@@ -1,0 +1,74 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v3
+    command:
+      - --accesslog=true
+      # - --accesslog.addinternals=true
+      - --accesslog.format=json
+      - --api=true
+      - --api.dashboard=true
+      - --api.disabledashboardad=true
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --log=true
+      - --log.format=json
+      - --log.level=INFO
+      - --ping=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.letsencrypt.acme.email={{ letsencrypt.email }}
+      - --certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json
+      - --certificatesresolvers.letsencrypt.acme.caserver={{ letsencrypt.caserver }}
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+    environment:
+      CF_DNS_API_TOKEN: "{{ cloudflare.dns_api_token }}"
+    pull_policy: missing
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik:/traefik
+    restart: unless-stopped
+    healthcheck:
+      test: traefik healthcheck --ping
+      interval: 30s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.traefik.loadbalancer.server.port: "7700"
+      traefik.http.routers.traefik.rule: Host(`traefik.grady.axatol.xyz`)
+
+  meilisearch-buildsight:
+    container_name: meilisearch-buildsight
+    image: getmeili/meilisearch:v1.27.0
+    environment:
+      MEILI_DB_PATH: /meili_data
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: "{{ meilisearch.master_key }}"
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_LOG_LEVEL: INFO
+      MEILI_EXPERIMENTAL_LOGS_MODE: json
+      MEILI_MAX_INDEXING_MEMORY: 3Gb
+    ports:
+      - 7700:7700/tcp
+    volumes:
+      - /opt/meilisearch-buildsight:/meili_data
+    restart: unless-stopped
+    healthcheck:
+      test: curl --silent http://localhost:7700/health
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.meilisearch-buildsight.loadbalancer.server.port: "7700"
+      traefik.http.routers.meilisearch-buildsight.rule: Host(`meilisearch-buildsight.grady.axatol.xyz`)
+      traefik.http.routers.meilisearch-buildsight.tls.certresolver: letsencrypt

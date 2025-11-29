@@ -1,0 +1,28 @@
+---
+- name: Configure containers
+  hosts: grady
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Create /opt/grady
+      ansible.builtin.file:
+        path: /opt/grady
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Copy docker-compose.yaml
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/docker-compose.yaml"
+        dest: "/opt/grady/docker-compose.yaml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Docker compose
+      community.docker.docker_compose_v2:
+        project_name: grady
+        project_src: "/opt/grady"
+        pull: missing
+        remove_orphans: true
