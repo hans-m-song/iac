@@ -27,18 +27,25 @@ spec:
           secretAccessKeySecretRef:
             name: {{ $.Release.Name }}-credentials
             key: {{ $solverName }}_secret_access_key
-      {{- if $solver.dnsZone }}
+      {{- if $solver.dnsZones }}
       selector:
-        dnsZones:
-          - {{ $solver.dnsZone }}
+        dnsZones: {{ $solver.dnsZones | toJson }}
       {{- end }}
     {{- else if eq $solver.kind "dns01_cloudflare" }}
     - dns01:
         cloudflare:
           email: {{ $email }}
-          apiKeySecretRef:
+          apiTokenSecretRef:
             name: {{ $.Release.Name }}-credentials
             key: {{ $solverName }}_api_key
+      {{- if $solver.dnsZones }}
+      selector:
+        dnsZones: {{ $solver.dnsZones | toJson }}
+      {{- end }}
+    {{- else if eq $solver.kind "http01" }}
+    - http01:
+        ingress:
+          ingressClassName: {{ $solver.ingressClassName | default "nginx" }}
     {{- else }}
     {{- fail "please specify a solver type" }}
     {{- end }}
