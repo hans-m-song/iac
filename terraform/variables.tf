@@ -100,8 +100,8 @@ variable "oci_terraform_api_private_key" {
   sensitive   = true
 }
 
-variable "openssh_public_keys" {
-  description = "/infrastructure/ssh/openssh_public_keys"
+variable "ssh_authorized_keys" {
+  description = "/infrastructure/ssh/authorized_keys"
   type        = string
   sensitive   = false
 }

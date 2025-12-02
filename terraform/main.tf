@@ -18,6 +18,16 @@ data "github_user" "hans_m_song" {
   username = "hans-m-song"
 }
 
+data "cloudflare_zone" "axatol_xyz" {
+  filter = {
+    name = "axatol.xyz"
+  }
+}
+
+resource "terraform_data" "test" {
+  input = data.cloudflare_zone.axatol_xyz
+}
+
 locals {
   aws_account_id = data.aws_caller_identity.current.account_id
 
@@ -31,6 +41,8 @@ locals {
   }
 
   slack_alerts_channel_id = "C05QK1T67JA"
+
+  axatol_xyz_zone_id = data.cloudflare_zone.axatol_xyz.zone_id
 }
 
 module "auth0" {
@@ -53,9 +65,25 @@ module "newrelic" {
 module "oci" {
   source              = "./workspaces/oci"
   oci_tenancy_ocid    = var.oci_tenancy_ocid
-  openssh_public_keys = var.openssh_public_keys
+  ssh_authorized_keys = var.ssh_authorized_keys
 }
 
 module "zerotier" {
   source = "./workspaces/zerotier"
+}
+
+resource "cloudflare_dns_record" "grady_axatol_xyz" {
+  zone_id = local.axatol_xyz_zone_id
+  name    = "grady.axatol.xyz"
+  ttl     = 1
+  type    = "A"
+  content = module.oci.grady_ip_address
+}
+
+resource "cloudflare_dns_record" "wildcard_grady_axatol_xyz" {
+  zone_id = local.axatol_xyz_zone_id
+  name    = "*.grady.axatol.xyz"
+  ttl     = 1
+  type    = "A"
+  content = module.oci.grady_ip_address
 }

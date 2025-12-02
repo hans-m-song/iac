@@ -24,6 +24,38 @@ locals {
   # natgw_instance_cloud_init_user_data = base64encode(templatefile("${path.module}/templates/natgw.cloud-init.yaml.tftpl", {lan_ip = local.natgw_private_ip }))
 }
 
+# resource "oci_core_instance" "rattman" {
+#   compartment_id      = local.compartment_id
+#   availability_domain = local.sydney_ad_name
+#   shape               = local.arm_instance_shape_name
+
+#   shape_config {
+#     ocpus         = 1
+#     memory_in_gbs = 4
+#   }
+
+#   create_vnic_details {
+#     display_name           = "private"
+#     subnet_id              = oci_core_subnet.public.id
+#     assign_public_ip       = false
+#     skip_source_dest_check = false
+#     hostname_label         = "rattman"
+#   }
+
+#   source_details {
+#     source_type = "image"
+#     source_id   = local.arm_canonical_ubuntu_image_id
+#   }
+
+#   metadata = {
+#     "ssh_authorized_keys" = var.ssh_authorized_keys
+#   }
+
+#   lifecycle {
+#     ignore_changes = [metadata]
+#   }
+# }
+
 resource "oci_core_instance" "grady" {
   compartment_id      = local.compartment_id
   availability_domain = local.sydney_ad_name
@@ -38,7 +70,7 @@ resource "oci_core_instance" "grady" {
     display_name           = "public"
     subnet_id              = oci_core_subnet.public.id
     assign_public_ip       = true
-    skip_source_dest_check = true
+    skip_source_dest_check = false
     hostname_label         = "grady"
   }
 
