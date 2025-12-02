@@ -1,0 +1,33 @@
+containers:
+  komga:
+    image: gotson/komga:latest
+    environment:
+      TZ: Australia/Brisbane
+      JAVA_TOOL_OPTIONS: -Xmx1g
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 25600
+        externalPort: 25600
+    volumes:
+      data:
+        mount:
+          mountPath: /data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: suwayomi-downloads
+
+ingress:
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    komga.lab.axatol.xyz:
+      - path: /
+        portName: http
+        tls: true

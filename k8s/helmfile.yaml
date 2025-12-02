@@ -13,6 +13,8 @@ repositories:
     url: https://grafana.github.io/helm-charts
   - name: hashicorp
     url: https://helm.releases.hashicorp.com
+  - name: headlamp
+    url: https://kubernetes-sigs.github.io/headlamp/
   - name: huisheng
     url: https://huisheng.charts.axatol.xyz # git+https://github.com/hans-m-song/huisheng@charts?ref=master
   - name: jaegertracing
@@ -40,8 +42,9 @@ helmfiles:
   - path: ./collections/applications/helmfile.yaml.gotmpl
   - path: ./collections/deployment/helmfile.yaml.gotmpl
   - path: ./collections/infrastructure/helmfile.yaml.gotmpl
-  - path: ./collections/monitoring/helmfile.yaml.gotmpl
   - path: ./collections/media/helmfile.yaml.gotmpl
+  - path: ./collections/monitoring/helmfile.yaml.gotmpl
+  - path: ./collections/services/helmfile.yaml.gotmpl
 
 helmDefaults:
   kubeContext: wheatley

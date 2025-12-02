@@ -1,0 +1,62 @@
+containers:
+  suwayomi:
+    image: ghcr.io/suwayomi/suwayomi-server
+    environment:
+      TZ: Australia/Brisbane
+      DOWNLOAD_AS_CBZ: "true"
+    # securityContext:
+    #   readOnlyRootFilesystem: false
+    #   runAsGroup: 0
+    #   runAsUser: 0
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+    volumes:
+      downloads:
+        mount:
+          mountPath: /home/suwayomi/.local/share/Tachidesk/downloads
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: suwayomi-downloads
+      files:
+        mount:
+          mountPath: /home/suwayomi/.local/share/Tachidesk
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: suwayomi-files
+      tmp:
+        mount:
+          mountPath: /tmp
+          readOnly: false
+        spec:
+          emptyDir: {}
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 4567
+        externalPort: 4567
+
+pvc:
+  suwayomi-downloads:
+    storageClassName: nfs-persistent
+    capacity: 5Gi
+  suwayomi-files:
+    storageClassName: nfs-persistent
+    capacity: 5Gi
+
+ingress:
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    suwayomi.lab.axatol.xyz:
+      - path: /
+        portName: http
+        tls: true
+    suwayomi.lab.ts.axatol.xyz:
+      - path: /
+        portName: http
+        # tls: true

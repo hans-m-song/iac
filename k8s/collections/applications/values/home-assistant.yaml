@@ -51,10 +51,13 @@ service:
 
 ingress:
   ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
   hosts:
-    home.axatol.local:
+    home.lab.axatol.xyz:
       - path: /
         portName: console
+        tls: true
 
 pvc:
   homeassistant-config:

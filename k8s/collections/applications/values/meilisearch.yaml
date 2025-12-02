@@ -4,7 +4,7 @@ deployment:
 
 containers:
   meilisearch:
-    image: getmeili/meilisearch:v1
+    image: getmeili/meilisearch:v1.15.2
     # args:
     #   - --experimental-dumpless-upgrade
     env:

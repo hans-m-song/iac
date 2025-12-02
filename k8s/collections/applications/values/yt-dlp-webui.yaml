@@ -47,10 +47,16 @@ containers:
 
 ingress:
   ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
   hosts:
     ytdlp.axatol.local:
       - path: /
         portName: web
+    ytdlp.lab.axatol.xyz:
+      - path: /
+        portName: web
+        tls: true
 
 pvc:
   audio:

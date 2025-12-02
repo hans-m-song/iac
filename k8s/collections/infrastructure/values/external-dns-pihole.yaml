@@ -7,8 +7,11 @@ interval: 1h
 triggerLoopOnEvent: true
 
 provider: pihole
-sources: [ingress]
-domainFilters: [axatol.local]
+sources:
+  - ingress
+domainFilters:
+  - axatol.local
+  - lab.axatol.xyz
 
 env:
   - name: EXTERNAL_DNS_PIHOLE_PASSWORD

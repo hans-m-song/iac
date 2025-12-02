@@ -4,7 +4,7 @@ releases:
   - name: cert-manager
     chart: jetstack/cert-manager
     namespace: cert-manager
-    version: 1.17.2
+    version: 1.18.2
     labels:
       networking: true
       tier: critical
@@ -13,7 +13,6 @@ releases:
           enabled: true
 
   - name: cert-manager-cluster-issuers
-    installed: false
     chart: ../../charts/cluster-issuers
     namespace: cert-manager
     labels:

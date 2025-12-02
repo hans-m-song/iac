@@ -26,3 +26,15 @@ releases:
     values:
       - ./values/qbittorrent.yaml
       - {{- $secrets.qbittorrent | toYaml | nindent 8 }}
+
+  - name: suwayomi
+    chart: ../../charts/generic
+    namespace: media
+    values:
+      - ./values/suwayomi.yaml
+
+  - name: komga
+    chart: ../../charts/generic
+    namespace: media
+    values:
+      - ./values/komga.yaml
