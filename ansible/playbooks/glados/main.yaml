@@ -12,12 +12,6 @@
       ansible.builtin.import_role:
         name: server_landing_zone
 
-    - name: Install ZeroTier
-      ansible.builtin.import_role:
-        name: zerotier_client
-      vars:
-        zerotier_client_network_id: "{{ zerotier.network_id }}"
-
     - name: Start k3s agent
       ansible.builtin.import_role:
         name: k3s_agent
@@ -25,3 +19,17 @@
         k3s_agent_channel: "{{ kubernetes.k3s_version }}"
         k3s_agent_server_url: "{{ kubernetes.k3s_server_url }}"
         k3s_agent_join_token: "{{ kubernetes.k3s_agent_token }}"
+
+    - name: Configure socket write buffer size
+      ansible.posix.sysctl:
+        name: net.core.wmem_max
+        value: "7500000"
+        state: present
+        sysctl_set: true
+
+    - name: Configure socket read buffer size
+      ansible.posix.sysctl:
+        name: net.core.rmem_max
+        value: "7500000"
+        state: present
+        sysctl_set: true

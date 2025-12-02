@@ -16,8 +16,10 @@
       - --disable=traefik
       - --disable=metrics-server
       - --disable=local-storage
+      # - --disable=servicelb
       - --disable-cloud-controller
       - --disable-helm-controller
+      # - --disable-network-policy
       - "{{ '--tls-san=' ~ (k3s_server_tls_sans | join(',')) if (k3s_server_tls_sans | length) > 0 }}"
   environment:
     INSTALL_K3S_CHANNEL: "{{ k3s_server_channel }}"

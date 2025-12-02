@@ -1,0 +1,13 @@
+---
+- name: Bootstrap pbody
+  hosts: pbody.local
+  become: true
+  gather_facts: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
+  tasks:
+    - name: Install prometheus node exporter
+      ansible.builtin.import_role:
+        name: prometheus.prometheus.node_exporter

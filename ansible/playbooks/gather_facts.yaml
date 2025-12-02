@@ -1,0 +1,16 @@
+---
+- name: Cache inventory facts
+  hosts: all
+  become: true
+  gather_facts: true
+  vars_prompt:
+    - name: ansible_sudo_pass
+      prompt: Sudo password
+      private: true
+  tasks:
+    - name: Write facts to file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: facts/{{ ansible_nodename }}.json
+        mode: "0644"
+        content: "{{ ansible_facts | to_nice_json(indent=2) }}\n"

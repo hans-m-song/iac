@@ -1,15 +1,20 @@
 atlas:
   hosts:
-    atlas.local:
+    atlas.lan:
 
 wheatley:
   hosts:
-    wheatley.local:
+    wheatley.lan:
 
 glados:
   hosts:
-    glados.local:
+    glados.lan:
 
 pbody:
   hosts:
-    pbody.local:
+    pbody.lan:
+
+grady:
+  hosts:
+    grady.siamese-halibut.ts.net:
+      ansible_user: ubuntu
