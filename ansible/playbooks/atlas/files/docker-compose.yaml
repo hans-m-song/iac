@@ -52,6 +52,20 @@ services:
       retries: 3
       start_period: 5s
 
+  opentelemetry-collector:
+    container_name: opentelemetry-collector
+    image: otel/opentelemetry-collector-contrib:latest
+    pull_policy: missing
+    restart: unless-stopped
+    pid: host
+    user: 0:0
+    network_mode: host
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+      - /opt/atlas/otelcol-config.yaml:/etc/otelcol-contrib/config.yaml
+
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
@@ -151,3 +165,36 @@ services:
       traefik.http.services.traefik.loadbalancer.server.port: "8080"
       traefik.http.routers.traefik.rule: Host(`traefik.atlas.axatol.xyz`)
       traefik.http.routers.traefik.tls.certresolver: letsencrypt
+
+  # gluetun:
+  #   container_name: gluetun
+  #   image: qmcgaw/gluetun
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   volumes:
+  #     - /opt/atlas/gluetun-auth-config.toml:/gluetun/auth/config.toml
+  #   environment:
+  #     DNS_SERVER: "on"
+  #     DNS_UPSTREAM_RESOLVERS: cloudflare,quad9
+  #     FIREWALL_DEBUG: "on"
+  #     FIREWALL_OUTBOUND_SUBNETS: 192.168.1.0/24,
+  #     VPN_SERVICE_PROVIDER: protonvpn
+  #     VPN_TYPE: wireguard
+  #     VPN_PORT_FORWARDING: "on"
+  #     WIREGUARD_PRIVATE_KEY: "{{ vpn.wireguard_private_key }}"
+  #     SERVER_COUNTRIES: Australia
+  #   healthcheck:
+  #     test: wget --quiet --tries=1 --spider http://localhost:8080/v1/portforward || exit 1
+  #     interval: 30s
+  #     timeout: 1s
+  #     retries: 3
+  #     start_period: 5s
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.services.gluetun.loadbalancer.server.port: "8080"
+  #     traefik.http.routers.gluetun.rule: Host(`gluetun.atlas.axatol.xyz`)
+  #     # traefik.http.routers.portainer.tls.certresolver: letsencrypt

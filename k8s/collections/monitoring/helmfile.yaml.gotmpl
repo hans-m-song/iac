@@ -41,6 +41,19 @@ releases:
     values:
       - ./values/metrics-server.yaml
 
+  - name: openobserve
+    chart: ../../charts/generic
+    namespace: monitoring
+    values:
+      - ./values/openobserve.yaml
+      - {{- $secrets.openobserve | toYaml | nindent 8 }}
+
+  - name: opentelemetry-collector
+    chart: open-telemetry/opentelemetry-collector
+    namespace: monitoring
+    values:
+      - ./values/opentelemetry-collector.yaml
+
   - name: prometheus-stack
     chart: prometheus-community/kube-prometheus-stack
     namespace: monitoring

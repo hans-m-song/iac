@@ -1,0 +1,54 @@
+deployment:
+  nodeSelector:
+    kubernetes.io/hostname: wheatley
+  strategy:
+    type: Recreate
+
+containers:
+  openobserve:
+    image: o2cr.ai/openobserve/openobserve-enterprise:v0.20.2
+    environment:
+      ZO_USAGE_REPORTING_ENABLED: "true"
+      ZO_DATA_DIR: /data
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 5080
+        externalPort: 5080
+      grpc:
+        protocol: TCP
+        internalPort: 5081
+        externalPort: 5081
+    volumes:
+      data:
+        mount:
+          mountPath: /data
+          readOnly: false
+        spec:
+          hostPath:
+            path: /mnt/data/nfs/k8s/monitoring/openobserve-data
+            type: Directory
+
+pvc:
+  openobserve-data:
+    storageClassName: nfs-persistent
+    capacity: 5Gi
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: o2.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://openobserve.monitoring.svc.cluster.local:5080
+
+ingress:
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    o2.lab.axatol.xyz:
+      - path: /
+        portName: http
+        tls: true

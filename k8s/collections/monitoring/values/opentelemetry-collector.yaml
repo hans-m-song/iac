@@ -1,0 +1,62 @@
+mode: daemonset
+
+image:
+  repository: otel/opentelemetry-collector-k8s
+
+presets:
+  logsCollection:
+    enabled: true
+    includeCollectorLogs: true
+  hostMetrics:
+    enabled: true
+  kubernetesAttributes:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+
+ports:
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+
+config:
+  receivers:
+    jaeger: null
+    prometheus: null
+    zipkin: null
+  exporters:
+    debug:
+      verbosity: normal
+    otlp/openobserve:
+      # endpoint: overriden by secrets
+      headers:
+        # Authorization: overriden by secrets
+        organization: default
+        stream-name: default
+      tls:
+        insecure: true
+  service:
+    pipelines:
+      logs:
+        receivers:
+          - otlp
+        exporters:
+          - debug
+          - otlp/openobserve
+      metrics:
+        receivers:
+          - otlp
+        exporters:
+          - debug
+          - otlp/openobserve
+      traces:
+        receivers:
+          - otlp
+        exporters:
+          - debug
+          - otlp/openobserve

@@ -1,6 +1,6 @@
 ---
 - name: Configure containers
-  hosts: atlas.local
+  hosts: atlas
   become: true
   gather_facts: true
   vars_prompt:
@@ -38,13 +38,14 @@
         group: root
         mode: "0755"
 
-    - name: Copy docker-compose.yaml
+    - name: Copy files
       ansible.builtin.template:
-        src: "{{ playbook_dir }}/docker-compose.yaml"
-        dest: "/opt/atlas/docker-compose.yaml"
+        src: "{{ item }}"
+        dest: "/opt/atlas/{{ item | basename }}"
         owner: root
         group: root
         mode: "0644"
+      with_fileglob: ./files/*
 
     - name: Docker compose
       community.docker.docker_compose_v2:

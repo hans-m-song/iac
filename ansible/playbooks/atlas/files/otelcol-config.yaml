@@ -1,0 +1,79 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  filelog:
+    include: [/var/lib/docker/containers/*/*-json.log]
+    poll_interval: 200ms
+    start_at: end
+    include_file_name: false
+    include_file_path: false
+    operators:
+      - id: container-parser
+        type: container
+        format: docker
+        add_metadata_from_filepath: false
+  hostmetrics:
+    root_path: /hostfs
+    collection_interval: 60s
+    scrapers:
+      cpu: {}
+      disk: {}
+      load: {}
+      filesystem: {}
+      memory: {}
+      network: {}
+      paging: {}
+      process:
+        mute_process_exe_error: true
+        mute_process_io_error: true
+        mute_process_name_error: true
+        mute_process_user_error: true
+      processes: {}
+
+processors:
+  batch:
+    send_batch_size: 1000
+    timeout: 10s
+  resourcedetection/docker:
+    detectors: [env, docker]
+    timeout: 2s
+    override: false
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+exporters:
+  otlphttp/openobserve:
+    endpoint: "{{ openobserve.otlp_http_endpoint }}"
+    headers:
+      Authorization: "{{ openobserve.authorization }}"
+      organization: default
+      stream-name: default
+  debug:
+    verbosity: normal
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    logs:
+      receivers: [otlp, filelog]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]
+    metrics/internal:
+      receivers: [hostmetrics]
+      processors: [resourcedetection/docker, batch]
+      exporters: [otlphttp/openobserve]

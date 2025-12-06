@@ -72,3 +72,19 @@ services:
       traefik.http.services.meilisearch-buildsight.loadbalancer.server.port: "7700"
       traefik.http.routers.meilisearch-buildsight.rule: Host(`meilisearch-buildsight.grady.axatol.xyz`)
       traefik.http.routers.meilisearch-buildsight.tls.certresolver: letsencrypt
+
+  opentelemetry-collector:
+    container_name: opentelemetry-collector
+    image: otel/opentelemetry-collector-contrib:0.139.0
+    pull_policy: missing
+    restart: unless-stopped
+    pid: host
+    user: 0:0
+    ports:
+      - 4317:4317
+      - 4318:4318
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+      - /opt/grady/otelcol-config.yaml:/etc/otelcol-contrib/config.yaml

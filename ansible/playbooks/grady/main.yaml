@@ -12,13 +12,15 @@
         group: root
         mode: "0755"
 
-    - name: Copy docker-compose.yaml
+    - name: Copy files
       ansible.builtin.template:
-        src: "{{ playbook_dir }}/docker-compose.yaml"
-        dest: "/opt/grady/docker-compose.yaml"
+        src: "{{ item }}"
+        dest: "/opt/grady/{{ item | basename }}"
         owner: root
         group: root
         mode: "0644"
+      with_fileglob:
+        - ./files/*
 
     - name: Docker compose
       community.docker.docker_compose_v2:
