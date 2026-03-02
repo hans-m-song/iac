@@ -20,7 +20,7 @@
         group: root
         mode: "0644"
       with_fileglob:
-        - ./files/*
+        - ./files/**
 
     - name: Docker compose
       community.docker.docker_compose_v2:

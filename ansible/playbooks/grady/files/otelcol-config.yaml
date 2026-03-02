@@ -5,6 +5,7 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
+
   filelog:
     include: [/var/lib/docker/containers/*/*-json.log]
     poll_interval: 200ms
@@ -16,6 +17,45 @@ receivers:
         type: container
         format: docker
         add_metadata_from_filepath: false
+
+  docker_stats:
+    collection_interval: 30s
+    metrics:
+      # default
+      container.blockio.io_service_bytes_recursive:
+        enabled: true
+      container.cpu.usage.kernelmode:
+        enabled: false
+      container.cpu.usage.total:
+        enabled: true
+      container.cpu.usage.usermode:
+        enabled: false
+      container.cpu.utilization:
+        enabled: true
+      container.memory.file:
+        enabled: false
+      container.memory.percent:
+        enabled: true
+      container.memory.total_cache:
+        enabled: false
+      container.memory.usage.limit:
+        enabled: false
+      container.memory.usage.total:
+        enabled: true
+      container.network.io.usage.rx_bytes:
+        enabled: true
+      container.network.io.usage.rx_dropped:
+        enabled: false
+      container.network.io.usage.tx_bytes:
+        enabled: true
+      container.network.io.usage.tx_dropped:
+        enabled: false
+      # optional
+      container.restarts:
+        enabled: true
+      container.uptime:
+        enabled: true
+
   hostmetrics:
     root_path: /hostfs
     collection_interval: 60s
@@ -49,12 +89,11 @@ processors:
 
 extensions:
   health_check:
-  pprof:
-  zpages:
+    endpoint: 0.0.0.0:13133
 
 exporters:
   otlphttp:
-    endpoint: "{{ openobserve.otlp_http_endpoint  }}"
+    endpoint: "{{ openobserve.otlp_http_endpoint }}"
     headers:
       Authorization: "{{ openobserve.authorization }}"
       organization: default
@@ -63,7 +102,7 @@ exporters:
     verbosity: normal
 
 service:
-  extensions: [health_check, pprof, zpages]
+  extensions: [health_check]
   pipelines:
     logs:
       receivers: [otlp, filelog]
@@ -74,7 +113,7 @@ service:
       processors: [batch]
       exporters: [otlphttp]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, docker_stats]
       processors: [batch]
       exporters: [otlphttp]
     metrics/internal:

@@ -52,8 +52,8 @@ services:
       retries: 3
       start_period: 5s
 
-  opentelemetry-collector:
-    container_name: opentelemetry-collector
+  otel-collector:
+    container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
     pull_policy: missing
     restart: unless-stopped

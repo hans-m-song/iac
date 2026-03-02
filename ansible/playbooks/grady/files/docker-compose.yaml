@@ -18,13 +18,21 @@ services:
       - --ping=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --certificatesresolvers.letsencrypt.acme.email={{ letsencrypt.email }}
-      - --certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json
-      - --certificatesresolvers.letsencrypt.acme.caserver={{ letsencrypt.caserver }}
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.cloudflare.acme.email={{ letsencrypt.email }}
+      - --certificatesresolvers.cloudflare.acme.storage=/traefik/acme.json
+      - --certificatesresolvers.cloudflare.acme.caserver={{ letsencrypt.caserver }}
+      - --certificatesresolvers.cloudflare.acme.dnschallenge=true
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.route53.acme.email={{ letsencrypt.email }}
+      - --certificatesresolvers.route53.acme.storage=/traefik/acme.json
+      - --certificatesresolvers.route53.acme.caserver={{ letsencrypt.caserver }}
+      - --certificatesresolvers.route53.acme.dnschallenge=true
+      - --certificatesresolvers.route53.acme.dnschallenge.provider=route53
     environment:
       CF_DNS_API_TOKEN: "{{ cloudflare.dns_api_token }}"
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: "{{ pointsman.aws_access_key_id }}"
+      AWS_SECRET_ACCESS_KEY: "{{ pointsman.aws_secret_access_key }}"
     pull_policy: missing
     ports:
       - 80:80
@@ -45,9 +53,31 @@ services:
       traefik.http.services.traefik.loadbalancer.server.port: "7700"
       traefik.http.routers.traefik.rule: Host(`traefik.grady.axatol.xyz`)
 
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:latest
+    restart: unless-stopped
+    ports:
+      - 3001:3001/tcp
+    volumes:
+      - /opt/uptime-kuma:/app/data
+    environment:
+      - TZ=Australia/Brisbane
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.uptime-kuma.loadbalancer.server.port: "3001"
+      traefik.http.routers.uptime-kuma.rule: Host(`uptime.grady.axatol.xyz`)
+      traefik.http.routers.uptime-kuma.tls.certresolver: cloudflare
+
   meilisearch-buildsight:
     container_name: meilisearch-buildsight
-    image: getmeili/meilisearch:v1.27.0
+    image: getmeili/meilisearch:v1.27
     environment:
       MEILI_DB_PATH: /meili_data
       MEILI_ENV: production
@@ -56,6 +86,15 @@ services:
       MEILI_LOG_LEVEL: INFO
       MEILI_EXPERIMENTAL_LOGS_MODE: json
       MEILI_MAX_INDEXING_MEMORY: 3Gb
+
+      MEILI_IMPORT_DUMP: /opt/meilisearch-buildsight/dumps/20260228-044027938.dump
+      MEILI_IGNORE_MISSING_DUMP: "true"
+      MEILI_IGNORE_DUMP_IF_DB_EXISTS: "true"
+
+      # MEILI_IGNORE_MISSING_SNAPSHOT: "true"
+      # MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS: "true"
+      # MEILI_IMPORT_SNAPSHOT: /opt/meilisearch-buildsight/snapshots/meili_data.snapshot
+      # MEILI_SCHEDULE_SNAPSHOT: "604800" # 7 days in seconds
     ports:
       - 7700:7700/tcp
     volumes:
@@ -71,11 +110,11 @@ services:
       traefik.enable: "true"
       traefik.http.services.meilisearch-buildsight.loadbalancer.server.port: "7700"
       traefik.http.routers.meilisearch-buildsight.rule: Host(`meilisearch-buildsight.grady.axatol.xyz`)
-      traefik.http.routers.meilisearch-buildsight.tls.certresolver: letsencrypt
+      traefik.http.routers.meilisearch-buildsight.tls.certresolver: cloudflare
 
-  opentelemetry-collector:
-    container_name: opentelemetry-collector
-    image: otel/opentelemetry-collector-contrib:0.139.0
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib:latest
     pull_policy: missing
     restart: unless-stopped
     pid: host
@@ -83,8 +122,34 @@ services:
     ports:
       - 4317:4317
       - 4318:4318
+      - 13133:13133
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
       - /opt/grady/otelcol-config.yaml:/etc/otelcol-contrib/config.yaml
+
+  pointsman:
+    container_name: pointsman
+    image: public.ecr.aws/axatol/pointsman:latest
+    restart: unless-stopped
+    command:
+      - /pointsman
+      - -log-level=debug
+      # - -redirects="www.buildsight.com.au=>buildsight.com.au=301"
+      - -redirects=www.buildsight.site=>https://buildsight.com.au=301
+      - -redirects=buildsight.site=>https://buildsight.com.au=301
+      - -redirects=www.buildsight.au=>https://buildsight.com.au=301
+      - -redirects=buildsight.au=>https://buildsight.com.au=301
+    ports:
+      - 8000:8000/tcp
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.pointsman.loadbalancer.server.port: "8000"
+      # Host(`www.buildsight.com.au`)
+      traefik.http.routers.pointsman.rule: >-
+        Host(`buildsight.site`)
+        || Host(`www.buildsight.site`)
+        || Host(`buildsight.au`)
+        || Host(`www.buildsight.au`)
+      traefik.http.routers.pointsman.tls.certresolver: route53

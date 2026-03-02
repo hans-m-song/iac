@@ -1,0 +1,20 @@
+redirects:
+  - from: www.buildsight.com.au
+    to: buildsight.com.au
+    status: 301
+
+  - from: www.buildsight.site
+    to: buildsight.com.au
+    status: 301
+
+  - from: buildsight.site
+    to: buildsight.com.au
+    status: 301
+
+  - from: www.buildsight.au
+    to: buildsight.com.au
+    status: 301
+
+  - from: buildsight.au
+    to: buildsight.com.au
+    status: 301
