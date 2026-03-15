@@ -15,7 +15,7 @@ RUN \
 
 RUN sudo ln -sf /usr/bin/python3 /usr/bin/python \
   && sudo ln -sf /usr/bin/pip3 /usr/bin/pip \
-  && pip install yq
+  && pip install --break-system-packages yq
 
 # aws cli
 RUN curl -fsSLo ./awscli.zip \
