@@ -1,0 +1,54 @@
+services:
+  openobserve-meta-db:
+    container_name: openobserve-meta-db
+    image: postgres:18
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      POSTGRES_PASSWORD: "{{ openobserve.meta_db_password }}"
+    volumes:
+      - openobserve_meta_db_data:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, pg_isready, -d, postgres]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+
+  openobserve:
+    container_name: openobserve
+    image: o2cr.ai/openobserve/openobserve-enterprise:v0.70.3
+    restart: unless-stopped
+    networks:
+      - proxy
+    depends_on:
+      openobserve-meta-db:
+        condition: service_healthy
+    environment:
+      RUST_LOG: warn
+      ZO_DATA_DIR: /data
+      ZO_ROOT_USER_EMAIL: "{{ openobserve.root_user_email }}"
+      ZO_ROOT_USER_PASSWORD: "{{ openobserve.root_user_password }}"
+      ZO_META_POSTGRES_DSN: "{{ openobserve.meta_db_url }}"
+      ZO_TELEMETRY: "false"
+      ZO_LOCAL_MODE: "true"
+      ZO_WEB_URL: https://o2.buildsight.com.au
+      ZO_USAGE_REPORTING_ENABLED: "true"
+    ports:
+      - 5080:5080
+    volumes:
+      - openobserve_data:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.openobserve.loadbalancer.server.port: "5080"
+      traefik.http.routers.buildsight-openobserve.rule: Host(`o2.buildsight.com.au`)
+      traefik.http.routers.buildsight-openobserve.tls.certresolver: route53
+
+volumes:
+  openobserve_data:
+  openobserve_meta_db_data:
+
+networks:
+  proxy:
+    external: true

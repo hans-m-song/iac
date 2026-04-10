@@ -13,10 +13,35 @@ receivers:
     include_file_name: false
     include_file_path: false
     operators:
-      - id: container-parser
-        type: container
-        format: docker
-        add_metadata_from_filepath: false
+      - id: parse_line
+        type: json_parser
+        parse_to: body
+        timestamp:
+          parse_from: body.time
+          layout: "%Y-%m-%dT%H:%M:%S.%LZ"
+      - id: move_name
+        if: body.attrs?.tag != nil
+        type: move
+        from: body.attrs.tag
+        to: attributes.container_name
+      - id: move_log
+        type: move
+        from: body.log
+        to: body
+        parse_to: body
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: supabase
+          scrape_interval: 1m
+          basic_auth:
+            username: "{{ supabase.metrics_username }}"
+            password: "{{ supabase.metrics_password }}"
+          scheme: https
+          metrics_path: /customer/v1/privileged/metrics
+          static_configs:
+            - targets: [gateway.buildsight.com.au]
 
   docker_stats:
     collection_interval: 30s
@@ -76,48 +101,57 @@ receivers:
 
 processors:
   batch:
-    send_batch_size: 1000
-    timeout: 10s
-  resourcedetection/oraclecloud:
-    detectors: [env, oraclecloud]
+    send_batch_size: 100
+    timeout: 5s
+
+  resourcedetection:
     timeout: 2s
     override: false
-  resourcedetection/docker:
-    detectors: [env, docker]
-    timeout: 2s
-    override: false
+    detectors:
+      - env
+      - docker
+      # - oraclecloud
 
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
 
 exporters:
-  otlphttp:
-    endpoint: "{{ openobserve.otlp_http_endpoint }}"
+  otlp_grpc:
+    endpoint: "{{ openobserve.buildsight_v2.otlp_grpc_endpoint }}"
     headers:
-      Authorization: "{{ openobserve.authorization }}"
-      organization: default
+      Authorization: "{{ openobserve.buildsight_v2.authorization }}"
+      organization: "{{ openobserve.buildsight_v2.organization }}"
       stream-name: default
-  debug:
-    verbosity: normal
+    tls:
+      insecure: true
 
 service:
-  extensions: [health_check]
+  extensions:
+    - health_check
+
   pipelines:
-    logs:
-      receivers: [otlp, filelog]
-      processors: [batch]
-      exporters: [otlphttp]
-    traces:
+    metrics/otlp:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp]
-    metrics:
-      receivers: [otlp, docker_stats]
+      exporters: [otlp_grpc]
+
+    logs/otlp:
+      receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [otlp_grpc]
+
+    traces/otlp:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_grpc]
+
     metrics/internal:
-      receivers: [hostmetrics]
-      processors:
-        [resourcedetection/oraclecloud, resourcedetection/docker, batch]
-      exporters: [otlphttp]
+      receivers: [hostmetrics, docker_stats]
+      processors: [batch, resourcedetection]
+      exporters: [otlp_grpc]
+
+    logs/internal:
+      receivers: [filelog]
+      processors: [batch, resourcedetection]
+      exporters: [otlp_grpc]

@@ -22,6 +22,11 @@
       with_fileglob:
         - ./files/**
 
+    - name: Docker shared network
+      community.docker.docker_network:
+        name: proxy
+        driver: bridge
+
     - name: Docker compose
       community.docker.docker_compose_v2:
         project_name: grady

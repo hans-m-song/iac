@@ -9,7 +9,7 @@ args +=--start-at-task="$(task)"
 endif
 
 ifneq ($(debug),) # an extra level
-args +=--verbose
+args +=-vvvvv
 endif
 
 prepare:

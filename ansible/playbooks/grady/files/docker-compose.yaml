@@ -1,7 +1,14 @@
+include:
+  - docker-compose.buildsight.yaml
+  - docker-compose.sonarqube.yaml
+  - docker-compose.openobserve.yaml
+
 services:
   traefik:
     container_name: traefik
     image: traefik:v3
+    networks:
+      - proxy
     command:
       - --accesslog=true
       # - --accesslog.addinternals=true
@@ -18,6 +25,7 @@ services:
       - --ping=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=proxy
       - --certificatesresolvers.cloudflare.acme.email={{ letsencrypt.email }}
       - --certificatesresolvers.cloudflare.acme.storage=/traefik/acme.json
       - --certificatesresolvers.cloudflare.acme.caserver={{ letsencrypt.caserver }}
@@ -39,7 +47,7 @@ services:
       - 443:443
       - 8080:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /opt/traefik:/traefik
     restart: unless-stopped
     healthcheck:
@@ -48,14 +56,12 @@ services:
       timeout: 1s
       retries: 3
       start_period: 10s
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.traefik.loadbalancer.server.port: "7700"
-      traefik.http.routers.traefik.rule: Host(`traefik.grady.axatol.xyz`)
 
   uptime-kuma:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:latest
+    networks:
+      - proxy
     restart: unless-stopped
     ports:
       - 3001:3001/tcp
@@ -78,6 +84,8 @@ services:
   meilisearch-buildsight:
     container_name: meilisearch-buildsight
     image: getmeili/meilisearch:v1.27
+    networks:
+      - proxy
     environment:
       MEILI_DB_PATH: /meili_data
       MEILI_ENV: production
@@ -115,6 +123,8 @@ services:
   otel-collector:
     container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
+    networks:
+      - proxy
     pull_policy: missing
     restart: unless-stopped
     pid: host
@@ -127,16 +137,18 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
-      - /opt/grady/otelcol-config.yaml:/etc/otelcol-contrib/config.yaml
+      - /opt/grady/otel-collector.yaml:/etc/otelcol-contrib/config.yaml
 
   pointsman:
     container_name: pointsman
     image: public.ecr.aws/axatol/pointsman:latest
+    networks:
+      - proxy
     restart: unless-stopped
     command:
       - /pointsman
-      - -log-level=debug
-      # - -redirects="www.buildsight.com.au=>buildsight.com.au=301"
+      - -log-level=info
+      - -redirects=www.buildsight.com.au=>https://buildsight.com.au=301
       - -redirects=www.buildsight.site=>https://buildsight.com.au=301
       - -redirects=buildsight.site=>https://buildsight.com.au=301
       - -redirects=www.buildsight.au=>https://buildsight.com.au=301
@@ -146,10 +158,14 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.services.pointsman.loadbalancer.server.port: "8000"
-      # Host(`www.buildsight.com.au`)
       traefik.http.routers.pointsman.rule: >-
-        Host(`buildsight.site`)
+        Host(`www.buildsight.com.au`)
+        || Host(`buildsight.site`)
         || Host(`www.buildsight.site`)
         || Host(`buildsight.au`)
         || Host(`www.buildsight.au`)
       traefik.http.routers.pointsman.tls.certresolver: route53
+
+networks:
+  proxy:
+    external: true

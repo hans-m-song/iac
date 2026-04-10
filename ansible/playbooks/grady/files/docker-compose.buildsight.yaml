@@ -1,0 +1,58 @@
+services:
+  buildsight-otel-collector:
+    container_name: buildsight-otel-collector
+    image: otel/opentelemetry-collector-contrib:latest
+    networks:
+      - proxy
+    user: 0:0
+    pull_policy: missing
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+      - /opt/grady/otel-collector.buildsight.yaml:/etc/otelcol-contrib/config.yaml
+
+  buildsight-meilisearch:
+    container_name: buildsight-meilisearch
+    image: getmeili/meilisearch:v1.41
+    networks:
+      - proxy
+    environment:
+      MEILI_DB_PATH: /meili_data
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: "{{ meilisearch.master_key }}"
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_LOG_LEVEL: INFO
+      MEILI_EXPERIMENTAL_LOGS_MODE: json
+      MEILI_MAX_INDEXING_MEMORY: 3Gb
+      # dump for upgrades
+      # MEILI_IMPORT_DUMP: /meili_data/dumps/20260409-082112530.dump
+      # MEILI_IGNORE_DUMP_IF_DB_EXISTS: "true"
+      # MEILI_IGNORE_MISSING_DUMP: "true"
+      # snapshots
+      # MEILI_IMPORT_SNAPSHOT: /meili_data/snapshots/meili_data.snapshot
+      # MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS: "true"
+      # MEILI_IGNORE_MISSING_SNAPSHOT: "true"
+      MEILI_SCHEDULE_SNAPSHOT: "604800" # 7 days in seconds
+    # ports:
+    #   - 7700:7700/tcp
+    volumes:
+      - /opt/buildsight-meilisearch:/meili_data
+    restart: unless-stopped
+    healthcheck:
+      test: curl --silent http://localhost:7700/health
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.buildsight-meilisearch.loadbalancer.server.port: "7700"
+      traefik.http.routers.buildsight-meilisearch.rule: Host(`search.buildsight.com.au`)
+      traefik.http.routers.buildsight-meilisearch.tls.certresolver: route53
+
+networks:
+  proxy:
+    external: true
