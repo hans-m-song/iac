@@ -1,0 +1,13 @@
+k8sCluster: kubernetes
+
+agent:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+gateway:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi

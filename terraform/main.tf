@@ -24,10 +24,6 @@ data "cloudflare_zone" "axatol_xyz" {
   }
 }
 
-resource "terraform_data" "test" {
-  input = data.cloudflare_zone.axatol_xyz
-}
-
 locals {
   aws_account_id = data.aws_caller_identity.current.account_id
 

@@ -6,7 +6,6 @@ image:
 presets:
   logsCollection:
     enabled: true
-    includeCollectorLogs: true
   hostMetrics:
     enabled: true
   kubernetesAttributes:
@@ -23,6 +22,11 @@ ports:
     enabled: false
   zipkin:
     enabled: false
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 512Mi
 
 config:
   receivers:

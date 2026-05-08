@@ -4,11 +4,12 @@
   "assetMetadata": false,
   "pathMetadata": false,
   "versionReporting": false,
+  "cli-telemetry": false,
   "context": {
-    "@aws-cdk/core:bootstrapQualifier": "toolkit",
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "acknowledged-issue-numbers": [
-      8607
+      8607,
+      34892
     ]
   }
 }

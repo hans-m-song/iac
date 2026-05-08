@@ -5,6 +5,7 @@ releases:
     chart: grafana/alloy
     namespace: monitoring
     version: 1.1.1
+    installed: false
     labels:
       monitoring: true
     values:
@@ -24,7 +25,8 @@ releases:
   - name: loki
     chart: grafana/loki
     namespace: monitoring
-    version: 6.29.0
+    version: 6.40.0
+    installed: false
     labels:
       monitoring: true
     values:
@@ -48,16 +50,35 @@ releases:
       - ./values/openobserve.yaml
       - {{- $secrets.openobserve | toYaml | nindent 8 }}
 
+  - name: openobserve
+    chart: openobserve/openobserve-standalone
+    installed: false
+    namespace: monitoring
+    values:
+      - ./values/openobserve-standalone.yaml
+      - {{- $secrets.openobserveStandalone | toYaml | nindent 8 }}
+
+  - name: openobserve-collector
+    chart: openobserve/openobserve-collector
+    installed: false
+    namespace: monitoring
+    values:
+      - ./values/openobserve-collector.yaml
+      - {{- $secrets.openobserveCollector | toYaml | nindent 8 }}
+
   - name: opentelemetry-collector
     chart: open-telemetry/opentelemetry-collector
+    installed: false
     namespace: monitoring
     values:
       - ./values/opentelemetry-collector.yaml
+      - {{- $secrets.opentelemetryCollector | toYaml | nindent 8 }}
 
   - name: prometheus-stack
     chart: prometheus-community/kube-prometheus-stack
     namespace: monitoring
     version: 72.5.0
+    installed: false
     labels:
       monitoring: true
     values:
@@ -69,6 +90,7 @@ releases:
     chart: grafana/tempo
     namespace: monitoring
     version: 1.21.1
+    installed: false
     labels:
       monitoring: true
     values:

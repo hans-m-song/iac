@@ -53,6 +53,32 @@ services:
       traefik.http.routers.buildsight-meilisearch.rule: Host(`search.buildsight.com.au`)
       traefik.http.routers.buildsight-meilisearch.tls.certresolver: route53
 
+  buildsight-pointsman:
+    container_name: buildsight-pointsman
+    image: public.ecr.aws/axatol/pointsman:latest
+    networks:
+      - proxy
+    restart: unless-stopped
+    command:
+      - /pointsman
+      - -log-level=info
+      - -redirects=www.buildsight.com.au=>https://buildsight.com.au=301
+      - -redirects=www.buildsight.au=>https://buildsight.com.au=301
+      - -redirects=www.buildsight.site=>https://buildsight.com.au=301
+      - -redirects=buildsight.au=>https://buildsight.com.au=301
+      - -redirects=buildsight.site=>https://buildsight.com.au=301
+    ports:
+      - 8000:8000/tcp
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.pointsman.loadbalancer.server.port: "8000"
+      traefik.http.routers.pointsman.rule: >-
+        Host(`www.buildsight.com.au`)
+        || Host(`www.buildsight.au`)
+        || Host(`www.buildsight.site`)
+        || Host(`buildsight.au`)
+        || Host(`buildsight.site`)
+      traefik.http.routers.pointsman.tls.certresolver: route53
 networks:
   proxy:
     external: true

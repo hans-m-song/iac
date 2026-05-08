@@ -112,6 +112,24 @@ variable "terraform_deploy_role" {
   sensitive   = true
 }
 
+variable "tailscale_network_name" {
+  description = "/infrastructure/tailscale/network_name"
+  type        = string
+  sensitive   = true
+}
+
+variable "tailscale_tailnet_id" {
+  description = "/infrastructure/tailscale/tailnet_id"
+  type        = string
+  sensitive   = true
+}
+
+variable "tailscale_api_key" {
+  description = "/infrastructure/tailscale/api_key"
+  type        = string
+  sensitive   = true
+}
+
 variable "zerotier_terraform_token" {
   description = "/infrastructure/zerotier/terraform_token"
   type        = string

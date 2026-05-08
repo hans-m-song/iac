@@ -1,6 +1,5 @@
 include:
   - docker-compose.buildsight.yaml
-  - docker-compose.sonarqube.yaml
   - docker-compose.openobserve.yaml
 
 services:
@@ -138,33 +137,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
       - /opt/grady/otel-collector.yaml:/etc/otelcol-contrib/config.yaml
-
-  pointsman:
-    container_name: pointsman
-    image: public.ecr.aws/axatol/pointsman:latest
-    networks:
-      - proxy
-    restart: unless-stopped
-    command:
-      - /pointsman
-      - -log-level=info
-      - -redirects=www.buildsight.com.au=>https://buildsight.com.au=301
-      - -redirects=www.buildsight.site=>https://buildsight.com.au=301
-      - -redirects=buildsight.site=>https://buildsight.com.au=301
-      - -redirects=www.buildsight.au=>https://buildsight.com.au=301
-      - -redirects=buildsight.au=>https://buildsight.com.au=301
-    ports:
-      - 8000:8000/tcp
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.pointsman.loadbalancer.server.port: "8000"
-      traefik.http.routers.pointsman.rule: >-
-        Host(`www.buildsight.com.au`)
-        || Host(`buildsight.site`)
-        || Host(`www.buildsight.site`)
-        || Host(`buildsight.au`)
-        || Host(`www.buildsight.au`)
-      traefik.http.routers.pointsman.tls.certresolver: route53
 
 networks:
   proxy:

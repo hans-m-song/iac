@@ -39,8 +39,8 @@ export class LokiIngestStack extends Stack {
       environment: {
         WRITE_ADDRESS: destination,
         KEEP_STREAM: "false",
-        EXTRA_LABELS: ["__aws_region", this.region].join(","),
         OMIT_EXTRA_LABELS_PREFIX: "true",
+        DROP_LABELS: "__aws_log_type,service_name",
       },
     });
 

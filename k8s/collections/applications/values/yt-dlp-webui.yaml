@@ -4,46 +4,22 @@ deployment:
 
 containers:
   youtubedl-material:
-    image: tzahi12345/youtubedl-material
+    image: ghcr.io/marcopiovanello/yt-dlp-web-ui:latest
     ports:
       web:
         protocol: TCP
-        internalPort: 17442
-        externalPort: 17442
+        internalPort: 3033
+        externalPort: 3033
     readinessProbe:
       tcpSocket:
         port: web
     volumes:
-      audio:
+      downloads:
         mount:
-          mountPath: /app/audio
+          mountPath: /downloads
         spec:
           persistentVolumeClaim:
-            claimName: audio
-      video:
-        mount:
-          mountPath: /app/video
-        spec:
-          persistentVolumeClaim:
-            claimName: video
-
-  # ytdlpui:
-  #   image: marcobaobao/yt-dlp-webui
-  #   ports:
-  #     web:
-  #       protocol: TCP
-  #       internalPort: 3033
-  #       externalPort: 3033
-  #   readinessProbe:
-  #     tcpSocket:
-  #       port: web
-  #   volumes:
-  #     downloads:
-  #       mount:
-  #         mountPath: /downloads
-  #       spec:
-  #         persistentVolumeClaim:
-  #           claimName: data
+            claimName: downloads
 
 ingress:
   ingressClassName: traefik
@@ -59,6 +35,10 @@ ingress:
         tls: true
 
 pvc:
+  downloads:
+    storageClassName: nfs-ephemeral
+    capacity: 1Gi
+
   audio:
     storageClassName: nfs-ephemeral
     capacity: 1Gi

@@ -6,12 +6,13 @@ import path from "path";
 export interface NodejsFunctionProps
   extends Omit<nodejs.NodejsFunctionProps, "runtime" | "entry"> {
   entry: string;
+  runtime?: lambda.Runtime;
 }
 
 export class NodejsFunction extends nodejs.NodejsFunction {
   constructor(scope: Construct, id: string, props: NodejsFunctionProps) {
     super(scope, id, {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: "index.handler",
       ...props,
       entry: path.resolve(process.cwd(), "handlers", props.entry),

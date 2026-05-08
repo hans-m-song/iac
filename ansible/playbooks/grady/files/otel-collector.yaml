@@ -94,7 +94,7 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: "{{ openobserve.default.otlp_http_endpoint }}"
     headers:
       Authorization: "{{ openobserve.default.authorization }}"
@@ -111,17 +111,17 @@ service:
     logs:
       receivers: [otlp, filelog]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
 
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
 
     metrics:
       receivers: [otlp, docker_stats]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
 
     metrics/internal:
       receivers: [hostmetrics]
@@ -129,4 +129,4 @@ service:
         - resourcedetection/oraclecloud
         - resourcedetection/docker
         - batch
-      exporters: [otlphttp]
+      exporters: [otlp_http]

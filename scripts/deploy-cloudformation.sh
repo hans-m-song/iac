@@ -11,7 +11,7 @@ region=${AWS_REGION:-ap-southeast-2}
 filepath=$1
 name=$(basename -s .yaml $filepath)
 profile=${AWS_PROFILE:-default}
-exec_role_arn=arn:aws:iam::${account}:role/cdk-toolkit-cfn-exec-role-${account}-${region}
+exec_role_arn=arn:aws:iam::${account}:role/cdk-hnb659fds-cfn-exec-role-${account}-${region}
 
 echo "filepath: $filepath"
 echo "name:     $name"
@@ -25,7 +25,7 @@ change_set_id=$(
   aws cloudformation create-change-set \
     --profile $profile \
     --region $region \
-    --role-arn arn:aws:iam::${account}:role/cdk-toolkit-cfn-exec-role-${account}-${region} \
+    --role-arn arn:aws:iam::${account}:role/cdk-hnb659fds-cfn-exec-role-${account}-${region} \
     --stack-name $name \
     --change-set-name $name-$(date +%s) \
     --template-body file://$filepath \

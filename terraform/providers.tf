@@ -38,6 +38,11 @@ terraform {
       version = "6.8.0"
     }
 
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.24.0"
+    }
+
     zerotier = {
       source  = "zerotier/zerotier"
       version = "1.6.0"
@@ -99,6 +104,11 @@ provider "oci" {
   fingerprint  = var.oci_terraform_api_key_fingerprint
   private_key  = var.oci_terraform_api_private_key
   region       = "ap-sydney-1"
+}
+
+provider "tailscale" {
+  tailnet = var.tailscale_tailnet_id
+  api_key = var.tailscale_api_key
 }
 
 provider "zerotier" {

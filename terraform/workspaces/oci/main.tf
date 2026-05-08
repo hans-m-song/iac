@@ -62,8 +62,8 @@ resource "oci_core_instance" "grady" {
   shape               = local.arm_instance_shape_name
 
   shape_config {
-    ocpus         = 1
-    memory_in_gbs = 4
+    ocpus         = 4
+    memory_in_gbs = 24
   }
 
   create_vnic_details {

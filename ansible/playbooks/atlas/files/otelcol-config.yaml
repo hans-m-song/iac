@@ -23,7 +23,7 @@ receivers:
     metrics:
       # default
       container.blockio.io_service_bytes_recursive:
-        enabled: true
+        enabled: false
       container.cpu.usage.kernelmode:
         enabled: false
       container.cpu.usage.total:
@@ -39,15 +39,15 @@ receivers:
       container.memory.total_cache:
         enabled: false
       container.memory.usage.limit:
-        enabled: false
+        enabled: true
       container.memory.usage.total:
         enabled: true
       container.network.io.usage.rx_bytes:
-        enabled: true
+        enabled: false
       container.network.io.usage.rx_dropped:
         enabled: false
       container.network.io.usage.tx_bytes:
-        enabled: true
+        enabled: false
       container.network.io.usage.tx_dropped:
         enabled: false
       # optional
@@ -73,6 +73,14 @@ receivers:
         mute_process_name_error: true
         mute_process_user_error: true
       processes: {}
+
+  syslog:
+    tcp:
+      listen_address: 0.0.0.0:5514
+    udp:
+      listen_address: 0.0.0.0:5514
+    protocol: rfc5424
+    location: Australia/Brisbane
 
 processors:
   batch:
@@ -101,7 +109,7 @@ service:
   extensions: [health_check]
   pipelines:
     logs:
-      receivers: [otlp, filelog]
+      receivers: [otlp, filelog, syslog]
       processors: [batch]
       exporters: [otlphttp/openobserve]
     traces:
