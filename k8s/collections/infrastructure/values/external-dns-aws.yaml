@@ -1,0 +1,20 @@
+logLevel: info
+logFormat: json
+
+policy: sync
+registry: txt
+interval: 1h
+triggerLoopOnEvent: true
+
+sources: [service]
+domainFilters: [.buildsight.com.au, .buildsight.au, .buildsight.site]
+extraArgs: [--webhook-provider-url=http://localhost:8080]
+
+image:
+  pullPolicy: Always
+
+serviceMonitor:
+  enabled: true
+
+provider:
+  name: aws

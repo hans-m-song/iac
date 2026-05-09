@@ -7,8 +7,8 @@ containers:
     image: ghcr.io/home-assistant/home-assistant:stable
     resources:
       limits:
-        cpu: 400m
-        memory: 512Mi
+        cpu: 500m
+        memory: 1024Mi
     ports:
       console:
         protocol: TCP

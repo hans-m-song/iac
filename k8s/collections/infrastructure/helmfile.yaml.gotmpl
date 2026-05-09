@@ -72,6 +72,18 @@ releases:
       - ./values/external-dns-adguard.yaml
       - {{- $secrets.externalDnsAdguard | toYaml | nindent 8 }}
 
+  - name: external-dns-aws
+    chart: external-dns/external-dns
+    namespace: external-dns
+    version: 1.18.0
+    installed: false
+    labels:
+      networking: true
+      external-dns: 'true'
+    values:
+      - ./values/external-dns-aws.yaml
+      - {{- $secrets.externalDnsAws | toYaml | nindent 8 }}
+
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns

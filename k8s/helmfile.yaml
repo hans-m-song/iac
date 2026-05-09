@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile.json
+
 repositories:
   - name: actions-runner-controller
     url: https://actions-runner-controller.github.io/actions-runner-controller
@@ -43,6 +45,7 @@ repositories:
 helmfiles:
   - path: ./collections/applications/helmfile.yaml.gotmpl
   - path: ./collections/deployment/helmfile.yaml.gotmpl
+  - path: ./collections/home-assistant/helmfile.yaml.gotmpl
   - path: ./collections/infrastructure/helmfile.yaml.gotmpl
   - path: ./collections/media/helmfile.yaml.gotmpl
   - path: ./collections/monitoring/helmfile.yaml.gotmpl

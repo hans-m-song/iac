@@ -1,0 +1,27 @@
+{{- $secrets := readFile "../../secrets.yaml" | fromYaml -}}
+
+releases:
+  - name: home-assistant
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/home-assistant.yaml
+
+  - name: eufy-security
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/eufy-security.yaml
+      - {{- $secrets.eufySecurity | toYaml | nindent 8 }}
+
+  - name: zigbee2mqtt
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/zigbee2mqtt.yaml
+
+  - name: matter-server
+    chart: ../../charts/generic
+    namespace: home-assistant
+    values:
+      - ./values/matter-server.yaml

@@ -1,0 +1,25 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  matter-server:
+    image: ghcr.io/matter-js/python-matter-server:stable
+    ports:
+      ws:
+        protocol: TCP
+        internalPort: 5580
+        externalPort: 5580
+    volumes:
+      data:
+        mount:
+          mountPath: /data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: matter-server-data
+
+pvc:
+  matter-server-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi

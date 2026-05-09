@@ -1,0 +1,17 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  eufy-security:
+    image: bropat/eufy-security-ws:latest
+    ports:
+      ws:
+        protocol: TCP
+        internalPort: 3000
+        externalPort: 3000
+    readinessProbe:
+      tcpSocket:
+        port: 3000
+      initialDelaySeconds: 3
+      periodSeconds: 30

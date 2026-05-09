@@ -8,12 +8,6 @@ releases:
       - ./values/glance.yaml
       - {{- $secrets.glance | toYaml | nindent 8 }}
 
-  - name: home-assistant
-    chart: ../../charts/generic
-    namespace: home-assistant
-    values:
-      - ./values/home-assistant.yaml
-
   - name: homepage
     chart: ../../charts/generic
     namespace: homepage

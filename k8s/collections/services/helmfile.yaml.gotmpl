@@ -5,15 +5,16 @@ releases:
     installed: false
     chart: ../../charts/generic
     namespace: elastic
+    installed: false
     values:
       - ./values/elasticsearch.yaml
 
   - name: flipt
     chart: flipt/flipt
     namespace: flipt
-    version: 0.52.0
+    version: 0.86.0
+    installed: false
     values:
-      - ./values/flipt.yaml
 
   - name: mqtt
     chart: ../../charts/generic
@@ -24,12 +25,7 @@ releases:
   - name: redis
     chart: ../../charts/generic
     namespace: redis
+    installed: false
     values:
       - ./values/redis.yaml
       - {{- $secrets.redis | toYaml | nindent 8}}
-
-  - name: zigbee2mqtt
-    chart: ../../charts/generic
-    namespace: home-assistant
-    values:
-      - ./values/zigbee2mqtt.yaml
