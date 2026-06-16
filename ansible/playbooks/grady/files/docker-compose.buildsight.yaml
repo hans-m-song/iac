@@ -12,7 +12,7 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
-      - /opt/grady/otel-collector.buildsight.yaml:/etc/otelcol-contrib/config.yaml
+      - /opt/grady/otel-collector/buildsight.yaml:/etc/otelcol-contrib/config.yaml
 
   buildsight-meilisearch:
     container_name: buildsight-meilisearch
@@ -52,6 +52,7 @@ services:
       traefik.http.services.buildsight-meilisearch.loadbalancer.server.port: "7700"
       traefik.http.routers.buildsight-meilisearch.rule: Host(`search.buildsight.com.au`)
       traefik.http.routers.buildsight-meilisearch.tls.certresolver: route53
+      traefik.http.routers.buildsight-meilisearch.middlewares: crowdsec@file
 
   buildsight-pointsman:
     container_name: buildsight-pointsman

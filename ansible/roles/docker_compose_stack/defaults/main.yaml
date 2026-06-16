@@ -1,0 +1,17 @@
+---
+# Compose project name (required). Default install dir is /opt/<project>.
+docker_compose_stack_project: ""
+docker_compose_stack_root: "/opt/{{ docker_compose_stack_project }}"
+
+# Directory whose tree is templated into docker_compose_stack_root (required), e.g. "{{ playbook_dir }}/files".
+docker_compose_stack_src: ""
+
+docker_compose_stack_pull: missing
+docker_compose_stack_remove_orphans: false
+
+# Map of literal path prefix (relative to docker_compose_stack_root) -> compose service to
+# restart when a changed file matches. A trailing "/" makes it a directory prefix
+# (e.g. "crowdsec/" -> any file under crowdsec/). Paths absent from this map are deployed
+# but trigger no explicit restart (compose up already recreates services whose compose
+# definition changed).
+docker_compose_stack_restart_map: {}

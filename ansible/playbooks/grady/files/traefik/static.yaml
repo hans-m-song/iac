@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
+
+accessLog:
+  addInternals: false
+  format: json
+
+api:
+  dashboard: true
+  disableDashboardAd: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+log:
+  format: json
+  level: INFO
+
+ping:
+  entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: proxy
+  file:
+    filename: /etc/traefik/dynamic.yaml
+    watch: true
+
+experimental:
+  plugins:
+    crowdsec:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.6.0
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: "{{ letsencrypt.email }}"
+      storage: /traefik/acme.json
+      caServer: "{{ letsencrypt.caserver }}"
+      dnsChallenge:
+        provider: cloudflare
+
+  route53:
+    acme:
+      email: "{{ letsencrypt.email }}"
+      storage: /traefik/acme.json
+      caServer: "{{ letsencrypt.caserver }}"
+      dnsChallenge:
+        provider: route53

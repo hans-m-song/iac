@@ -4,32 +4,20 @@
   become: true
   gather_facts: true
   tasks:
-    - name: Create /opt/grady
-      ansible.builtin.file:
-        path: /opt/grady
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Copy files
-      ansible.builtin.template:
-        src: "{{ item }}"
-        dest: "/opt/grady/{{ item | basename }}"
-        owner: root
-        group: root
-        mode: "0644"
-      with_fileglob:
-        - ./files/**
-
     - name: Docker shared network
       community.docker.docker_network:
         name: proxy
         driver: bridge
 
-    - name: Docker compose
-      community.docker.docker_compose_v2:
-        project_name: grady
-        project_src: "/opt/grady"
-        pull: missing
-        remove_orphans: true
+    - name: Deploy grady docker compose stack
+      ansible.builtin.import_role:
+        name: docker_compose_stack
+      vars:
+        docker_compose_stack_project: grady
+        docker_compose_stack_src: "{{ playbook_dir }}/files"
+        docker_compose_stack_remove_orphans: true
+        docker_compose_stack_restart_map:
+          traefik/static.yaml: traefik
+          crowdsec/: crowdsec
+          otel-collector/default.yaml: otel-collector
+          otel-collector/buildsight.yaml: buildsight-otel-collector

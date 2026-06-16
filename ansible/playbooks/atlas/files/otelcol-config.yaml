@@ -43,11 +43,11 @@ receivers:
       container.memory.usage.total:
         enabled: true
       container.network.io.usage.rx_bytes:
-        enabled: false
+        enabled: true
       container.network.io.usage.rx_dropped:
         enabled: false
       container.network.io.usage.tx_bytes:
-        enabled: false
+        enabled: true
       container.network.io.usage.tx_dropped:
         enabled: false
       # optional
@@ -97,9 +97,9 @@ extensions:
 
 exporters:
   otlphttp/openobserve:
-    endpoint: "{{ openobserve.otlp_http_endpoint }}"
+    endpoint: "{{ openobserve.default.otlp_http_endpoint }}"
     headers:
-      Authorization: "{{ openobserve.authorization }}"
+      Authorization: "{{ openobserve.default.authorization }}"
       organization: default
       stream-name: default
   debug:

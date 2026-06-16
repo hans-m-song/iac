@@ -1,0 +1,18 @@
+type: http
+name: http_default
+log_level: info
+
+# Go template (escaped from Ansible Jinja); emits the alert list as a JSON array,
+# which is exactly the shape OpenObserve's _json ingest endpoint expects.
+format: '{% raw %}{{ .|toJson }}{% endraw %}'
+
+url: "http://openobserve:5080/api/{{ openobserve.buildsight.organization }}/crowdsec/_json"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: "{{ openobserve.buildsight.authorization }}"
+
+group_wait: 10s
+group_threshold: 20
+max_retry: 3
+timeout: 10s

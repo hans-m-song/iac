@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: rundeck
+      POSTGRES_USER: rundeck
+      POSTGRES_PASSWORD: rundeck
+    # volumes:
+    #   - db_data:/var/lib/postgresql/data
+
+  rundeck:
+    image: rundeck/rundeck:5.20.1
+    environment:
+      RUNDECK_DATABASE_DRIVER: org.postgresql.Driver
+      RUNDECK_DATABASE_USERNAME: rundeck
+      RUNDECK_DATABASE_PASSWORD: rundeck
+      RUNDECK_DATABASE_URL: jdbc:postgresql://postgres/rundeck?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      RUNDECK_GRAILS_URL: http://localhost:4440
+    ports:
+      - 4440:4440
+
+# https://github.com/rundeck-plugins/jq-json-logfilter
+# https://github.com/rundeck-plugins/ui-job-metrics
+# https://github.com/rundeck-plugins/http-step
+# https://github.com/rundeck-plugins/docker
+# https://github.com/rundeck-plugins/ansible-plugin

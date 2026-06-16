@@ -1,0 +1,16 @@
+yaml-language-server: $schema=https://www.schemastore.org/traefik-v3-file-provider.json
+http:
+  middlewares:
+    crowdsec:
+      plugin:
+        crowdsec:
+          enabled: true
+          logLevel: INFO
+          crowdsecMode: stream
+          crowdsecLapiScheme: http
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiKey: "{{ crowdsec.lapi_key }}"
+          # Detect-only: bouncer forwards requests to AppSec for inspection, but the
+          # appsec config uses default_remediation: allow, so nothing is blocked.
+          crowdsecAppsecEnabled: true
+          crowdsecAppsecHost: crowdsec:7422

@@ -8,33 +8,6 @@ services:
     image: traefik:v3
     networks:
       - proxy
-    command:
-      - --accesslog=true
-      # - --accesslog.addinternals=true
-      - --accesslog.format=json
-      - --api=true
-      - --api.dashboard=true
-      - --api.disabledashboardad=true
-      - --api.insecure=true
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --log=true
-      - --log.format=json
-      - --log.level=INFO
-      - --ping=true
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=proxy
-      - --certificatesresolvers.cloudflare.acme.email={{ letsencrypt.email }}
-      - --certificatesresolvers.cloudflare.acme.storage=/traefik/acme.json
-      - --certificatesresolvers.cloudflare.acme.caserver={{ letsencrypt.caserver }}
-      - --certificatesresolvers.cloudflare.acme.dnschallenge=true
-      - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.route53.acme.email={{ letsencrypt.email }}
-      - --certificatesresolvers.route53.acme.storage=/traefik/acme.json
-      - --certificatesresolvers.route53.acme.caserver={{ letsencrypt.caserver }}
-      - --certificatesresolvers.route53.acme.dnschallenge=true
-      - --certificatesresolvers.route53.acme.dnschallenge.provider=route53
     environment:
       CF_DNS_API_TOKEN: "{{ cloudflare.dns_api_token }}"
       AWS_REGION: us-east-1
@@ -48,6 +21,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /opt/traefik:/traefik
+      - /opt/grady/traefik/static.yaml:/etc/traefik/traefik.yaml:ro
+      - /opt/grady/traefik/dynamic.yaml:/etc/traefik/dynamic.yaml:ro
     restart: unless-stopped
     healthcheck:
       test: traefik healthcheck --ping
@@ -80,45 +55,6 @@ services:
       traefik.http.routers.uptime-kuma.rule: Host(`uptime.grady.axatol.xyz`)
       traefik.http.routers.uptime-kuma.tls.certresolver: cloudflare
 
-  meilisearch-buildsight:
-    container_name: meilisearch-buildsight
-    image: getmeili/meilisearch:v1.27
-    networks:
-      - proxy
-    environment:
-      MEILI_DB_PATH: /meili_data
-      MEILI_ENV: production
-      MEILI_MASTER_KEY: "{{ meilisearch.master_key }}"
-      MEILI_NO_ANALYTICS: "true"
-      MEILI_LOG_LEVEL: INFO
-      MEILI_EXPERIMENTAL_LOGS_MODE: json
-      MEILI_MAX_INDEXING_MEMORY: 3Gb
-
-      MEILI_IMPORT_DUMP: /opt/meilisearch-buildsight/dumps/20260228-044027938.dump
-      MEILI_IGNORE_MISSING_DUMP: "true"
-      MEILI_IGNORE_DUMP_IF_DB_EXISTS: "true"
-
-      # MEILI_IGNORE_MISSING_SNAPSHOT: "true"
-      # MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS: "true"
-      # MEILI_IMPORT_SNAPSHOT: /opt/meilisearch-buildsight/snapshots/meili_data.snapshot
-      # MEILI_SCHEDULE_SNAPSHOT: "604800" # 7 days in seconds
-    ports:
-      - 7700:7700/tcp
-    volumes:
-      - /opt/meilisearch-buildsight:/meili_data
-    restart: unless-stopped
-    healthcheck:
-      test: curl --silent http://localhost:7700/health
-      interval: 30s
-      timeout: 2s
-      retries: 3
-      start_period: 10s
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.meilisearch-buildsight.loadbalancer.server.port: "7700"
-      traefik.http.routers.meilisearch-buildsight.rule: Host(`meilisearch-buildsight.grady.axatol.xyz`)
-      traefik.http.routers.meilisearch-buildsight.tls.certresolver: cloudflare
-
   otel-collector:
     container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
@@ -136,8 +72,44 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
-      - /opt/grady/otel-collector.yaml:/etc/otelcol-contrib/config.yaml
+      - /opt/grady/otel-collector/default.yaml:/etc/otelcol-contrib/config.yaml
+
+  crowdsec:
+    container_name: crowdsec
+    image: crowdsecurity/crowdsec:latest
+    networks:
+      - proxy
+    pull_policy: missing
+    restart: unless-stopped
+    environment:
+      COLLECTIONS: >-
+        crowdsecurity/traefik
+        crowdsecurity/base-http-scenarios
+        crowdsecurity/http-cve
+        crowdsecurity/linux
+        crowdsecurity/appsec-virtual-patching
+        crowdsecurity/appsec-generic-rules
+      BOUNCER_KEY_traefik: "{{ crowdsec.lapi_key }}"
+      GID: "989" # host docker group gid (getent group docker)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/grady/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      - /opt/grady/crowdsec/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
+      - /opt/grady/crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
+      - /opt/grady/crowdsec/appsec-detect.yaml:/etc/crowdsec/appsec-configs/detect-only.yaml:ro
+      - crowdsec-db:/var/lib/crowdsec/data
+      - crowdsec-config:/etc/crowdsec
+    healthcheck:
+      test: cscli lapi status
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
 networks:
   proxy:
     external: true
+
+volumes:
+  crowdsec-db:
+  crowdsec-config:

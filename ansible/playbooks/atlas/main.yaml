@@ -8,47 +8,12 @@
       prompt: Sudo password
       private: true
   tasks:
-    - name: Pihole dnsmasq
-      ansible.builtin.copy:
-        dest: /opt/pihole/etc-dnsmasq.d/custom.conf
-        owner: 1000
-        group: 1000
-        mode: "0640"
-        content: |
-          address=/atlas.local/192.168.1.41
-          address=/.atlas.local/192.168.1.41
-          address=/wheatley.local/192.168.1.42
-          address=/glados.local/192.168.1.43
-
-          address=/atlas.lan/192.168.1.41
-          address=/.atlas.lan/192.168.1.41
-          address=/wheatley.lan/192.168.1.42
-          address=/glados.lan/192.168.1.43
-
-          address=/atlas.home/192.168.1.41
-          address=/.atlas.home/192.168.1.41
-          address=/wheatley.home/192.168.1.42
-          address=/glados.home/192.168.1.43
-
-    - name: Create /opt/atlas
-      ansible.builtin.file:
-        path: /opt/atlas
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Copy files
-      ansible.builtin.template:
-        src: "{{ item }}"
-        dest: "/opt/atlas/{{ item | basename }}"
-        owner: root
-        group: root
-        mode: "0644"
-      with_fileglob: ./files/*
-
-    - name: Docker compose
-      community.docker.docker_compose_v2:
-        project_name: atlas
-        project_src: "/opt/atlas"
-        pull: missing
+    - name: Deploy atlas docker compose stack
+      ansible.builtin.import_role:
+        name: docker_compose_stack
+      vars:
+        docker_compose_stack_project: atlas
+        docker_compose_stack_src: "{{ playbook_dir }}/files"
+        docker_compose_stack_restart_map:
+          otelcol-config.yaml: otel-collector
+          custom.conf: pihole

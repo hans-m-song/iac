@@ -88,6 +88,7 @@ services:
     volumes:
       - /opt/pihole/etc-pihole:/etc/pihole
       - /opt/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+      - /opt/atlas/custom.conf:/etc/dnsmasq.d/custom.conf:ro
     # healthcheck:
     #   test: curl --sSfL http://localhost/ || exit 1
     #   interval: 30s

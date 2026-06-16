@@ -1,0 +1,17 @@
+# Fully passive posture: every alert is forwarded to OpenObserve, but NO decisions
+# are generated, so nothing is banned. To enable IP enforcement later, uncomment the
+# default_ip_remediation profile below.
+name: notify_all
+filters:
+  - true
+notifications:
+  - http_default
+on_success: continue
+# ---
+# name: default_ip_remediation
+# filters:
+#   - Alert.Remediation == true && Alert.GetScope() == "Ip"
+# decisions:
+#   - type: ban
+#     duration: 4h
+# on_success: break

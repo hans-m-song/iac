@@ -1,20 +1,37 @@
 atlas:
   hosts:
-    atlas.lan:
+    atlas.siamese-halibut.ts.net:
 
 wheatley:
   hosts:
-    wheatley.lan:
+    wheatley.siamese-halibut.ts.net:
 
 glados:
   hosts:
-    glados.lan:
+    glados.siamese-halibut.ts.net:
 
 pbody:
   hosts:
-    pbody.lan:
+    pbody.siamese-halibut.ts.net:
 
 grady:
   hosts:
     grady.siamese-halibut.ts.net:
       ansible_user: ubuntu
+
+vps:
+  children:
+    grady:
+
+lan:
+  children:
+    atlas:
+    wheatley:
+    glados:
+
+servers:
+  children:
+    atlas:
+    wheatley:
+    glados:
+    grady:

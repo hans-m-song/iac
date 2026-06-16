@@ -1,0 +1,80 @@
+---
+- name: Assert required variables
+  ansible.builtin.assert:
+    that:
+      - docker_compose_stack_project | length > 0
+      - docker_compose_stack_src | length > 0
+    fail_msg: "docker_compose_stack requires docker_compose_stack_project and docker_compose_stack_src"
+
+- name: Create stack root
+  ansible.builtin.file:
+    path: "{{ docker_compose_stack_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create stack subdirectories
+  ansible.builtin.file:
+    path: "{{ docker_compose_stack_root }}/{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ lookup('community.general.filetree', docker_compose_stack_src) | selectattr('state', 'eq', 'directory') | list }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: Deploy stack files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ docker_compose_stack_root }}/{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ lookup('community.general.filetree', docker_compose_stack_src) | selectattr('state', 'eq', 'file') | list }}"
+  loop_control:
+    label: "{{ item.path }}"
+  register: docker_compose_stack_deploy
+
+- name: Validate compose configuration
+  ansible.builtin.command:
+    cmd: "docker compose --project-name {{ docker_compose_stack_project }} config --quiet"
+    chdir: "{{ docker_compose_stack_root }}"
+  changed_when: false
+
+- name: Docker compose up
+  community.docker.docker_compose_v2:
+    project_name: "{{ docker_compose_stack_project }}"
+    project_src: "{{ docker_compose_stack_root }}"
+    pull: "{{ docker_compose_stack_pull }}"
+    remove_orphans: "{{ docker_compose_stack_remove_orphans }}"
+
+- name: Initialize the restart list
+  ansible.builtin.set_fact:
+    docker_compose_stack_restart_services: []
+
+# restart_map keys are literal path prefixes (regex-escaped, matched anchored at the
+# start) — so "crowdsec/" matches everything under that dir and periods stay literal
+- name: Determine services whose config changed
+  ansible.builtin.set_fact:
+    docker_compose_stack_restart_services: "{{ (docker_compose_stack_restart_services + [item.value]) | unique }}"
+  loop: "{{ docker_compose_stack_restart_map | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when:
+    - item.value | length > 0
+    - docker_compose_stack_deploy.results | selectattr('changed') | map(attribute='item.path') | select('match', item.key | regex_escape) | list | length > 0
+
+- name: Debug
+  ansible.builtin.debug:
+    var: docker_compose_stack_restart_services
+
+- name: Restart services whose config changed
+  community.docker.docker_compose_v2:
+    project_name: "{{ docker_compose_stack_project }}"
+    project_src: "{{ docker_compose_stack_root }}"
+    services: "{{ docker_compose_stack_restart_services }}"
+    state: restarted
+  # guard required: an empty services list restarts the WHOLE stack
+  when: docker_compose_stack_restart_services | length > 0
