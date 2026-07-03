@@ -1,12 +1,13 @@
-name: custom/appsec-detect-only
-# default_remediation: allow disables blocking; inband matches are logged as alerts only.
-default_remediation: allow
+name: custom/appsec-grady
+# inband matches are blocked inline (403) and generate remediation-eligible alerts.
+default_remediation: ban
 # inband_rules take appsec-RULE names/globs (not collection names). base-config sets up the
 # WAF engine; vpatch-* are the virtual-patching rules from crowdsecurity/appsec-virtual-patching.
 inband_rules:
   - crowdsecurity/base-config
   - crowdsecurity/vpatch-*
-# Generic OWASP CRS rules (from crowdsecurity/appsec-generic-rules) are noisier; load them
-# out-of-band (never blocking) once confirmed via `cscli appsec-rules list`:
+# Out-of-band rules evaluate after the response: they alert but NEVER block, so this is
+# the count-only tier for the WAF. Confirm exact rule names via `cscli appsec-rules list`
+# before enabling — an unmatched pattern crash-loops the appsec component (2026-06-17).
 # outofband_rules:
 #   - crowdsecurity/crs

@@ -97,6 +97,7 @@ services:
       - /opt/grady/crowdsec/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
       - /opt/grady/crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
       - /opt/grady/crowdsec/appsec-detect.yaml:/etc/crowdsec/appsec-configs/detect-only.yaml:ro
+      - /opt/grady/crowdsec/whitelists.yaml:/etc/crowdsec/parsers/s02-enrich/01-custom-whitelists.yaml:ro
       - crowdsec-db:/var/lib/crowdsec/data
       - crowdsec-config:/etc/crowdsec
     healthcheck:

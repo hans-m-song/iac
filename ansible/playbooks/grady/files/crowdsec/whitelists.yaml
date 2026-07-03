@@ -1,0 +1,11 @@
+# Parser-stage whitelist: events from these IPs never become alerts, so they can
+# never be banned (and won't appear in the O2 crowdsec stream). Populate
+# crowdsec.whitelisted_ips (list) in vault/host vars with trusted egress IPs.
+name: custom/local-whitelists
+description: Trusted admin egress IPs are never alerted on or banned
+whitelist:
+  reason: trusted admin egress
+  ip:
+{% for ip in crowdsec.whitelisted_ips %}
+    - "{{ ip }}"
+{% endfor %}

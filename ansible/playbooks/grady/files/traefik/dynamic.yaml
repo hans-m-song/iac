@@ -10,7 +10,13 @@ http:
           crowdsecLapiScheme: http
           crowdsecLapiHost: crowdsec:8080
           crowdsecLapiKey: "{{ crowdsec.lapi_key }}"
-          # Detect-only: bouncer forwards requests to AppSec for inspection, but the
-          # appsec config uses default_remediation: allow, so nothing is blocked.
+          # Enforcing: AppSec inband matches block inline (403) and IP bans from
+          # the ban_curated profile are enforced on routes using this middleware.
           crowdsecAppsecEnabled: true
           crowdsecAppsecHost: crowdsec:7422
+          # Trusted IPs bypass both the decision check and AppSec — parser
+          # whitelists don't cover the AppSec path, so this prevents self-lockout.
+          clientTrustedIPs:
+{% for ip in crowdsec.whitelisted_ips %}
+            - "{{ ip }}/32"
+{% endfor %}

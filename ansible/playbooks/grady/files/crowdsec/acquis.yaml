@@ -7,6 +7,6 @@ labels:
 ---
 source: appsec
 listen_addr: 0.0.0.0:7422
-appsec_config: custom/appsec-detect-only
+appsec_config: custom/appsec-grady
 labels:
   type: appsec

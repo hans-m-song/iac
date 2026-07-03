@@ -1,17 +1,23 @@
-# Fully passive posture: every alert is forwarded to OpenObserve, but NO decisions
-# are generated, so nothing is banned. To enable IP enforcement later, uncomment the
-# default_ip_remediation profile below.
+# Every alert (banned or count-only) is forwarded to OpenObserve first;
+# on_success: continue lets evaluation fall through to the ban profile.
 name: notify_all
 filters:
   - true
 notifications:
   - http_default
 on_success: continue
-# ---
-# name: default_ip_remediation
-# filters:
-#   - Alert.Remediation == true && Alert.GetScope() == "Ip"
-# decisions:
-#   - type: ban
-#     duration: 4h
-# on_success: break
+---
+# Enforcement: ban remediation-eligible IP alerts except count-only scenarios.
+# To observe a scenario without banning, add it to the exclusion list below.
+# Scenarios the hub marks non-remediating (e.g. http-technology-probing) never
+# match Alert.Remediation == true and are count-only by default.
+name: ban_curated
+filters:
+  - >-
+    Alert.Remediation == true
+    && Alert.GetScope() == "Ip"
+    && Alert.GetScenario() not in ["crowdsecurity/http-crawl-non_statics"]
+decisions:
+  - type: ban
+    duration: 4h
+on_success: break
