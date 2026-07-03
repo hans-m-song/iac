@@ -35,7 +35,7 @@ terraform {
 
     oci = {
       source  = "oracle/oci"
-      version = "6.8.0"
+      version = "8.18.0"
     }
 
     tailscale = {
@@ -107,8 +107,9 @@ provider "oci" {
 }
 
 provider "tailscale" {
-  tailnet = var.tailscale_tailnet_id
-  api_key = var.tailscale_api_key
+  tailnet             = var.tailscale_tailnet_id
+  oauth_client_id     = var.tailscale_oauth_client_id
+  oauth_client_secret = var.tailscale_oauth_client_secret
 }
 
 provider "zerotier" {
