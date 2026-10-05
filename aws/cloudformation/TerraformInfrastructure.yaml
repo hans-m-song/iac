@@ -1,6 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Provides the infrastructure and role to enable Terraform deployments
 
+Parameters:
+  AllowAssumeRolePrincipalArns:
+    Type: CommaDelimitedList
+    Description: List of IAM Role ARNs allowed to assume the Terraform deploy role
+
+Conditions:
+  HasAllowAssumeRolePrincipalArns:
+    Fn::Not:
+      - Fn::Equals:
+          - Fn::Join:
+              - ""
+              - Ref: AllowAssumeRolePrincipalArns
+          - ""
+
 Resources:
   StateBucket:
     Type: AWS::S3::Bucket
@@ -34,47 +48,12 @@ Resources:
       Value:
         Ref: StateBucket
 
-  StateLockTable:
-    Type: AWS::DynamoDB::Table
-    UpdateReplacePolicy: Retain
-    DeletionPolicy: Retain
-    Properties:
-      TableName: terraform-state-lock
-      AttributeDefinitions:
-        - AttributeName: LockID
-          AttributeType: S
-      KeySchema:
-        - AttributeName: LockID
-          KeyType: HASH
-      BillingMode: PAY_PER_REQUEST
-
-  StateLockTableArnParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: /infrastructure/terraform/state_lock_table_arn
-      Value:
-        Fn::GetAtt: StateLockTable.Arn
-
-  StateLockTableNameParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: /infrastructure/terraform/state_lock_table_name
-      Value:
-        Ref: StateLockTable
-
   DeployRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: terraform-deploy-role
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSESFullAccess
-        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
-        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
-        - arn:aws:iam::aws:policy/AWSCloudTrail_FullAccess
-        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
         - arn:aws:iam::aws:policy/ReadOnlyAccess
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -83,9 +62,14 @@ Resources:
             Action:
               - sts:AssumeRole
             Principal:
-              AWS:
-                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:user/axatol-cli
-                - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:user/axatol
+              AWS: "*"
+            Condition:
+              ForAnyValue:ArnEquals:
+                aws:PrincipalArn:
+                  Fn::If:
+                    - HasAllowAssumeRolePrincipalArns
+                    - Ref: AllowAssumeRolePrincipalArns
+                    - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:root
 
   DeployRoleArnParameter:
     Type: AWS::SSM::Parameter
@@ -130,20 +114,10 @@ Resources:
               - Fn::Sub: ${StateBucket.Arn}/*
           - Effect: Allow
             Action:
-              - dynamodb:BatchGetItem
-              - dynamodb:GetRecords
-              - dynamodb:GetShardIterator
-              - dynamodb:Query
-              - dynamodb:GetItem
-              - dynamodb:Scan
-              - dynamodb:ConditionCheckItem
-              - dynamodb:BatchWriteItem
-              - dynamodb:PutItem
-              - dynamodb:UpdateItem
-              - dynamodb:DeleteItem
-              - dynamodb:DescribeTable
-            Resource:
-              - Fn::GetAtt: StateLockTable.Arn
+              - s3:*
+            NotResource:
+              - Fn::GetAtt: StateBucket.Arn
+              - Fn::Sub: ${StateBucket.Arn}/*
 
   DeployPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -165,9 +139,23 @@ Resources:
                 iam:PassedToService: cloudformation.amazonaws.com
           - Effect: Allow
             Action:
-              # apigateway
-              - apigateway:GET
-              - apigateway:PATCH
+              - iam:PassRole
+            Resource:
+              - Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
+            Condition:
+              StringEquals:
+                iam:PassedToService:
+                  - cloudfront.amazonaws.com
+                  - cloudtrail.amazonaws.com
+                  - delivery.logs.amazonaws.com
+                  - events.amazonaws.com
+                  - firehose.amazonaws.com
+                  - lambda.amazonaws.com
+                  - logs.amazonaws.com
+                  - pipes.amazonaws.com
+                  - scheduler.amazonaws.com
+          - Effect: Allow
+            Action:
               # iam oidc
               - iam:AddClientIDToOpenIDConnectProvider
               - iam:CreateOpenIDConnectProvider
@@ -181,9 +169,12 @@ Resources:
               - iam:DeleteRole
               - iam:AttachRolePolicy
               - iam:DetachRolePolicy
+              - iam:PutRolePolicy
+              - iam:DeleteRolePolicy
               - iam:UpdateAssumeRolePolicy
               - iam:PutRolePermissionsBoundary
               - iam:DeleteRolePermissionsBoundary
+              - iam:CreateServiceLinkedRole
               # iam groups
               - iam:CreateGroup
               - iam:UpdateGroup
@@ -197,14 +188,35 @@ Resources:
               - iam:DeletePolicyVersion
               - iam:Tag*
               - iam:Untag*
+              - iam:List*
+              - iam:Get*
               - route53:ChangeResourceRecordSets
               - route53:ChangeTagsForResource
-              - s3:*
               - ssm:AddTagsToResource
               - ssm:RemoveTagsFromResource
               - ssm:DeleteParameter
               - ssm:DeleteParameters
               - ssm:DeleteResourcePolicy
               - ssm:PutParameter
+            Resource:
+              - "*"
+          - Effect: Allow
+            Action:
+              - acm:*
+              - apigateway:*
+              - events:*
+              - cloudformation:*
+              - cloudfront:*
+              - cloudtrail:*
+              - firehose:*
+              - lambda:*
+              - logs:*
+              - pipes:*
+              - schemas:*
+              - scheduler:*
+              - sns:*
+              - sqs:*
+              - waf:*
+              - wafv2:*
             Resource:
               - "*"

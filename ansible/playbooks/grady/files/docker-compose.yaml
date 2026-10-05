@@ -30,6 +30,8 @@ services:
       timeout: 1s
       retries: 3
       start_period: 10s
+    labels:
+      traefik.http.routers.traefik.observability.tracing: "false"
 
   uptime-kuma:
     container_name: uptime-kuma
@@ -54,6 +56,8 @@ services:
       traefik.http.services.uptime-kuma.loadbalancer.server.port: "3001"
       traefik.http.routers.uptime-kuma.rule: Host(`uptime.grady.axatol.xyz`)
       traefik.http.routers.uptime-kuma.tls.certresolver: cloudflare
+      traefik.http.routers.uptime-kuma.observability.tracing: "false"
+      traefik.http.routers.uptime-kuma.middlewares: crowdsec@file
 
   otel-collector:
     container_name: otel-collector
@@ -76,7 +80,7 @@ services:
 
   crowdsec:
     container_name: crowdsec
-    image: crowdsecurity/crowdsec:latest
+    image: crowdsecurity/crowdsec:v1.8.1
     networks:
       - proxy
     pull_policy: missing
@@ -89,17 +93,20 @@ services:
         crowdsecurity/linux
         crowdsecurity/appsec-virtual-patching
         crowdsecurity/appsec-generic-rules
+        crowdsecurity/appsec-crs
+        crowdsecurity/http-dos
       BOUNCER_KEY_traefik: "{{ crowdsec.lapi_key }}"
       GID: "989" # host docker group gid (getent group docker)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/crowdsec/data:/var/lib/crowdsec/data
+      - /opt/crowdsec/config:/etc/crowdsec
       - /opt/grady/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      - /opt/grady/crowdsec/appsec-detect.yaml:/etc/crowdsec/appsec-configs/detect-only.yaml:ro
       - /opt/grady/crowdsec/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
       - /opt/grady/crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
-      - /opt/grady/crowdsec/appsec-detect.yaml:/etc/crowdsec/appsec-configs/detect-only.yaml:ro
+      - /opt/grady/crowdsec/simulation.yaml:/etc/crowdsec/simulation.yaml:ro
       - /opt/grady/crowdsec/whitelists.yaml:/etc/crowdsec/parsers/s02-enrich/01-custom-whitelists.yaml:ro
-      - crowdsec-db:/var/lib/crowdsec/data
-      - crowdsec-config:/etc/crowdsec
     healthcheck:
       test: cscli lapi status
       interval: 30s
@@ -110,7 +117,3 @@ services:
 networks:
   proxy:
     external: true
-
-volumes:
-  crowdsec-db:
-  crowdsec-config:

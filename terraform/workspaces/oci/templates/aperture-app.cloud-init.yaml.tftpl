@@ -1,0 +1,23 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - nginx
+write_files:
+  - path: /var/www/html/index.html
+    permissions: "0644"
+    content: |
+      healthy
+      instance=${instance_name}
+runcmd:
+  - [snap, refresh, oracle-cloud-agent]
+  - [snap, start, --enable, oracle-cloud-agent]
+  - [install, --mode=0755, --directory, /usr/share/keyrings]
+  - [curl, --fail, --silent, --show-error, --location, https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg, --output, /usr/share/keyrings/tailscale-archive-keyring.gpg]
+  - [curl, --fail, --silent, --show-error, --location, https://pkgs.tailscale.com/stable/ubuntu/noble.tailscale-keyring.list, --output, /etc/apt/sources.list.d/tailscale.list]
+  - [apt-get, update]
+  - [apt-get, install, --yes, tailscale]
+  - [systemctl, enable, --now, tailscaled]
+  - [systemctl, enable, --now, nginx]

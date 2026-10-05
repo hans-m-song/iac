@@ -11,7 +11,7 @@ locals {
 resource "oci_core_private_ip" "grady" {
   hostname_label = "grady"
   display_name   = "public"
-  ip_address     = "10.10.2.10"
+  ip_address     = local.grady_private_ip
 
   lifecycle {
     ignore_changes = [vnic_id]
@@ -32,7 +32,7 @@ resource "oci_core_instance" "grady" {
     display_name           = "public"
     hostname_label         = "grady"
     subnet_id              = oci_core_subnet.public.id
-    private_ip             = "10.10.2.10"
+    private_ip             = local.grady_private_ip
     assign_public_ip       = true
     skip_source_dest_check = false
   }

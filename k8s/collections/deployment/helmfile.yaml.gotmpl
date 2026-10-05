@@ -4,24 +4,11 @@ releases:
   - name: arc
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
     namespace: arc-systems
-    version: 0.14.2
+    version: 0.15.0
     labels:
       deployment: true
     values:
       - ./values/arc.yaml
-    hooks:
-      - events: [presync]
-        showlogs: true
-        command: bash
-        args:
-          - -c
-          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl apply --server-side --force-conflicts --filename -
-      - events: [postuninstall]
-        showlogs: true
-        command: bash
-        args:
-          - -c
-          - helm show crds {{`{{ .Release.Chart }}`}} --version {{`{{ .Release.Version }}`}} | kubectl delete --filename -
 
   - name: arc-runner-support
     chart: ../../charts/shim
@@ -36,7 +23,7 @@ releases:
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
     installed: true
-    version: 0.14.2
+    version: 0.15.0
     labels:
       deployment: true
       gha-rs: 'true'
@@ -52,7 +39,7 @@ releases:
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
     installed: true
-    version: 0.14.2
+    version: 0.15.0
     labels:
       deployment: true
       gha-rs: 'true'
@@ -68,7 +55,7 @@ releases:
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
     installed: true
-    version: 0.14.2
+    version: 0.15.0
     labels:
       deployment: true
       gha-rs: 'true'
@@ -84,7 +71,7 @@ releases:
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
     namespace: arc-runners
     installed: true
-    version: 0.14.2
+    version: 0.15.0
     labels:
       deployment: true
       gha-rs: 'true'
@@ -107,4 +94,3 @@ releases:
     values:
       - ./values/arc-runner-rbac.yaml
       - serviceAccountName: hans-m-song-huisheng-gha-rs-no-permission
-  

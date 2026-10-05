@@ -52,6 +52,7 @@ services:
       traefik.http.services.buildsight-meilisearch.loadbalancer.server.port: "7700"
       traefik.http.routers.buildsight-meilisearch.rule: Host(`search.buildsight.com.au`)
       traefik.http.routers.buildsight-meilisearch.tls.certresolver: route53
+      traefik.http.routers.buildsight-meilisearch.observability.tracing: "true"
       traefik.http.routers.buildsight-meilisearch.middlewares: crowdsec@file
 
   buildsight-pointsman:
@@ -74,12 +75,62 @@ services:
       traefik.enable: "true"
       traefik.http.services.pointsman.loadbalancer.server.port: "8000"
       traefik.http.routers.pointsman.rule: >-
-        Host(`www.buildsight.com.au`)
-        || Host(`www.buildsight.au`)
-        || Host(`www.buildsight.site`)
-        || Host(`buildsight.au`)
-        || Host(`buildsight.site`)
+        Host(`www.buildsight.com.au`) ||
+        Host(`www.buildsight.au`) ||
+        Host(`www.buildsight.site`) ||
+        Host(`buildsight.au`) ||
+        Host(`buildsight.site`)
       traefik.http.routers.pointsman.tls.certresolver: route53
+      traefik.http.routers.pointsman.observability.tracing: "false"
+      traefik.http.routers.pointsman.middlewares: crowdsec@file
+
+  buildsight-folio-migrate:
+    container_name: buildsight-folio-migrate
+    image: syd.ocir.io/sdlstkm7bnrs/folio:latest
+    pull_policy: always
+    env_file:
+      - path: ./folio/.env
+        format: raw
+    command:
+      - node
+      - src/database/migrate.mjs
+
+  buildsight-folio:
+    container_name: buildsight-folio
+    image: syd.ocir.io/sdlstkm7bnrs/folio:latest
+    pull_policy: always
+    env_file:
+      - path: ./folio/.env
+        format: raw
+    depends_on:
+      buildsight-folio-migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --quiet
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:3000/health
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.folio.loadbalancer.server.port: "3000"
+      traefik.http.routers.folio.rule: "Host(`folio.buildsight.com.au`)"
+      traefik.http.routers.folio.entrypoints: websecure
+      traefik.http.routers.folio.tls: "true"
+      traefik.http.routers.folio.tls.certresolver: route53
+      traefik.http.routers.folio.middlewares: crowdsec@file
+
 networks:
   proxy:
     external: true

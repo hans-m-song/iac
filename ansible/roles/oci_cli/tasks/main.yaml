@@ -1,0 +1,20 @@
+---
+- name: Install Python virtual environment packages
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-venv
+    state: present
+
+- name: Install OCI CLI
+  ansible.builtin.pip:
+    name: "oci-cli=={{ oci_cli_version }}"
+    state: present
+    virtualenv: "{{ oci_cli_venv_path }}"
+    virtualenv_command: python3 -m venv
+
+- name: Link OCI CLI executable
+  ansible.builtin.file:
+    src: "{{ oci_cli_venv_path }}/bin/oci"
+    dest: "{{ oci_cli_binary_path }}"
+    state: link

@@ -1,0 +1,15 @@
+config:
+  ZO_DATA_DIR: /zo_data/
+  ZO_TELEMETRY: "false"
+  ZO_WEB_URL: https://o2.axatol.xyz
+  ZO_USAGE_REPORTING_ENABLED: "true"
+  ZO_USAGE_ORG: default
+  ZO_COMPACT_INTERVAL: "60"
+  ZO_COMPACT_DATA_RETENTION_DAYS: "30"
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: o2.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://openobserve-openobserve-standalone.monitoring.svc.cluster.local:5080
+
+nodeSelector:
+  kubernetes.io/hostname: wheatley

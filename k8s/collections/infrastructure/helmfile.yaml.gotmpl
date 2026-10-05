@@ -29,6 +29,8 @@ releases:
       tier: critical
     values:
       - {{- $secrets.cloudflareTunnel | toYaml | nindent 8 }}
+      - image:
+          pullPolicy: Always
 
   - name: csi-driver-nfs-storage-classes
     chart: ../../charts/shim
@@ -64,7 +66,7 @@ releases:
     chart: external-dns/external-dns
     namespace: external-dns
     installed: false
-    version: 1.18.0
+    version: 1.21.1
     labels:
       networking: true
       external-dns: 'true'
@@ -75,7 +77,7 @@ releases:
   - name: external-dns-aws
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.18.0
+    version: 1.21.1
     installed: false
     labels:
       networking: true
@@ -87,7 +89,7 @@ releases:
   - name: external-dns-cloudflare-tunnel
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.18.0
+    version: 1.21.1
     labels:
       networking: true
       external-dns: 'true'
@@ -98,7 +100,7 @@ releases:
   - name: external-dns-pihole
     chart: external-dns/external-dns
     namespace: external-dns
-    version: 1.18.0
+    version: 1.21.1
     labels:
       networking: true
       external-dns: 'true'

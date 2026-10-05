@@ -13,6 +13,7 @@ k8s/charts/*/charts
 .DS_Store
 .env
 .envrc
+*.env
 .iac-data
 k8s/secrets.yaml
 ansible/secrets.yaml

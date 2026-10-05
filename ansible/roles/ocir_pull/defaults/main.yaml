@@ -1,0 +1,4 @@
+---
+ocir_pull_registry: syd.ocir.io
+ocir_pull_region: ap-sydney-1
+ocir_pull_docker_config_dir: /root/.docker

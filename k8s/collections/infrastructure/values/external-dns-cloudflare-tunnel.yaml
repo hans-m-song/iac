@@ -24,6 +24,7 @@ provider:
     image:
       repository: public.ecr.aws/axatol/external-dns-cloudflare-tunnel-webhook
       tag: latest
+      pullPolicy: Always
     securityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -36,9 +37,9 @@ provider:
       runAsUser: 65532
     env:
       - name: LOG_LEVEL
-        value: debug
-      - name: PORT
-        value: "8080"
+        value: info
+      - name: LISTEN_ADDR
+        value: ":8080"
       # - name: DOMAIN_FILTERS
       #   value: axatol.xyz
       # - name: DRY_RUN

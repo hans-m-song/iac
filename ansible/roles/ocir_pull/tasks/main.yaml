@@ -1,0 +1,72 @@
+---
+- name: Create root Docker configuration directory
+  ansible.builtin.file:
+    path: "{{ ocir_pull_docker_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Authenticate Docker to OCIR
+  when: not ansible_check_mode
+  block:
+    - name: Request a fresh OCIR pull token
+      ansible.builtin.command:
+        argv:
+          - oci
+          - container-registry
+          - access-token
+          - get
+          - --auth
+          - instance_principal
+          - --region
+          - "{{ ocir_pull_region }}"
+          - --endpoint
+          - "https://{{ ocir_pull_registry }}/20180419"
+          - --service
+          - "{{ ocir_pull_registry }}"
+          - --query
+          - data.token
+          - --raw-output
+      register: ocir_pull_access_token
+      changed_when: false
+      no_log: true
+
+    - name: Validate the OCIR pull token
+      ansible.builtin.assert:
+        that:
+          - (ocir_pull_access_token.stdout | default('') | trim | lower) not in ['', 'null', 'none']
+        fail_msg: OCI CLI did not return a usable OCIR pull token.
+      no_log: true
+
+    - name: Log Docker in to OCIR with the pull token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - --config
+          - "{{ ocir_pull_docker_config_dir }}"
+          - login
+          - --username
+          - BEARER_TOKEN
+          - --password-stdin
+          - "{{ ocir_pull_registry }}"
+        stdin: "{{ ocir_pull_access_token.stdout | trim }}"
+      no_log: true
+      register: ocir_pull_login_result
+      failed_when: false
+
+    - name: Stop when Docker login fails
+      ansible.builtin.fail:
+        msg: >-
+          Docker login failed with rc={{ ocir_pull_login_result.rc | default(1) }}:
+          {{ ocir_pull_login_result.stderr | default('No stderr output was returned.', true)
+             | replace(ocir_pull_access_token.stdout | trim, '[REDACTED]') }}
+      when: ocir_pull_login_result.rc | default(1) != 0
+
+    - name: Enforce root Docker configuration permissions
+      ansible.builtin.file:
+        path: "{{ ocir_pull_docker_config_dir }}/config.json"
+        state: file
+        owner: root
+        group: root
+        mode: "0600"

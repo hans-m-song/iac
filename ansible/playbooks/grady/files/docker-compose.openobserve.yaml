@@ -18,7 +18,7 @@ services:
 
   openobserve:
     container_name: openobserve
-    image: o2cr.ai/openobserve/openobserve-enterprise:v0.70.3
+    image: o2cr.ai/openobserve/openobserve-enterprise:v0.92.2
     restart: unless-stopped
     networks:
       - proxy
@@ -27,19 +27,23 @@ services:
         condition: service_healthy
     environment:
       RUST_LOG: warn
-      ZO_DATA_DIR: /data
-      ZO_ROOT_USER_EMAIL: "{{ openobserve.root_user_email }}"
-      ZO_ROOT_USER_PASSWORD: "{{ openobserve.root_user_password }}"
-      ZO_META_STORE: "postgres"
-      ZO_META_POSTGRES_DSN: "{{ openobserve.meta_db_url }}"
-      ZO_TELEMETRY: "false"
-      ZO_LOCAL_MODE: "true"
-      ZO_WEB_URL: https://o2.buildsight.com.au
-      ZO_USAGE_REPORTING_ENABLED: "true"
-      O2_TOOL_API_URL: "http://localhost:5080"
       O2_AI_ENABLED: "true"
       O2_SERVICE_GRAPH_ENABLED: "true"
       O2_SERVICE_STREAMS_ENABLED: "true"
+      O2_TOOL_API_URL: "http://localhost:5080"
+      ZO_COMPACT_DATA_RETENTION_DAYS: "365"
+      ZO_CORS_ALLOWED_ORIGINS: https://dev.buildsight.com.au,https://buildsight.com.au
+      ZO_DATA_DIR: /data
+      ZO_DISK_CACHE_ENABLED: "false"
+      ZO_LOCAL_MODE: "true"
+      ZO_LOG_JSON_FORMAT: "true"
+      ZO_META_POSTGRES_DSN: "{{ openobserve.meta_db_url }}"
+      ZO_META_STORE: "postgres"
+      ZO_ROOT_USER_EMAIL: "{{ openobserve.root_user_email }}"
+      ZO_ROOT_USER_PASSWORD: "{{ openobserve.root_user_password }}"
+      ZO_TELEMETRY: "false"
+      ZO_USAGE_REPORTING_ENABLED: "true"
+      ZO_WEB_URL: https://o2.buildsight.com.au
     ports:
       - 5080:5080
     volumes:
@@ -50,13 +54,20 @@ services:
       traefik.http.routers.openobserve.rule: Host(`o2.buildsight.com.au`)
       traefik.http.routers.openobserve.tls.certresolver: route53
       traefik.http.routers.openobserve.service: openobserve
+      # traefik.http.routers.openobserve.middlewares: crowdsec@file
+      traefik.http.routers.openobserve.observability.tracing: "false"
       traefik.http.services.openobserve-grpc.loadbalancer.server.port: "5081"
       traefik.http.routers.openobserve-grpc.rule: Host(`o2-grpc.buildsight.com.au`)
       traefik.http.routers.openobserve-grpc.tls.certresolver: route53
       traefik.http.routers.openobserve-grpc.service: openobserve-grpc
+      # traefik.http.routers.openobserve-grpc.middlewares: crowdsec@file
+      traefik.http.routers.openobserve-grpc.observability.tracing: "false"
 
 volumes:
   openobserve_data:
+    # driver: local
+    # driver_opts:
+    #   o: size=50g
   openobserve_meta_db_data:
 
 networks:

@@ -1,0 +1,70 @@
+deployment:
+  strategy:
+    type: Recreate
+  terminationGracePeriodSeconds: 120
+
+containers:
+  mongo:
+    image: difegue/lanraragi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    volumes:
+      content:
+        mount:
+          mountPath: /home/koyomi/lanraragi/content
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: content
+      database:
+        mount:
+          mountPath: /home/koyomi/lanraragi/database
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: database
+      thumb:
+        mount:
+          mountPath: /home/koyomi/lanraragi/thumb
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: thumb
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 3000
+        externalPort: 3000
+
+pvc:
+  content:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+  database:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+  thumb:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: lanraragi.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://lanraragi.lanraragi.svc.cluster.local:3000
+
+ingress:
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    lanraragi.axatol.local:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+    lanraragi.lab.axatol.xyz:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+        tls: true

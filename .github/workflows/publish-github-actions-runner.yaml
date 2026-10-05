@@ -11,7 +11,7 @@ on:
     branches:
       - master
     paths:
-      - "github/images/github-actions-runner/**"
+      - "images/github-actions-runner/**"
       - .github/workflows/_ecr-public-publish.yaml
       - .github/workflows/publish-github-actions-runner.yaml
 
@@ -21,5 +21,6 @@ jobs:
     with:
       context: ./images/github-actions-runner
       image: public.ecr.aws/axatol/github-actions-runner
+      image-tag: runner-2.337.0
     secrets:
       AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN: ${{ secrets.AWS_ECR_IMAGE_PUBLISHER_ROLE_ARN }}

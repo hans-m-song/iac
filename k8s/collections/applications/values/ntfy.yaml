@@ -1,0 +1,26 @@
+containers:
+  ollama:
+    image: binwiederhier/ntfy
+    volumes:
+      data:
+        cache:
+          mountPath: /var/cache/ntfy
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: cache
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 80
+        externalPort: 80
+
+pvc:
+  cache:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+
+service:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: ntfy.axatol.xyz
+    external-dns.alpha.kubernetes.io/target: http://ntfy.ntfy.svc.cluster.local:3000

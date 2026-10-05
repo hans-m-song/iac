@@ -1,4 +1,5 @@
-yaml-language-server: $schema=https://www.schemastore.org/traefik-v3-file-provider.json
+# yaml-language-server: $schema=https://www.schemastore.org/traefik-v3-file-provider.json
+
 http:
   middlewares:
     crowdsec:
@@ -7,6 +8,8 @@ http:
           enabled: true
           logLevel: INFO
           crowdsecMode: stream
+          updateMaxFailure: -1
+          streamStartupBlock: false
           crowdsecLapiScheme: http
           crowdsecLapiHost: crowdsec:8080
           crowdsecLapiKey: "{{ crowdsec.lapi_key }}"
@@ -14,6 +17,9 @@ http:
           # the ban_curated profile are enforced on routes using this middleware.
           crowdsecAppsecEnabled: true
           crowdsecAppsecHost: crowdsec:7422
+          crowdsecAppsecFailureBlock: false
+          crowdsecAppsecUnreachableBlock: false
+          crowdsecAppsecUnreadableBodyBlock: false
           # Trusted IPs bypass both the decision check and AppSec — parser
           # whitelists don't cover the AppSec path, so this prevents self-lockout.
           clientTrustedIPs:

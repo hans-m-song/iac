@@ -50,13 +50,13 @@ releases:
       - ./values/openobserve.yaml
       - {{- $secrets.openobserve | toYaml | nindent 8 }}
 
-  - name: openobserve
-    chart: openobserve/openobserve-standalone
-    installed: false
-    namespace: monitoring
-    values:
-      - ./values/openobserve-standalone.yaml
-      - {{- $secrets.openobserveStandalone | toYaml | nindent 8 }}
+  # - name: openobserve
+  #   chart: openobserve/openobserve-standalone
+  #   installed: false
+  #   namespace: monitoring
+  #   values:
+  #     - ./values/openobserve-standalone.yaml
+  #     - {{- $secrets.openobserveStandalone | toYaml | nindent 8 }}
 
   - name: openobserve-collector
     chart: openobserve/openobserve-collector

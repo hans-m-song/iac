@@ -22,6 +22,12 @@ releases:
       - ./values/huisheng.yaml
       - {{- $secrets.huisheng | toYaml | nindent 8 }}
 
+  - name: lanraragi
+    chart: ../../charts/generic
+    namespace: lanraragi
+    values:
+      - ./values/lanraragi.yaml
+
   - name: meilisearch
     chart: ../../charts/generic
     namespace: buildsight
@@ -44,6 +50,24 @@ releases:
     values:
       - ./values/mongo.yaml
       - {{- $secrets.mongo | toYaml | nindent 8 }}
+
+  - name: ntfy
+    chart: ../../charts/generic
+    namespace: ntfy
+    values:
+      - ./values/ntfy.yaml
+
+  - name: ollama
+    chart: ../../charts/generic
+    namespace: ollama
+    values:
+      - ./values/ollama.yaml
+
+  - name: open-webui
+    chart: ../../charts/generic
+    namespace: open-webui
+    values:
+      - ./values/open-webui.yaml
 
   - name: supabase
     chart: ../../charts/supabase

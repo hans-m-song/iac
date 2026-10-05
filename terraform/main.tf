@@ -60,6 +60,7 @@ module "newrelic" {
 
 module "oci" {
   source              = "./workspaces/oci"
+  bastion_client_ip   = var.bastion_client_ip
   oci_tenancy_ocid    = var.oci_tenancy_ocid
   ssh_authorized_keys = var.ssh_authorized_keys
 }

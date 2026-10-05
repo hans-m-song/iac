@@ -10,37 +10,42 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "6.2.0"
+      version = "~> 6.54.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "5.6.0"
+      version = "~> 5.22.0"
     }
 
     github = {
       source  = "integrations/github"
-      version = "6.6.0"
+      version = "~> 6.13.0"
     }
 
     http = {
       source  = "hashicorp/http"
-      version = "3.5.0"
+      version = "~> 3.6.0"
     }
 
     newrelic = {
       source  = "newrelic/newrelic"
-      version = "3.63.0"
+      version = "~> 3.94.0"
     }
 
     oci = {
       source  = "oracle/oci"
-      version = "8.18.0"
+      version = "~> 8.22.0"
+    }
+
+    openobserve = {
+      source  = "openobserve/openobserve"
+      version = "~> 1.3.0"
     }
 
     tailscale = {
       source  = "tailscale/tailscale"
-      version = "0.24.0"
+      version = "~> 0.29.0"
     }
 
     zerotier = {

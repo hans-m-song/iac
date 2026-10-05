@@ -9,6 +9,8 @@ locals {
   private_subnet_cidr = "10.10.1.0/24"
   public_subnet_cidr  = "10.10.2.0/24"
   natgw_private_ip    = "10.10.1.200"
+  nlb_private_ip      = "10.10.2.2"
+  grady_private_ip    = "10.10.2.10"
 }
 
 resource "oci_core_vcn" "default" {
@@ -60,18 +62,18 @@ resource "oci_core_security_list" "public_subnet" {
     }
   }
 
-  ingress_security_rules {
-    description = "tailscale ipv4 ingress"
-    protocol    = local.transport_protocol_udp
-    source      = "0.0.0.0/0"
-    source_type = "CIDR_BLOCK"
-    stateless   = true
+  # ingress_security_rules {
+  #   description = "tailscale ipv4 ingress"
+  #   protocol    = local.transport_protocol_udp
+  #   source      = "0.0.0.0/0"
+  #   source_type = "CIDR_BLOCK"
+  #   stateless   = true
 
-    udp_options {
-      min = 41641
-      max = 41641
-    }
-  }
+  #   udp_options {
+  #     min = 41641
+  #     max = 41641
+  #   }
+  # }
 }
 
 resource "oci_core_subnet" "public" {
@@ -142,28 +144,19 @@ resource "oci_core_security_list" "private_subnet" {
     destination_type = "CIDR_BLOCK"
   }
 
+  # Reached only by traefik on grady, never by the NLB, so the source stays
+  # inside the VCN. Widen this to 0.0.0.0/0 if a private instance ever becomes
+  # an NLB backend — source preservation delivers the client's IP, not the
+  # load balancer's, so there is no narrower CIDR that works.
   ingress_security_rules {
     description = "https ingress"
     protocol    = local.transport_protocol_tcp
-    source      = "0.0.0.0/0"
+    source      = local.vcn_cidr
     source_type = "CIDR_BLOCK"
 
     tcp_options {
       min = 443
       max = 443
-    }
-  }
-
-  ingress_security_rules {
-    description = "tailscale ipv4 ingress"
-    protocol    = local.transport_protocol_udp
-    source      = "0.0.0.0/0"
-    source_type = "CIDR_BLOCK"
-    stateless   = true
-
-    udp_options {
-      min = 41641
-      max = 41641
     }
   }
 }
@@ -183,11 +176,4 @@ resource "oci_core_subnet" "private" {
 resource "oci_core_route_table_attachment" "private" {
   route_table_id = oci_core_route_table.private.id
   subnet_id      = oci_core_subnet.private.id
-}
-
-data "oci_core_services" "test_services" {
-}
-
-resource "terraform_data" "test" {
-  input = data.oci_core_services.test_services
 }

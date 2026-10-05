@@ -6,7 +6,7 @@ deployment:
 
 containers:
   openobserve:
-    image: public.ecr.aws/zinclabs/openobserve:v0.70.1
+    image: public.ecr.aws/zinclabs/openobserve:v0.91.3
     resources:
       limits:
         cpu: 2000m

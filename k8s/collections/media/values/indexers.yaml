@@ -3,6 +3,27 @@ deployment:
     type: Recreate
 
 containers:
+  gluetun:
+    image: qmcgaw/gluetun
+    securityContext:
+      capabilities:
+        add:
+          - NET_ADMIN
+    livenessProbe:
+      exec:
+        command: /gluetun-entrypoint, healthcheck
+      initialDelaySeconds: 30
+      periodSeconds: 5
+      timeoutSeconds: 5
+    volumes:
+      tun:
+        mount:
+          mountPath: /dev/net/tun
+          readOnly: false
+        spec:
+          hostPath:
+            path: /dev/net/tun
+
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     securityContext: false
@@ -56,6 +77,13 @@ containers:
         spec:
           persistentVolumeClaim:
             claimName: indexers-config
+      data:
+        mount:
+          mountPath: /data
+          subPath: radarr
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-data
     ports:
       radarr:
         protocol: TCP
@@ -88,6 +116,13 @@ containers:
         spec:
           persistentVolumeClaim:
             claimName: indexers-config
+      data:
+        mount:
+          mountPath: /data
+          subPath: readarr
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-data
     ports:
       readarr:
         protocol: TCP
@@ -120,6 +155,13 @@ containers:
         spec:
           persistentVolumeClaim:
             claimName: indexers-config
+      data:
+        mount:
+          mountPath: /data
+          subPath: sonarr
+        spec:
+          persistentVolumeClaim:
+            claimName: indexers-data
     ports:
       sonarr:
         protocol: TCP
@@ -151,6 +193,9 @@ pvc:
   indexers-config:
     storageClassName: nfs-persistent
     capacity: 1Gi
+  indexers-data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
 
 networkPolicy:
   ingress:
@@ -159,3 +204,8 @@ networkPolicy:
   egress:
     - cidr: 192.168.1.41/32
     - namespace: media
+    - cidr: 0.0.0.0/0
+    # skyhook.sonarr.tv
+    - cidr: 104.26.0.163/32
+    - cidr: 172.67.70.98/32
+    - cidr: 104.26.1.163/32

@@ -30,11 +30,16 @@ providers:
     filename: /etc/traefik/dynamic.yaml
     watch: true
 
+tracing:
+  otlp:
+    http:
+      endpoint: http://buildsight-otel-collector:4318/v1/traces
+
 experimental:
   plugins:
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.6.0
+      version: v1.7.1
 
 certificatesResolvers:
   cloudflare:

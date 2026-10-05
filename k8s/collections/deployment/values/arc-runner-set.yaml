@@ -11,6 +11,7 @@ template:
     containers:
       - name: runner
         image: public.ecr.aws/axatol/github-actions-runner:latest
+        imagePullPolicy: Always
         command: ["/home/runner/run.sh"]
         env:
           - name: npm_config_store_dir

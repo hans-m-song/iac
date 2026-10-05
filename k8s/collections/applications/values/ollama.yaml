@@ -1,0 +1,36 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      data:
+        mount:
+          mountPath: /root/.ollama
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: data
+    ports:
+      ollama:
+        protocol: TCP
+        internalPort: 11434
+        externalPort: 11434
+
+pvc:
+  data:
+    storageClassName: nfs-persistent
+    capacity: 10Gi
+
+ingress:
+  ingressClassName: traefik
+  # annotations:
+  #   cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    ollama.lab.axatol.xyz:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+        tls: true

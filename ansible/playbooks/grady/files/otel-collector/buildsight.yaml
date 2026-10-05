@@ -100,6 +100,48 @@ receivers:
       processes: {}
 
 processors:
+  filter/trace_health:
+    error_mode: ignore
+    traces:
+      span:
+        - attributes["url.path"] == "/health"
+        - IsMatch(attributes["url.full"], "/health$")
+        - attributes["server.address"] == "/var/run/docker.sock"
+
+  resource/trace_prune:
+    attributes:
+      - key: os.description
+        action: delete
+      - key: os.type
+        action: delete
+      - key: process.command_args
+        action: delete
+      - key: process.executable.name
+        action: delete
+      - key: process.executable.path
+        action: delete
+      - key: process.owner
+        action: delete
+      - key: process.pid
+        action: delete
+      - key: process.runtime.description
+        action: delete
+      - key: process.runtime.name
+        action: delete
+      - key: process.runtime.version
+        action: delete
+      - key: telemetry.sdk.language
+        action: delete
+      - key: telemetry.sdk.name
+        action: delete
+      - key: telemetry.sdk.version
+        action: delete
+
+  attributes/trace_prune:
+    actions:
+      - key: network.peer.port
+        action: delete
+
   batch:
     send_batch_size: 1000
     timeout: 1s
@@ -143,7 +185,11 @@ service:
 
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors:
+        - filter/trace_health
+        - resource/trace_prune
+        - attributes/trace_prune
+        - batch
       exporters: [otlp_grpc]
 
     metrics/internal:

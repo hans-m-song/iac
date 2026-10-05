@@ -1,0 +1,35 @@
+deployment:
+  strategy:
+    type: Recreate
+
+containers:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    volumes:
+      data:
+        mount:
+          mountPath: /app/backend/data
+          readOnly: false
+        spec:
+          persistentVolumeClaim:
+            claimName: data
+    ports:
+      http:
+        protocol: TCP
+        internalPort: 8080
+        externalPort: 8080
+
+pvc:
+  data:
+    storageClassName: nfs-persistent
+    capacity: 1Gi
+ingress:
+  ingressClassName: traefik
+  # annotations:
+  #   cert-manager.io/cluster-issuer: cert-manager-cluster-issuers-prd
+  hosts:
+    lanraragi.lab.axatol.xyz:
+      - path: /
+        pathType: ImplementationSpecific
+        portName: http
+        tls: true
