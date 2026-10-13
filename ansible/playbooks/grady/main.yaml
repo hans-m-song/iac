@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Configure containers
   hosts: grady
@@ -8,6 +9,14 @@
       community.docker.docker_network:
         name: proxy
         driver: bridge
+
+    - name: Install OCI CLI for instance principal authentication
+      ansible.builtin.import_role:
+        name: oci_cli
+
+    - name: Log root Docker in to OCIR
+      ansible.builtin.import_role:
+        name: ocir_pull
 
     - name: Deploy grady docker compose stack
       ansible.builtin.import_role:
@@ -21,3 +30,4 @@
           crowdsec/: crowdsec
           otel-collector/default.yaml: otel-collector
           otel-collector/buildsight.yaml: buildsight-otel-collector
+          folio/: buildsight-folio-migrate
