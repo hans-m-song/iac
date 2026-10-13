@@ -43,11 +43,11 @@ receivers:
       container.memory.usage.total:
         enabled: true
       container.network.io.usage.rx_bytes:
-        enabled: true
+        enabled: false
       container.network.io.usage.rx_dropped:
         enabled: false
       container.network.io.usage.tx_bytes:
-        enabled: true
+        enabled: false
       container.network.io.usage.tx_dropped:
         enabled: false
       # optional

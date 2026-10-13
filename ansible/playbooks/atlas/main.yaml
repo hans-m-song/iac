@@ -17,3 +17,4 @@
         docker_compose_stack_restart_map:
           otelcol-config.yaml: otel-collector
           custom.conf: pihole
+          unbound.conf: unbound

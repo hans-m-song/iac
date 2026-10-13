@@ -1,37 +1,4 @@
 services:
-  # adguard:
-  #   container_name: adguard
-  #   image: adguard/adguardhome:latest
-  #   pull_policy: missing
-  #   restart: unless-stopped
-  #   ports:
-  #     # setup
-  #     # - "3000:3000/tcp"
-  #     # web
-  #     - 3000:80
-  #     # dns
-  #     - 53:53/tcp
-  #     - 53:53/udp
-  #     # dns over https
-  #     - 443:443/tcp
-  #     - 443:443/udp
-  #     # dns over tls
-  #     - 853:853/tcp
-  #     - 853:853/udp
-  #   volumes:
-  #     - /opt/adguard/work:/opt/adguardhome/work:rw
-  #     - /opt/adguard/conf:/opt/adguardhome/conf:rw
-  #   healthcheck:
-  #     test: wget --quiet --tries=1 --spider http://localhost/ || exit 1
-  #     interval: 30s
-  #     timeout: 1s
-  #     retries: 3
-  #     start_period: 5s
-  #   labels:
-  #     traefik.enable: "true"
-  #     traefik.http.services.adguard.loadbalancer.server.port: "80"
-  #     traefik.http.routers.adguard.rule: Host(`adguard.atlas.local`) || Host(`adguard.atlas.axatol.xyz`)
-
   node-exporter:
     container_name: node-exporter
     image: quay.io/prometheus/node-exporter:latest
@@ -75,7 +42,7 @@ services:
       DNSMASQ_USER: "{{ pihole.dnsmasq_user }}"
       FTLCONF_dns_listeningMode: all
       FTLCONF_dns_ratelimit_count: "0"
-      FTLCONF_dns_upstreams: "{{ pihole.dns }}"
+      FTLCONF_dns_upstreams: "unbound#5335"
       FTLCONF_misc_etc_dnsmasq_d: "true"
       FTLCONF_webserver_api_password: "{{ pihole.web_password }}"
       FTLCONF_webserver_domain: pihole.atlas.axatol.xyz
@@ -95,29 +62,29 @@ services:
     #   timeout: 1s
     #   retries: 3
     #   start_period: 1m
-    network_mode: bridge
+    depends_on:
+      unbound:
+        condition: service_healthy
     labels:
       traefik.enable: "true"
       traefik.http.services.pihole.loadbalancer.server.port: "80"
       traefik.http.routers.pihole.rule: Host(`pihole.atlas.axatol.xyz`)
       traefik.http.routers.pihole.tls.certresolver: letsencrypt
 
-  portainer:
-    container_name: portainer
-    image: portainer/portainer-ce:latest
+  unbound:
+    container_name: unbound
+    image: klutchell/unbound:1.26.1
     pull_policy: missing
     restart: unless-stopped
-    ports:
-      - 9000:9000
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/portainer:/data
-    network_mode: bridge
-    labels:
-      traefik.enable: "true"
-      traefik.http.services.portainer.loadbalancer.server.port: "9000"
-      traefik.http.routers.portainer.rule: Host(`portainer.atlas.axatol.xyz`)
-      traefik.http.routers.portainer.tls.certresolver: letsencrypt
+      - /opt/atlas/unbound.conf:/etc/unbound/unbound.conf:ro
+      - unbound-state:/var/unbound
+    healthcheck:
+      test: ["CMD", "drill-hc", "-Q", "-p", "5335", "@127.0.0.1", "localhost"]
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
 
   traefik:
     container_name: traefik
@@ -147,7 +114,6 @@ services:
       CF_DNS_API_TOKEN: "{{ cloudflare.dns_api_token }}"
     pull_policy: missing
     restart: unless-stopped
-    network_mode: bridge
     ports:
       - 80:80
       - 443:443
@@ -167,35 +133,5 @@ services:
       traefik.http.routers.traefik.rule: Host(`traefik.atlas.axatol.xyz`)
       traefik.http.routers.traefik.tls.certresolver: letsencrypt
 
-  # gluetun:
-  #   container_name: gluetun
-  #   image: qmcgaw/gluetun
-  #   restart: unless-stopped
-  #   network_mode: host
-  #   cap_add:
-  #     - NET_ADMIN
-  #   devices:
-  #     - /dev/net/tun:/dev/net/tun
-  #   volumes:
-  #     - /opt/atlas/gluetun-auth-config.toml:/gluetun/auth/config.toml
-  #   environment:
-  #     DNS_SERVER: "on"
-  #     DNS_UPSTREAM_RESOLVERS: cloudflare,quad9
-  #     FIREWALL_DEBUG: "on"
-  #     FIREWALL_OUTBOUND_SUBNETS: 192.168.1.0/24,
-  #     VPN_SERVICE_PROVIDER: protonvpn
-  #     VPN_TYPE: wireguard
-  #     VPN_PORT_FORWARDING: "on"
-  #     WIREGUARD_PRIVATE_KEY: "{{ vpn.wireguard_private_key }}"
-  #     SERVER_COUNTRIES: Australia
-  #   healthcheck:
-  #     test: wget --quiet --tries=1 --spider http://localhost:8080/v1/portforward || exit 1
-  #     interval: 30s
-  #     timeout: 1s
-  #     retries: 3
-  #     start_period: 5s
-  #   labels:
-  #     traefik.enable: "true"
-  #     traefik.http.services.gluetun.loadbalancer.server.port: "8080"
-  #     traefik.http.routers.gluetun.rule: Host(`gluetun.atlas.axatol.xyz`)
-  #     # traefik.http.routers.portainer.tls.certresolver: letsencrypt
+volumes:
+  unbound-state:
